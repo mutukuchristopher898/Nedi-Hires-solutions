@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nedi Hires Solutions — Car Hire Platform
+
+Next.js 16 frontend for Nedi Hires Solutions: search & booking flow, partner
+onboarding/dashboard, admin approval queues, subscriptions, and customer
+accounts.
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Backend (Supabase)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The database schema lives in `supabase/migrations/`, and the client helpers
+in `src/lib/supabase/`. To connect a real backend:
 
-## Learn More
+1. Create a free project at [supabase.com](https://supabase.com).
+2. Copy `.env.local.example` to `.env.local` and fill in your project's URL
+   and anon key (Project Settings → API).
+3. Push the schema: `npx supabase link --project-ref <your-project-ref>`
+   then `npx supabase db push`.
+4. (Optional) Seed local dev data: `npx supabase db reset` — requires Docker
+   Desktop for the local Postgres instance.
 
-To learn more about Next.js, take a look at the following resources:
+The app currently reads from mock data in `src/lib/data.ts` rather than the
+database; wiring pages to real Supabase queries is in progress.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Tech
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Next.js 16 (App Router, Turbopack)
+- Tailwind CSS v4
+- Supabase (Postgres, Auth, Storage) — client-side auth currently mocked via
+  `src/lib/auth.tsx` pending real Supabase Auth wiring
