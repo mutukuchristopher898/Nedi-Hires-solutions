@@ -1,12 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SignUpPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignUpForm />
+    </Suspense>
+  );
+}
+
+function SignUpForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next") || "/account";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -35,7 +45,7 @@ export default function SignUpPage() {
     }
 
     if (data.session) {
-      router.push("/account");
+      router.push(next);
     } else {
       // Email confirmation is required before a session is issued.
       setNeedsConfirmation(true);
@@ -54,7 +64,7 @@ export default function SignUpPage() {
           account, then sign in.
         </p>
         <Link
-          href="/account/sign-in"
+          href={`/account/sign-in?next=${encodeURIComponent(next)}`}
           className="mt-6 inline-block rounded-md bg-midnight px-5 py-3 text-sm font-semibold text-white transition hover:bg-charcoal"
         >
           Go to Sign In
@@ -125,7 +135,10 @@ export default function SignUpPage() {
 
       <p className="mt-4 text-center text-sm text-midnight/60">
         Already have an account?{" "}
-        <Link href="/account/sign-in" className="font-medium text-gold-dark hover:text-gold">
+        <Link
+          href={`/account/sign-in?next=${encodeURIComponent(next)}`}
+          className="font-medium text-gold-dark hover:text-gold"
+        >
           Sign in
         </Link>
       </p>

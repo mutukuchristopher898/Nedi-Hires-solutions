@@ -32,3 +32,17 @@ export async function getSubscriptionPlans(): Promise<SubscriptionPlan[]> {
     perks: row.perks,
   }));
 }
+
+// Resolves the real DB row backing a displayed (mock/demo) vehicle, keyed by
+// the stable slug used in URLs, so bookings can reference a real vehicle_id.
+export async function getVehicleDbIdBySlug(slug: string): Promise<string | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("vehicles")
+    .select("id")
+    .eq("slug", slug)
+    .eq("approval_status", "approved")
+    .maybeSingle();
+
+  return (data as { id: string } | null)?.id ?? null;
+}

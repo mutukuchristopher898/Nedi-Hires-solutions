@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import type { Vehicle } from "@/lib/types";
 import { formatMoney } from "@/lib/data";
+import { useAuth } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/client";
 import VehiclePhoto from "./VehiclePhoto";
 
 type Step = "deposit" | "verification" | "settlement" | "confirmed";
@@ -16,23 +18,149 @@ const STEP_LABELS: Record<Step, string> = {
   confirmed: "Confirmed",
 };
 
-export default function BookingWizard({ vehicle }: { vehicle: Vehicle }) {
+export default function BookingWizard({
+  vehicle,
+  vehicleDbId,
+}: {
+  vehicle: Vehicle;
+  vehicleDbId: string | null;
+}) {
+  const { user, ready } = useAuth();
   const [step, setStep] = useState<Step>("deposit");
   const [days, setDays] = useState(3);
   const [docType, setDocType] = useState("International Passport");
   const [fileName, setFileName] = useState<string | null>(null);
   const [verificationSubmitted, setVerificationSubmitted] = useState(false);
+  const [bookingId, setBookingId] = useState<string | null>(null);
+  const [bookingRef, setBookingRef] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const deposit = 5000;
   const total = vehicle.pricePerDay * days;
   const securityDeposit = Math.round(total * 0.15);
   const remaining = Math.max(total - deposit, 0);
-  const [bookingRef] = useState(
-    () => `BK-${Math.floor(10000 + Math.random() * 89999)}`
-  );
   const money = (amount: number) => formatMoney(amount, vehicle.currency);
 
   const currentIndex = STEP_ORDER.indexOf(step);
+
+  async function handlePayDeposit() {
+    if (!user || !vehicleDbId) return;
+    setSaving(true);
+    setError(null);
+
+    const supabase = createClient();
+    const startDate = new Date();
+    const endDate = new Date(Date.now() + days * 86_400_000);
+
+    const { data, error: insertError } = await supabase
+      .from("bookings")
+      .insert({
+        customer_id: user.id,
+        vehicle_id: vehicleDbId,
+        start_date: startDate.toISOString().slice(0, 10),
+        end_date: endDate.toISOString().slice(0, 10),
+        status: "verification_pending",
+        deposit_amount: deposit,
+        total_amount: total,
+        security_deposit: securityDeposit,
+        currency: vehicle.currency,
+      })
+      .select("id, booking_ref")
+      .single();
+
+    setSaving(false);
+
+    if (insertError || !data) {
+      setError(insertError?.message ?? "Could not create your booking. Please try again.");
+      return;
+    }
+
+    setBookingId(data.id);
+    setBookingRef(data.booking_ref);
+    setStep("verification");
+  }
+
+  async function handleSubmitVerification() {
+    if (!user || !bookingId) return;
+    setSaving(true);
+    setError(null);
+
+    const supabase = createClient();
+    const { error: docError } = await supabase.from("identity_documents").insert({
+      booking_id: bookingId,
+      customer_id: user.id,
+      doc_type: docType,
+      file_url: fileName ?? "uploaded-document",
+      status: "pending",
+    });
+
+    setSaving(false);
+
+    if (docError) {
+      setError(docError.message);
+      return;
+    }
+
+    setVerificationSubmitted(true);
+  }
+
+  async function handleContinueToSettlement() {
+    if (bookingId) {
+      const supabase = createClient();
+      await supabase.from("bookings").update({ status: "settlement_pending" }).eq("id", bookingId);
+    }
+    setStep("settlement");
+  }
+
+  async function handleCompletePayment() {
+    if (bookingId) {
+      const supabase = createClient();
+      await supabase.from("bookings").update({ status: "confirmed" }).eq("id", bookingId);
+    }
+    setStep("confirmed");
+  }
+
+  if (!ready) return null;
+
+  if (!user) {
+    const next = `/booking/${vehicle.id}`;
+    return (
+      <div className="max-w-md rounded-2xl bg-white p-8 text-center ring-1 ring-line">
+        <h2 className="text-lg font-semibold text-midnight">Sign in to book this vehicle</h2>
+        <p className="mt-2 text-sm text-midnight/60">
+          Create an account or sign in so we can track your reservation, verification, and
+          booking history.
+        </p>
+        <div className="mt-6 flex justify-center gap-3">
+          <Link
+            href={`/account/sign-in?next=${encodeURIComponent(next)}`}
+            className="rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
+          >
+            Sign In
+          </Link>
+          <Link
+            href={`/account/sign-up?next=${encodeURIComponent(next)}`}
+            className="rounded-md border border-line px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-midnight/5"
+          >
+            Create Account
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!vehicleDbId) {
+    return (
+      <div className="max-w-md rounded-2xl bg-amber/10 p-8 text-center text-amber ring-1 ring-amber/30">
+        <h2 className="text-lg font-semibold">Booking temporarily unavailable</h2>
+        <p className="mt-2 text-sm text-midnight/60">
+          This vehicle isn&apos;t currently open for reservations. Please check back shortly or
+          contact support.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
@@ -62,6 +190,10 @@ export default function BookingWizard({ vehicle }: { vehicle: Vehicle }) {
           ))}
         </ol>
 
+        {error && (
+          <p className="mb-4 rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p>
+        )}
+
         {step === "deposit" && (
           <section className="rounded-2xl bg-white p-6 ring-1 ring-line">
             <h2 className="text-lg font-semibold text-midnight">1. Reservation & Deposit</h2>
@@ -87,10 +219,11 @@ export default function BookingWizard({ vehicle }: { vehicle: Vehicle }) {
             </div>
 
             <button
-              onClick={() => setStep("verification")}
-              className="mt-6 w-full rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white sm:w-auto"
+              onClick={handlePayDeposit}
+              disabled={saving}
+              className="mt-6 w-full rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white disabled:opacity-60 sm:w-auto"
             >
-              Pay Deposit — {money(deposit)}
+              {saving ? "Processing…" : `Pay Deposit — ${money(deposit)}`}
             </button>
           </section>
         )}
@@ -129,11 +262,11 @@ export default function BookingWizard({ vehicle }: { vehicle: Vehicle }) {
                 </label>
 
                 <button
-                  onClick={() => setVerificationSubmitted(true)}
-                  disabled={!fileName}
+                  onClick={handleSubmitVerification}
+                  disabled={!fileName || saving}
                   className="rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white disabled:cursor-not-allowed disabled:bg-midnight/20 disabled:text-midnight/50"
                 >
-                  Submit for Verification
+                  {saving ? "Submitting…" : "Submit for Verification"}
                 </button>
               </div>
             ) : (
@@ -144,7 +277,7 @@ export default function BookingWizard({ vehicle }: { vehicle: Vehicle }) {
                   In production, an admin or partner reviews this from the internal queue.
                 </p>
                 <button
-                  onClick={() => setStep("settlement")}
+                  onClick={handleContinueToSettlement}
                   className="mt-4 rounded-md bg-emerald px-4 py-2 text-xs font-semibold text-white transition hover:bg-emerald-dark"
                 >
                   Simulate Admin Approval → Continue
@@ -169,7 +302,7 @@ export default function BookingWizard({ vehicle }: { vehicle: Vehicle }) {
             </div>
 
             <button
-              onClick={() => setStep("confirmed")}
+              onClick={handleCompletePayment}
               className="mt-6 w-full rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white sm:w-auto"
             >
               Complete Payment
@@ -188,10 +321,10 @@ export default function BookingWizard({ vehicle }: { vehicle: Vehicle }) {
               A confirmation email with your receipt and pickup instructions has been sent.
             </p>
             <Link
-              href="/"
+              href="/account"
               className="mt-6 inline-block rounded-md bg-midnight px-5 py-3 text-sm font-semibold text-white transition hover:bg-charcoal"
             >
-              Back to Home
+              View My Bookings
             </Link>
           </section>
         )}

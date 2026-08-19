@@ -1,12 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SignInPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignInForm />
+    </Suspense>
+  );
+}
+
+function SignInForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next") || "/account";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +37,7 @@ export default function SignInPage() {
       return;
     }
 
-    router.push("/account");
+    router.push(next);
   }
 
   return (
@@ -74,7 +84,10 @@ export default function SignInPage() {
 
       <p className="mt-4 text-center text-sm text-midnight/60">
         Don&apos;t have an account?{" "}
-        <Link href="/account/sign-up" className="font-medium text-gold-dark hover:text-gold">
+        <Link
+          href={`/account/sign-up?next=${encodeURIComponent(next)}`}
+          className="font-medium text-gold-dark hover:text-gold"
+        >
           Create one
         </Link>
       </p>
