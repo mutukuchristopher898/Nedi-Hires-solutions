@@ -3,12 +3,32 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/client";
 
 export default function SignInPage() {
-  const { signIn } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+
+    const supabase = createClient();
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+
+    setSubmitting(false);
+
+    if (signInError) {
+      setError(signInError.message);
+      return;
+    }
+
+    router.push("/account");
+  }
 
   return (
     <div className="container-shell max-w-md py-16">
@@ -17,15 +37,11 @@ export default function SignInPage() {
         Access your bookings, documents, and profile.
       </p>
 
-      <form
-        className="mt-6 space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line"
-        onSubmit={(e) => {
-          e.preventDefault();
-          const name = email.split("@")[0]?.replace(/[._]/g, " ") || "Traveler";
-          signIn({ name: name.replace(/\b\w/g, (c) => c.toUpperCase()), email });
-          router.push("/account");
-        }}
-      >
+      <form className="mt-6 space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line" onSubmit={handleSubmit}>
+        {error && (
+          <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p>
+        )}
+
         <label className="block">
           <span className="text-xs font-medium text-midnight/60">Email</span>
           <input
@@ -41,15 +57,18 @@ export default function SignInPage() {
           <input
             required
             type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
           />
         </label>
 
         <button
           type="submit"
-          className="w-full rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
+          disabled={submitting}
+          className="w-full rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white disabled:opacity-60"
         >
-          Sign In
+          {submitting ? "Signing in…" : "Sign In"}
         </button>
       </form>
 

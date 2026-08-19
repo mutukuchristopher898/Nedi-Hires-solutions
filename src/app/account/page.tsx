@@ -3,7 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/client";
 import StatusBadge from "@/components/StatusBadge";
+import DemoTag from "@/components/DemoTag";
 
 const MOCK_BOOKINGS = [
   { ref: "BK-88421", vehicle: "Toyota Harrier (2018)", dates: "Aug 20 – Aug 24, 2026", status: "approved" as const, total: "KES 30,000" },
@@ -19,8 +21,15 @@ const MOCK_DOCS = [
 type Tab = "bookings" | "documents" | "profile";
 
 export default function AccountPage() {
-  const { user, ready, signOut } = useAuth();
+  const { user, profile, ready, signOut, refreshProfile } = useAuth();
   const [tab, setTab] = useState<Tab>("bookings");
+  const [nameOverride, setNameOverride] = useState<string | null>(null);
+  const [phoneOverride, setPhoneOverride] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const name = nameOverride ?? profile?.full_name ?? "";
+  const phone = phoneOverride ?? profile?.phone ?? "";
 
   if (!ready) return null;
 
@@ -43,11 +52,26 @@ export default function AccountPage() {
     );
   }
 
+  async function handleSaveProfile(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setSaved(false);
+    const supabase = createClient();
+    await supabase.from("profiles").update({ full_name: name, phone }).eq("id", user!.id);
+    await refreshProfile();
+    setSaving(false);
+    setSaved(true);
+  }
+
+  const displayName = profile?.full_name || user.email?.split("@")[0] || "there";
+
   return (
     <div className="container-shell py-10">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-midnight">Welcome back, {user.name.split(" ")[0]}</h1>
+          <h1 className="text-2xl font-bold text-midnight">
+            Welcome back, {displayName.split(" ")[0]}
+          </h1>
           <p className="mt-1 text-sm text-midnight/60">{user.email}</p>
         </div>
         <button
@@ -75,36 +99,44 @@ export default function AccountPage() {
       </div>
 
       {tab === "bookings" && (
-        <div className="mt-6 overflow-x-auto rounded-2xl bg-white ring-1 ring-line">
-          <table className="w-full text-sm">
-            <thead className="bg-offwhite text-left text-xs uppercase tracking-wide text-midnight/50">
-              <tr>
-                <th className="px-5 py-3">Reference</th>
-                <th className="px-5 py-3">Vehicle</th>
-                <th className="px-5 py-3">Dates</th>
-                <th className="px-5 py-3">Total</th>
-                <th className="px-5 py-3">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line">
-              {MOCK_BOOKINGS.map((b) => (
-                <tr key={b.ref}>
-                  <td className="px-5 py-3 font-mono text-xs text-midnight/70">{b.ref}</td>
-                  <td className="px-5 py-3 font-medium text-midnight">{b.vehicle}</td>
-                  <td className="px-5 py-3 text-midnight/70">{b.dates}</td>
-                  <td className="px-5 py-3 text-midnight/70">{b.total}</td>
-                  <td className="px-5 py-3">
-                    <StatusBadge status={b.status} />
-                  </td>
+        <div>
+          <div className="mt-4 flex justify-end">
+            <DemoTag />
+          </div>
+          <div className="mt-2 overflow-x-auto rounded-2xl bg-white ring-1 ring-line">
+            <table className="w-full text-sm">
+              <thead className="bg-offwhite text-left text-xs uppercase tracking-wide text-midnight/50">
+                <tr>
+                  <th className="px-5 py-3">Reference</th>
+                  <th className="px-5 py-3">Vehicle</th>
+                  <th className="px-5 py-3">Dates</th>
+                  <th className="px-5 py-3">Total</th>
+                  <th className="px-5 py-3">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-line">
+                {MOCK_BOOKINGS.map((b) => (
+                  <tr key={b.ref}>
+                    <td className="px-5 py-3 font-mono text-xs text-midnight/70">{b.ref}</td>
+                    <td className="px-5 py-3 font-medium text-midnight">{b.vehicle}</td>
+                    <td className="px-5 py-3 text-midnight/70">{b.dates}</td>
+                    <td className="px-5 py-3 text-midnight/70">{b.total}</td>
+                    <td className="px-5 py-3">
+                      <StatusBadge status={b.status} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
       {tab === "documents" && (
         <div className="mt-6 space-y-3">
+          <div className="flex justify-end">
+            <DemoTag />
+          </div>
           {MOCK_DOCS.map((d) => (
             <div key={d.type} className="flex items-center justify-between rounded-xl bg-white p-4 ring-1 ring-line">
               <div>
@@ -121,32 +153,43 @@ export default function AccountPage() {
       )}
 
       {tab === "profile" && (
-        <div className="mt-6 max-w-md space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line">
+        <form
+          onSubmit={handleSaveProfile}
+          className="mt-6 max-w-md space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line"
+        >
           <label className="block">
             <span className="text-xs font-medium text-midnight/60">Full Name</span>
             <input
-              defaultValue={user.name}
+              value={name}
+              onChange={(e) => setNameOverride(e.target.value)}
               className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
             />
           </label>
           <label className="block">
             <span className="text-xs font-medium text-midnight/60">Email</span>
             <input
-              defaultValue={user.email}
-              className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
+              disabled
+              value={user.email ?? ""}
+              className="mt-1 w-full rounded-md border border-line bg-offwhite px-3 py-2 text-sm text-midnight/60"
             />
           </label>
           <label className="block">
             <span className="text-xs font-medium text-midnight/60">Phone / WhatsApp</span>
             <input
-              defaultValue={user.phone}
+              value={phone}
+              onChange={(e) => setPhoneOverride(e.target.value)}
               className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
             />
           </label>
-          <button className="rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white">
-            Save Changes
+          <button
+            type="submit"
+            disabled={saving}
+            className="rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white disabled:opacity-60"
+          >
+            {saving ? "Saving…" : "Save Changes"}
           </button>
-        </div>
+          {saved && <p className="text-sm text-emerald-dark">Saved.</p>}
+        </form>
       )}
     </div>
   );

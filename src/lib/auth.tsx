@@ -1,69 +1,72 @@
 "use client";
 
-import { createContext, useContext, useMemo, useSyncExternalStore } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import type { User } from "@supabase/supabase-js";
+import { createClient } from "./supabase/client";
 
-export interface AuthUser {
-  name: string;
-  email: string;
-  phone?: string;
+export interface Profile {
+  id: string;
+  full_name: string;
+  phone: string | null;
+  role: "customer" | "partner" | "admin";
 }
 
 interface AuthContextValue {
-  user: AuthUser | null;
+  user: User | null;
+  profile: Profile | null;
   ready: boolean;
-  signIn: (user: AuthUser) => void;
-  signOut: () => void;
-}
-
-const STORAGE_KEY = "nedi-hires-auth-user";
-const authEvents = new EventTarget();
-
-function subscribe(callback: () => void) {
-  authEvents.addEventListener("change", callback);
-  window.addEventListener("storage", callback);
-  return () => {
-    authEvents.removeEventListener("change", callback);
-    window.removeEventListener("storage", callback);
-  };
-}
-
-function getSnapshot(): string | null {
-  try {
-    return window.localStorage.getItem(STORAGE_KEY);
-  } catch {
-    return null;
-  }
-}
-
-function getServerSnapshot(): string | null {
-  return null;
+  signOut: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const raw = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const user = useMemo<AuthUser | null>(() => {
-    if (!raw) return null;
-    try {
-      return JSON.parse(raw) as AuthUser;
-    } catch {
-      return null;
-    }
-  }, [raw]);
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [ready, setReady] = useState(false);
 
-  function signIn(nextUser: AuthUser) {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
-    authEvents.dispatchEvent(new Event("change"));
+  async function loadProfile(userId: string) {
+    const supabase = createClient();
+    const { data } = await supabase
+      .from("profiles")
+      .select("id, full_name, phone, role")
+      .eq("id", userId)
+      .single();
+    setProfile(data ?? null);
   }
 
-  function signOut() {
-    window.localStorage.removeItem(STORAGE_KEY);
-    authEvents.dispatchEvent(new Event("change"));
+  useEffect(() => {
+    const supabase = createClient();
+
+    supabase.auth.getSession().then(({ data }) => {
+      const sessionUser = data.session?.user ?? null;
+      setUser(sessionUser);
+      setReady(true);
+      if (sessionUser) loadProfile(sessionUser.id);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      const nextUser = session?.user ?? null;
+      setUser(nextUser);
+      if (nextUser) loadProfile(nextUser.id);
+      else setProfile(null);
+    });
+
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  async function signOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+  }
+
+  async function refreshProfile() {
+    if (user) await loadProfile(user.id);
   }
 
   return (
-    <AuthContext.Provider value={{ user, ready: true, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, profile, ready, signOut, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

@@ -15,7 +15,9 @@ const NAV_LINKS = [
 
 export default function Header() {
   const [open, setOpen] = useState(false);
-  const { user, ready } = useAuth();
+  const { user, profile, ready } = useAuth();
+  const firstName =
+    profile?.full_name?.split(" ")[0] || user?.email?.split("@")[0];
 
   return (
     <header className="sticky top-0 z-50 bg-midnight text-white">
@@ -49,7 +51,7 @@ export default function Header() {
             href="/account"
             className="text-sm font-medium text-white/80 transition hover:text-white"
           >
-            {ready && user ? `Hi, ${user.name.split(" ")[0]}` : "Sign In"}
+            {ready && user ? `Hi, ${firstName}` : "Sign In"}
           </Link>
           <Link
             href="/search"
@@ -79,7 +81,7 @@ export default function Header() {
               </Link>
             ))}
             <Link href="/account" onClick={() => setOpen(false)}>
-              {ready && user ? `My Account (${user.name.split(" ")[0]})` : "Sign In / Create Account"}
+              {ready && user ? `My Account (${firstName})` : "Sign In / Create Account"}
             </Link>
             <a href={site.whatsappHref} target="_blank" rel="noopener noreferrer">
               WhatsApp / Call: {site.phoneDisplay}

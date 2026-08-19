@@ -1,6 +1,9 @@
-import { formatMoney, subscriptionPlans } from "@/lib/data";
+import { formatMoney } from "@/lib/data";
+import { getSubscriptionPlans } from "@/lib/supabase/queries";
 
-export default function SubscriptionsPage() {
+export default async function SubscriptionsPage() {
+  const subscriptionPlans = await getSubscriptionPlans();
+
   return (
     <div>
       <section className="bg-midnight py-16 text-white">
