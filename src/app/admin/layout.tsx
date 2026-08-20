@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireRole } from "@/lib/supabase/authz";
 
 const LINKS = [
   { href: "/admin", label: "Overview" },
@@ -6,7 +7,9 @@ const LINKS = [
   { href: "/admin/documents", label: "Document Verification" },
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  await requireRole(["admin"], "/admin");
+
   return (
     <div className="bg-offwhite">
       <div className="border-b border-line bg-white">
