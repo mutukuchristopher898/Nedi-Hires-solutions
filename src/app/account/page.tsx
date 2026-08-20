@@ -6,8 +6,10 @@ import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
 import { formatMoney } from "@/lib/data";
 import StatusBadge from "@/components/StatusBadge";
+import DemoTag from "@/components/DemoTag";
+import type { LoyaltyTier } from "@/lib/types";
 
-type Tab = "bookings" | "documents" | "profile";
+type Tab = "bookings" | "documents" | "loyalty" | "profile";
 
 interface BookingRow {
   id: string;
@@ -30,6 +32,31 @@ interface DocumentRow {
   status: "pending" | "approved" | "rejected";
   submitted_at: string;
 }
+
+interface LoyaltyAccountRow {
+  points_balance: number;
+  lifetime_points: number;
+  tier: LoyaltyTier;
+}
+
+interface LoyaltyTransactionRow {
+  id: string;
+  points_delta: number;
+  reason: string;
+  created_at: string;
+}
+
+const TIER_STYLES: Record<LoyaltyTier, string> = {
+  bronze: "bg-amber/10 text-amber ring-1 ring-amber/30",
+  silver: "bg-midnight/10 text-midnight/70 ring-1 ring-midnight/20",
+  gold: "bg-gold/10 text-gold-dark ring-1 ring-gold/30",
+};
+
+const TIER_PERKS: Record<LoyaltyTier, string[]> = {
+  bronze: ["Earn 1 point per KES 100 spent"],
+  silver: ["Earn 1 point per KES 100 spent", "Priority customer support"],
+  gold: ["Earn 1 point per KES 100 spent", "Priority customer support", "Complimentary vehicle upgrade when available"],
+};
 
 const BOOKING_STATUS_STYLES: Record<BookingRow["status"], string> = {
   deposit_pending: "bg-amber/10 text-amber ring-1 ring-amber/30",
@@ -69,6 +96,8 @@ export default function AccountPage() {
   const [saved, setSaved] = useState(false);
   const [bookings, setBookings] = useState<BookingRow[]>([]);
   const [documents, setDocuments] = useState<DocumentRow[]>([]);
+  const [loyaltyAccount, setLoyaltyAccount] = useState<LoyaltyAccountRow | null>(null);
+  const [loyaltyTransactions, setLoyaltyTransactions] = useState<LoyaltyTransactionRow[]>([]);
   const [loadingRecords, setLoadingRecords] = useState(true);
 
   const name = nameOverride ?? profile?.full_name ?? "";
@@ -82,7 +111,7 @@ export default function AccountPage() {
     (async () => {
       setLoadingRecords(true);
       const supabase = createClient();
-      const [bookingsRes, documentsRes] = await Promise.all([
+      const [bookingsRes, documentsRes, loyaltyAccountRes, loyaltyTransactionsRes] = await Promise.all([
         supabase
           .from("bookings")
           .select(
@@ -95,11 +124,24 @@ export default function AccountPage() {
           .select("id, doc_type, status, submitted_at")
           .eq("customer_id", user.id)
           .order("submitted_at", { ascending: false }),
+        supabase
+          .from("loyalty_accounts")
+          .select("points_balance, lifetime_points, tier")
+          .eq("customer_id", user.id)
+          .maybeSingle(),
+        supabase
+          .from("loyalty_transactions")
+          .select("id, points_delta, reason, created_at")
+          .eq("customer_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(10),
       ]);
 
       if (!ignore) {
         setBookings((bookingsRes.data as unknown as BookingRow[]) ?? []);
         setDocuments((documentsRes.data as DocumentRow[]) ?? []);
+        setLoyaltyAccount((loyaltyAccountRes.data as LoyaltyAccountRow | null) ?? null);
+        setLoyaltyTransactions((loyaltyTransactionsRes.data as LoyaltyTransactionRow[]) ?? []);
         setLoadingRecords(false);
       }
     })();
@@ -161,7 +203,7 @@ export default function AccountPage() {
       </div>
 
       <div className="mt-6 flex gap-2 border-b border-line">
-        {(["bookings", "documents", "profile"] as Tab[]).map((t) => (
+        {(["bookings", "documents", "loyalty", "profile"] as Tab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -253,6 +295,66 @@ export default function AccountPage() {
                 <StatusBadge status={d.status} />
               </div>
             ))
+          )}
+        </div>
+      )}
+
+      {tab === "loyalty" && (
+        <div className="mt-6 space-y-6">
+          {loadingRecords ? (
+            <p className="text-sm text-midnight/50">Loading your loyalty status…</p>
+          ) : (
+            <>
+              <div className="rounded-2xl bg-white p-6 ring-1 ring-line">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span
+                    className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${
+                      TIER_STYLES[loyaltyAccount?.tier ?? "bronze"]
+                    }`}
+                  >
+                    {loyaltyAccount?.tier ?? "bronze"} tier
+                  </span>
+                  <DemoTag label="Indicative Thresholds" inline />
+                </div>
+                <p className="mt-4 text-3xl font-bold text-midnight">
+                  {loyaltyAccount?.points_balance ?? 0} <span className="text-base font-medium text-midnight/50">points</span>
+                </p>
+                <p className="mt-1 text-sm text-midnight/60">
+                  {loyaltyAccount?.lifetime_points ?? 0} lifetime points earned. Points are earned automatically
+                  when a booking is confirmed.
+                </p>
+                <ul className="mt-4 space-y-1.5 text-sm">
+                  {TIER_PERKS[loyaltyAccount?.tier ?? "bronze"].map((perk) => (
+                    <li key={perk} className="flex items-start gap-2 text-midnight/70">
+                      <span className="text-emerald-dark">✓</span>
+                      {perk}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold text-midnight">Recent Activity</h3>
+                {loyaltyTransactions.length === 0 ? (
+                  <p className="mt-2 text-sm text-midnight/50">No points activity yet.</p>
+                ) : (
+                  <div className="mt-2 divide-y divide-line rounded-2xl bg-white ring-1 ring-line">
+                    {loyaltyTransactions.map((t) => (
+                      <div key={t.id} className="flex items-center justify-between px-5 py-3 text-sm">
+                        <div>
+                          <div className="text-midnight">{t.reason}</div>
+                          <div className="text-xs text-midnight/50">{new Date(t.created_at).toLocaleDateString()}</div>
+                        </div>
+                        <span className={t.points_delta >= 0 ? "text-emerald-dark" : "text-red-600"}>
+                          {t.points_delta >= 0 ? "+" : ""}
+                          {t.points_delta}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
       )}

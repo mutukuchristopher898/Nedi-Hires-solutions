@@ -1,7 +1,6 @@
 import type {
   DocumentQueueItem,
   PartnerUnit,
-  SubscriptionPlan,
   Vehicle,
 } from "./types";
 
@@ -307,51 +306,6 @@ export const vehicles: Vehicle[] = [
     approvalStatus: "approved",
     features: ["Pop-Up Viewing Roof", "Guide on Request", "4x4 Off-Road"],
     description: "Purpose-built safari vehicle with a pop-up roof for game viewing on tours & safaris.",
-  },
-];
-
-export const subscriptionPlans: SubscriptionPlan[] = [
-  {
-    id: "sub-starter",
-    name: "Starter Mobility",
-    monthlyPrice: 45000,
-    currency: "KES",
-    tierClass: ["Economy"],
-    swapsPerMonth: 1,
-    perks: [
-      "Unlimited mileage on Economy tier",
-      "1 vehicle swap per month",
-      "Priority roadside support",
-    ],
-  },
-  {
-    id: "sub-plus",
-    name: "Explorer Plus",
-    monthlyPrice: 95000,
-    currency: "KES",
-    tierClass: ["Economy", "SUV"],
-    swapsPerMonth: 2,
-    highlight: true,
-    perks: [
-      "Access to Economy & SUV tiers",
-      "2 vehicle swaps per month",
-      "Free airport meet & greet",
-      "Dedicated relationship manager",
-    ],
-  },
-  {
-    id: "sub-executive",
-    name: "Executive Access",
-    monthlyPrice: 175000,
-    currency: "KES",
-    tierClass: ["Economy", "SUV", "Luxury"],
-    swapsPerMonth: 4,
-    perks: [
-      "Full fleet access including Luxury",
-      "4 vehicle swaps per month",
-      "Chauffeur credits included",
-      "Corporate invoicing",
-    ],
   },
 ];
 

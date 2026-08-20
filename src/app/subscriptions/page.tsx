@@ -1,5 +1,5 @@
-import { formatMoney } from "@/lib/data";
 import { getSubscriptionPlans } from "@/lib/supabase/queries";
+import SubscriptionPlansExplorer from "@/components/subscriptions/SubscriptionPlansExplorer";
 
 export default async function SubscriptionsPage() {
   const subscriptionPlans = await getSubscriptionPlans();
@@ -15,61 +15,14 @@ export default async function SubscriptionsPage() {
             Vehicle access, without the ownership liabilities.
           </h1>
           <p className="mt-3 max-w-lg text-sm text-white/70">
-            All-inclusive monthly plans granting power-users regular, tiered access to
-            vehicles across our fleet — ideal for the returning diaspora and long-stay
-            residents.
+            Plans for individual drivers, the diaspora, corporate & hospitality partners,
+            and fleet-listing partners — each with the billing cadence that fits.
           </p>
         </div>
       </section>
 
       <section className="container-shell py-14">
-        <div className="grid gap-6 lg:grid-cols-3">
-          {subscriptionPlans.map((plan) => (
-            <div
-              key={plan.id}
-              className={`flex flex-col rounded-2xl p-6 ring-1 ${
-                plan.highlight
-                  ? "bg-midnight text-white ring-midnight"
-                  : "bg-white text-midnight ring-line"
-              }`}
-            >
-              {plan.highlight && (
-                <span className="mb-3 inline-flex w-fit rounded-full bg-gold px-3 py-1 text-xs font-semibold text-midnight">
-                  Most Popular
-                </span>
-              )}
-              <h3 className="text-lg font-semibold">{plan.name}</h3>
-              <div className="mt-3 flex items-baseline gap-1">
-                <span className="text-3xl font-bold">{formatMoney(plan.monthlyPrice, plan.currency)}</span>
-                <span className={`text-sm ${plan.highlight ? "text-white/60" : "text-midnight/60"}`}>
-                  /month
-                </span>
-              </div>
-              <p className={`mt-1 text-sm ${plan.highlight ? "text-white/60" : "text-midnight/60"}`}>
-                {plan.tierClass.join(" · ")} tier(s) · {plan.swapsPerMonth} swap(s)/month
-              </p>
-
-              <ul className="mt-5 flex-1 space-y-2 text-sm">
-                {plan.perks.map((perk) => (
-                  <li key={perk} className="flex items-start gap-2">
-                    <span className={plan.highlight ? "text-emerald" : "text-emerald-dark"}>✓</span>
-                    <span className={plan.highlight ? "text-white/80" : "text-midnight/70"}>{perk}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                className={`mt-6 rounded-md px-5 py-3 text-sm font-semibold transition ${
-                  plan.highlight
-                    ? "bg-gold text-midnight hover:bg-gold-dark hover:text-white"
-                    : "bg-midnight text-white hover:bg-charcoal"
-                }`}
-              >
-                Choose {plan.name}
-              </button>
-            </div>
-          ))}
-        </div>
+        <SubscriptionPlansExplorer plans={subscriptionPlans} />
       </section>
     </div>
   );

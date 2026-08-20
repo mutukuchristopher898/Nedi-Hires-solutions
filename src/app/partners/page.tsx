@@ -55,6 +55,17 @@ export default function PartnersPage() {
               View Partner Dashboard
             </Link>
           </div>
+          <p className="mt-4 text-sm text-white/60">
+            Partners get their own subscription tier —{" "}
+            <Link href="/subscriptions" className="underline hover:text-white">
+              see partner pricing
+            </Link>
+            , or{" "}
+            <Link href="/partners/quote" className="underline hover:text-white">
+              request a custom quote
+            </Link>{" "}
+            if you&apos;re listing a larger fleet.
+          </p>
         </div>
       </section>
 

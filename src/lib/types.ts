@@ -36,15 +36,48 @@ export interface Vehicle {
   description: string;
 }
 
+export type SubscriptionAudience = "individual" | "diaspora" | "corporate" | "partner";
+
 export interface SubscriptionPlan {
   id: string;
   name: string;
-  monthlyPrice: number;
+  audience: SubscriptionAudience;
+  monthlyPrice?: number;
+  quarterlyPrice?: number;
+  annualPrice?: number;
   currency: "USD" | "KES";
   tierClass: VehicleClassification[];
   swapsPerMonth: number;
+  vehicleCountMax?: number;
   highlight?: boolean;
   perks: string[];
+}
+
+export interface QuoteRequest {
+  id: string;
+  businessName: string;
+  contactEmail: string;
+  contactPhone: string;
+  vehicleCount: number;
+  vehicleTypes: string | null;
+  notes: string | null;
+  status: "new" | "contacted" | "closed";
+  createdAt: string;
+}
+
+export type LoyaltyTier = "bronze" | "silver" | "gold";
+
+export interface LoyaltyAccount {
+  pointsBalance: number;
+  lifetimePoints: number;
+  tier: LoyaltyTier;
+}
+
+export interface LoyaltyTransaction {
+  id: string;
+  pointsDelta: number;
+  reason: string;
+  createdAt: string;
 }
 
 export type BookingStep =
