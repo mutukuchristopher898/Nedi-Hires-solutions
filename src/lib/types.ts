@@ -72,6 +72,7 @@ export interface TripDetails {
 }
 
 export interface BookingApplicant {
+  fullName: string;
   idType: IdType;
   idNumber: string;
   licenseNumber: string;

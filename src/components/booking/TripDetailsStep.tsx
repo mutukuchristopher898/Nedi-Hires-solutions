@@ -12,6 +12,39 @@ const PICKUP_POINTS = [
   "Kisumu",
 ];
 
+// Destination is restricted to Kenya for now — the business only operates
+// within the country at this stage.
+const KENYA_DESTINATIONS = [
+  "Nairobi",
+  "Mombasa",
+  "Nakuru",
+  "Eldoret",
+  "Kisumu",
+  "Naivasha",
+  "Nanyuki",
+  "Machakos",
+  "Meru",
+  "Nyeri",
+  "Kisii",
+  "Kericho",
+  "Kitale",
+  "Malindi",
+  "Diani Beach",
+  "Watamu",
+  "Lamu",
+  "Voi",
+  "Narok",
+  "Garissa",
+  "Maasai Mara National Reserve",
+  "Amboseli National Park",
+  "Tsavo East National Park",
+  "Tsavo West National Park",
+  "Lake Nakuru National Park",
+  "Hell's Gate National Park",
+  "Mount Kenya",
+  "Samburu National Reserve",
+];
+
 const todayIso = () => new Date().toISOString().slice(0, 10);
 
 export default function TripDetailsStep({
@@ -97,13 +130,21 @@ export default function TripDetailsStep({
             </datalist>
           </Field>
           <Field label="Destination">
-            <input
+            <select
               required
               value={trip.destination}
               onChange={(e) => update("destination", e.target.value)}
-              placeholder="e.g. Naivasha, Diani Beach"
               className={inputClass}
-            />
+            >
+              <option value="" disabled>
+                Select a destination
+              </option>
+              {KENYA_DESTINATIONS.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
           </Field>
           <Field label="Purpose">
             <select
@@ -125,19 +166,19 @@ export default function TripDetailsStep({
               <option value="chauffeur">Chauffeur-driven</option>
             </select>
           </Field>
-          <Field label="Your date of birth">
-            <input
-              required
-              type="date"
-              value={trip.dateOfBirth}
-              onChange={(e) => update("dateOfBirth", e.target.value)}
-              className={inputClass}
-            />
-          </Field>
         </div>
 
         {trip.driveType === "self_drive" && (
-          <div className="max-w-xs">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Your date of birth">
+              <input
+                required
+                type="date"
+                value={trip.dateOfBirth}
+                onChange={(e) => update("dateOfBirth", e.target.value)}
+                className={inputClass}
+              />
+            </Field>
             <Field label="Driving license issue date">
               <input
                 required

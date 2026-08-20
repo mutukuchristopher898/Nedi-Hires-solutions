@@ -19,6 +19,7 @@ export default function ApplicantDetailsStep({
   saving: boolean;
   onSubmit: (data: ApplicantSubmission) => void;
 }) {
+  const [fullName, setFullName] = useState("");
   const [idType, setIdType] = useState<IdType>("National ID");
   const [idNumber, setIdNumber] = useState("");
   const [idFile, setIdFile] = useState<File | null>(null);
@@ -38,6 +39,10 @@ export default function ApplicantDetailsStep({
     e.preventDefault();
     setFormError(null);
 
+    if (!fullName.trim()) {
+      setFormError("Please enter your full name as it appears on your ID/Passport.");
+      return;
+    }
     if (!idFile || !passportPhotoFile) {
       setFormError("Please attach both your ID/passport scan and a passport photo.");
       return;
@@ -48,6 +53,7 @@ export default function ApplicantDetailsStep({
     }
 
     onSubmit({
+      fullName: fullName.trim(),
       idType,
       idNumber,
       licenseNumber,
@@ -71,6 +77,9 @@ export default function ApplicantDetailsStep({
 
       <form onSubmit={handleSubmit} className="mt-5 space-y-5">
         <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Full name (as on ID / Passport)">
+            <input required value={fullName} onChange={(e) => setFullName(e.target.value)} className={inputClass} />
+          </Field>
           <Field label="ID type">
             <select value={idType} onChange={(e) => setIdType(e.target.value as IdType)} className={inputClass}>
               <option value="National ID">National ID</option>

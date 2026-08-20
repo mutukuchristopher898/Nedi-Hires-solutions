@@ -27,16 +27,6 @@ const STEP_ORDER: BookingStep[] = [
   "confirmed",
 ];
 
-const STEP_LABELS: Record<BookingStep, string> = {
-  trip: "Trip Details",
-  applicant: "Applicant & Guarantor",
-  agreement: "Rental Agreement",
-  deposit: "Reservation & Deposit",
-  verification: "Identity Verification",
-  settlement: "Final Settlement",
-  confirmed: "Confirmed",
-};
-
 const todayIso = () => new Date().toISOString().slice(0, 10);
 
 export default function BookingWizard({
@@ -157,7 +147,8 @@ export default function BookingWizard({
       const { error: applicantError } = await supabase.from("booking_applicants").insert({
         booking_id: bookingId,
         customer_id: user.id,
-        date_of_birth: trip.dateOfBirth,
+        date_of_birth: trip.dateOfBirth || null,
+        full_name: data.fullName,
         id_type: data.idType,
         id_number: data.idNumber,
         license_number: data.licenseNumber || null,
@@ -284,30 +275,17 @@ export default function BookingWizard({
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
       <div>
-        <ol className="mb-8 flex flex-wrap gap-4">
-          {STEP_ORDER.map((s, i) => (
-            <li key={s} className="flex items-center gap-2">
-              <span
-                className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold ${
-                  i < currentIndex
-                    ? "bg-emerald text-white"
-                    : i === currentIndex
-                    ? "bg-gold text-midnight"
-                    : "bg-midnight/10 text-midnight/50"
-                }`}
-              >
-                {i < currentIndex ? "✓" : i + 1}
-              </span>
-              <span
-                className={`text-sm ${
-                  i === currentIndex ? "font-semibold text-midnight" : "text-midnight/50"
-                }`}
-              >
-                {STEP_LABELS[s]}
-              </span>
-            </li>
-          ))}
-        </ol>
+        <div className="mb-8">
+          <p className="mb-2 text-xs font-medium text-midnight/50">
+            Step {currentIndex + 1} of {STEP_ORDER.length}
+          </p>
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-midnight/10">
+            <div
+              className="h-full rounded-full bg-gold transition-all"
+              style={{ width: `${((currentIndex + 1) / STEP_ORDER.length) * 100}%` }}
+            />
+          </div>
+        </div>
 
         {error && (
           <p className="mb-4 rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p>

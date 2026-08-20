@@ -18,8 +18,7 @@ export default async function BookingPage({
     <div className="container-shell py-10">
       <h1 className="text-2xl font-bold text-midnight">Complete Your Booking</h1>
       <p className="mt-1 text-sm text-midnight/60">
-        Trip details, identity verification, a signed rental agreement, and a two-tiered
-        payment workflow.
+        Just a few quick steps to secure your reservation.
       </p>
       <div className="mt-8">
         <BookingWizard vehicle={vehicle} vehicleDbId={vehicleDbId} />
