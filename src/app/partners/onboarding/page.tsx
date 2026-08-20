@@ -3,13 +3,19 @@
 import { useState } from "react";
 import Link from "next/link";
 import { classifications } from "@/lib/data";
+import { findCatalogEntry, getMakes, getModelsForMake } from "@/lib/vehicleCatalog";
 
 type Stage = "account" | "unit" | "done";
 
 export default function PartnerOnboardingPage() {
   const [stage, setStage] = useState<Stage>("account");
   const [businessName, setBusinessName] = useState("");
+  const [make, setMake] = useState("");
   const [vehicleName, setVehicleName] = useState("");
+
+  const makes = getMakes();
+  const models = make ? getModelsForMake(make) : [];
+  const catalogEntry = make && vehicleName ? findCatalogEntry(make, vehicleName) : undefined;
 
   return (
     <div className="container-shell max-w-2xl py-12">
@@ -70,16 +76,42 @@ export default function PartnerOnboardingPage() {
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Make">
-              <input required className="w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none" placeholder="Toyota" />
+              <select
+                required
+                value={make}
+                onChange={(e) => {
+                  setMake(e.target.value);
+                  setVehicleName("");
+                }}
+                className="w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none"
+              >
+                <option value="" disabled>
+                  Select make
+                </option>
+                {makes.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
             </Field>
             <Field label="Model">
-              <input
+              <select
                 required
+                disabled={!make}
                 value={vehicleName}
                 onChange={(e) => setVehicleName(e.target.value)}
-                className="w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none"
-                placeholder="Land Cruiser"
-              />
+                className="w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none disabled:opacity-60"
+              >
+                <option value="" disabled>
+                  {make ? "Select model" : "Select a make first"}
+                </option>
+                {models.map((m) => (
+                  <option key={m.model} value={m.model}>
+                    {m.model}
+                  </option>
+                ))}
+              </select>
             </Field>
             <Field label="Year">
               <input required type="number" min={1990} max={2027} className="w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none" placeholder="2023" />
@@ -95,23 +127,41 @@ export default function PartnerOnboardingPage() {
               </select>
             </Field>
             <Field label="Fuel Type">
-              <select required className="w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none">
-                <option>Petrol</option>
-                <option>Diesel</option>
-                <option>Hybrid</option>
-                <option>Electric</option>
+              <select
+                required
+                key={catalogEntry?.model ?? "default"}
+                defaultValue={catalogEntry?.fuelType[0] ?? "Petrol"}
+                className="w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none"
+              >
+                {(catalogEntry?.fuelType ?? ["Petrol", "Diesel", "Hybrid", "Electric"]).map((f) => (
+                  <option key={f}>{f}</option>
+                ))}
               </select>
             </Field>
             <Field label="Transmission">
-              <select required className="w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none">
-                <option>Automatic</option>
-                <option>Manual</option>
+              <select
+                required
+                key={catalogEntry?.model ?? "default"}
+                defaultValue={catalogEntry?.transmission[0] ?? "Automatic"}
+                className="w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none"
+              >
+                {(catalogEntry?.transmission ?? ["Automatic", "Manual"]).map((t) => (
+                  <option key={t}>{t}</option>
+                ))}
               </select>
             </Field>
             <Field label="Capacity (seats)">
               <input required type="number" min={1} max={60} className="w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none" placeholder="5" />
             </Field>
           </div>
+
+          {catalogEntry && (
+            <p className="rounded-md bg-offwhite px-3 py-2 text-xs text-midnight/60">
+              Typical spec for {catalogEntry.make} {catalogEntry.model}: {catalogEntry.cc} ·{" "}
+              common colours: {catalogEntry.colors.join(", ")}. General reference — confirm
+              against your actual unit.
+            </p>
+          )}
 
           <button
             type="submit"
