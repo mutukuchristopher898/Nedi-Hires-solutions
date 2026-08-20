@@ -28,11 +28,6 @@ export default function TripDetailsStep({
   const [trip, setTrip] = useState<TripDetails>(initial);
   const [formError, setFormError] = useState<string | null>(null);
 
-  const age = trip.dateOfBirth ? calculateAge(trip.dateOfBirth) : null;
-  const licenseYears = trip.licenseIssueDate ? calculateYearsSince(trip.licenseIssueDate) : null;
-  const ageOk = age === null || age >= MIN_SELF_DRIVE_AGE;
-  const licenseOk = licenseYears === null || licenseYears >= MIN_LICENSE_YEARS;
-
   function update<K extends keyof TripDetails>(key: K, value: TripDetails[K]) {
     setTrip((prev) => ({ ...prev, [key]: value }));
   }
@@ -42,15 +37,14 @@ export default function TripDetailsStep({
     setFormError(null);
 
     if (trip.driveType === "self_drive") {
-      const finalAge = calculateAge(trip.dateOfBirth);
-      const finalLicenseYears = calculateYearsSince(trip.licenseIssueDate);
+      const eligible =
+        calculateAge(trip.dateOfBirth) >= MIN_SELF_DRIVE_AGE &&
+        calculateYearsSince(trip.licenseIssueDate) >= MIN_LICENSE_YEARS;
 
-      if (finalAge < MIN_SELF_DRIVE_AGE) {
-        setFormError(`For self-drive, the hirer must be at least ${MIN_SELF_DRIVE_AGE} years old.`);
-        return;
-      }
-      if (finalLicenseYears < MIN_LICENSE_YEARS) {
-        setFormError(`For self-drive, the hirer's license must be at least ${MIN_LICENSE_YEARS} years old.`);
+      if (!eligible) {
+        setFormError(
+          "This booking doesn't meet our self-drive eligibility requirements. Please choose chauffeur-driven, or contact support for assistance."
+        );
         return;
       }
     }
@@ -139,36 +133,20 @@ export default function TripDetailsStep({
               onChange={(e) => update("dateOfBirth", e.target.value)}
               className={inputClass}
             />
-            {trip.driveType === "self_drive" && age !== null && (
-              <p className={`mt-1 text-xs ${ageOk ? "text-emerald-dark" : "text-red-600"}`}>
-                Age: {age} {ageOk ? "✓" : `— must be ${MIN_SELF_DRIVE_AGE}+`}
-              </p>
-            )}
           </Field>
         </div>
 
         {trip.driveType === "self_drive" && (
-          <div className="rounded-lg bg-offwhite p-4">
-            <p className="text-xs font-medium text-midnight/60">
-              Self-drive requires the hirer to be {MIN_SELF_DRIVE_AGE}+ years old with at least{" "}
-              {MIN_LICENSE_YEARS} years of driving license experience.
-            </p>
-            <div className="mt-3 max-w-xs">
-              <Field label="Driving license issue date">
-                <input
-                  required
-                  type="date"
-                  value={trip.licenseIssueDate}
-                  onChange={(e) => update("licenseIssueDate", e.target.value)}
-                  className={inputClass}
-                />
-                {licenseYears !== null && (
-                  <p className={`mt-1 text-xs ${licenseOk ? "text-emerald-dark" : "text-red-600"}`}>
-                    Experience: {licenseYears} yr(s) {licenseOk ? "✓" : `— must be ${MIN_LICENSE_YEARS}+`}
-                  </p>
-                )}
-              </Field>
-            </div>
+          <div className="max-w-xs">
+            <Field label="Driving license issue date">
+              <input
+                required
+                type="date"
+                value={trip.licenseIssueDate}
+                onChange={(e) => update("licenseIssueDate", e.target.value)}
+                className={inputClass}
+              />
+            </Field>
           </div>
         )}
 
