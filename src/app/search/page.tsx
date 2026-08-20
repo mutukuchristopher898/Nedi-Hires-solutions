@@ -1,5 +1,6 @@
 import VehicleCard from "@/components/VehicleCard";
 import SearchWidget from "@/components/SearchWidget";
+import DemoTag from "@/components/DemoTag";
 import { classifications, vehicles } from "@/lib/data";
 import type { FuelType, Transmission, VehicleClassification } from "@/lib/types";
 
@@ -80,6 +81,7 @@ export default async function SearchPage({
               {results.length} vehicle{results.length === 1 ? "" : "s"} available
               {params.location ? ` near ${params.location}` : ""}
             </p>
+            <DemoTag label="Illustrative Fleet Catalog" />
           </div>
 
           {results.length === 0 ? (

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import VehiclePhoto from "@/components/VehiclePhoto";
+import DemoTag from "@/components/DemoTag";
 import { formatMoney, getVehicleById } from "@/lib/data";
 
 export default async function VehicleDetailPage({
@@ -35,6 +36,7 @@ export default async function VehicleDetailPage({
                 Partner Fleet · {vehicle.partnerName}
               </span>
             )}
+            <DemoTag label="Illustrative Fleet Catalog" />
           </div>
 
           <h1 className="mt-4 text-3xl font-bold text-midnight">
