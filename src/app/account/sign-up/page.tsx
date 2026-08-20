@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { evaluatePasswordStrength } from "@/lib/passwordStrength";
 
 export default function SignUpPage() {
   return (
@@ -25,9 +26,17 @@ function SignUpForm() {
   const [submitting, setSubmitting] = useState(false);
   const [needsConfirmation, setNeedsConfirmation] = useState(false);
 
+  const strength = evaluatePasswordStrength(password);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    if (!strength.meetsMinimum) {
+      setError("Please choose a stronger password — at least 8 characters with a mix of upper/lowercase letters, numbers, and symbols.");
+      return;
+    }
+
     setSubmitting(true);
 
     const supabase = createClient();
@@ -91,6 +100,7 @@ function SignUpForm() {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
+            placeholder="e.g. Jane Wanjiru"
             className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
           />
         </label>
@@ -101,6 +111,7 @@ function SignUpForm() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="e.g. jane.wanjiru@example.com"
             className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
           />
         </label>
@@ -109,6 +120,7 @@ function SignUpForm() {
           <input
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
+            placeholder="e.g. 0712 345 678"
             className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
           />
         </label>
@@ -116,12 +128,35 @@ function SignUpForm() {
           <span className="text-xs font-medium text-midnight/60">Password</span>
           <input
             required
-            minLength={6}
+            minLength={8}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            placeholder="e.g. Nairobi#Drive26"
             className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
           />
+          {password && (
+            <div className="mt-2">
+              <div className="flex gap-1">
+                {[0, 1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className={`h-1.5 flex-1 rounded-full ${
+                      i < strength.score
+                        ? ["bg-red-500", "bg-amber-500", "bg-lime-500", "bg-emerald-dark"][strength.score - 1]
+                        : "bg-midnight/10"
+                    }`}
+                  />
+                ))}
+              </div>
+              <p
+                className={`mt-1 text-xs font-medium ${strength.meetsMinimum ? "text-emerald-dark" : "text-midnight/50"}`}
+              >
+                {strength.label}
+                {!strength.meetsMinimum && " — needs 8+ characters and a mix of upper/lowercase, numbers, and symbols"}
+              </p>
+            </div>
+          )}
         </label>
 
         <button

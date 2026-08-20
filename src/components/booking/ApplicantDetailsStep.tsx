@@ -21,6 +21,15 @@ function isAllowedFile(file: File) {
   return ALLOWED_FILE_TYPES.includes(file.type);
 }
 
+// Invalid fields are shown with a colored border only — no written
+// explanation under the field itself (a summary banner still appears once,
+// above the Continue button).
+function fieldClass(state?: "reject" | "warn") {
+  if (state === "reject") return `${inputClass} border-red-500 focus:border-red-500`;
+  if (state === "warn") return `${inputClass} border-amber-500 focus:border-amber-500`;
+  return inputClass;
+}
+
 export default function ApplicantDetailsStep({
   driveType,
   saving,
@@ -64,6 +73,10 @@ export default function ApplicantDetailsStep({
   const nameLayout = useMemo(() => getNameOrderLayout(rule?.name_order ?? "given-first"), [rule]);
   const showsGrandfatherSlot = nameLayout.some((slot) => slot.key === "grandfatherName");
   const isKenyan = nationality === "KE";
+
+  const idSample = (idType === "National ID" ? rule?.national_id_sample : rule?.passport_sample) || "e.g. A1234567";
+  const licenseSample = rule?.driving_licence_sample || "e.g. DL1234567";
+  const phoneSample = rule?.phone_sample || "e.g. 0712 345 678";
 
   function handleNationalityChange(nextIso2: string) {
     setNationality(nextIso2);
@@ -143,7 +156,7 @@ export default function ApplicantDetailsStep({
       return;
     }
     if (Object.keys(result.warnings).length > 0) {
-      setFormError("Please review and tick the confirmation next to each highlighted warning below.");
+      setFormError("Please review and tick the confirmation next to each highlighted field below.");
       return;
     }
 
@@ -190,16 +203,26 @@ export default function ApplicantDetailsStep({
         <div className="grid gap-4 sm:grid-cols-2">
           {mononymDeclared ? (
             <Field label="Your name (as on document)">
-              <input required value={givenNames} onChange={(e) => setGivenNames(e.target.value)} className={inputClass} />
-              {fieldErrors.givenNames && <p className="mt-1 text-xs text-red-600">{fieldErrors.givenNames}</p>}
+              <input
+                required
+                value={givenNames}
+                onChange={(e) => setGivenNames(e.target.value)}
+                placeholder="e.g. Suharto"
+                className={fieldClass(fieldErrors.givenNames ? "reject" : undefined)}
+              />
             </Field>
           ) : (
             nameLayout.map((slot) => {
               if (slot.key === "surname") {
                 return (
                   <Field key="surname" label={slot.label}>
-                    <input required value={surname} onChange={(e) => setSurname(e.target.value)} className={inputClass} />
-                    {fieldErrors.surname && <p className="mt-1 text-xs text-red-600">{fieldErrors.surname}</p>}
+                    <input
+                      required
+                      value={surname}
+                      onChange={(e) => setSurname(e.target.value)}
+                      placeholder="e.g. Mwangi"
+                      className={fieldClass(fieldErrors.surname ? "reject" : undefined)}
+                    />
                     {fieldErrors.surname?.includes("identical") && (
                       <label className="mt-1 flex items-center gap-2 text-xs text-midnight/60">
                         <input
@@ -217,22 +240,36 @@ export default function ApplicantDetailsStep({
               if (slot.key === "givenNames") {
                 return (
                   <Field key="givenNames" label={slot.label}>
-                    <input required value={givenNames} onChange={(e) => setGivenNames(e.target.value)} className={inputClass} />
-                    {fieldErrors.givenNames && <p className="mt-1 text-xs text-red-600">{fieldErrors.givenNames}</p>}
+                    <input
+                      required
+                      value={givenNames}
+                      onChange={(e) => setGivenNames(e.target.value)}
+                      placeholder="e.g. Wanjiru Grace"
+                      className={fieldClass(fieldErrors.givenNames ? "reject" : undefined)}
+                    />
                   </Field>
                 );
               }
               if (slot.key === "middleName") {
                 return (
                   <Field key="middleName" label={slot.label}>
-                    <input value={middleName} onChange={(e) => setMiddleName(e.target.value)} className={inputClass} />
-                    {fieldErrors.middleName && <p className="mt-1 text-xs text-red-600">{fieldErrors.middleName}</p>}
+                    <input
+                      value={middleName}
+                      onChange={(e) => setMiddleName(e.target.value)}
+                      placeholder="e.g. Otieno"
+                      className={fieldClass(fieldErrors.middleName ? "reject" : undefined)}
+                    />
                   </Field>
                 );
               }
               return (
                 <Field key="grandfatherName" label={slot.label}>
-                  <input value={grandfatherName} onChange={(e) => setGrandfatherName(e.target.value)} className={inputClass} />
+                  <input
+                    value={grandfatherName}
+                    onChange={(e) => setGrandfatherName(e.target.value)}
+                    placeholder="e.g. Hassan"
+                    className={inputClass}
+                  />
                 </Field>
               );
             })
@@ -258,22 +295,19 @@ export default function ApplicantDetailsStep({
                 setIdNumberFeedback(null);
               }}
               onBlur={handleIdNumberBlur}
-              className={inputClass}
+              placeholder={idSample}
+              className={fieldClass(fieldErrors.idNumber ? "reject" : idNumberFeedback?.outcome === "warn" ? "warn" : undefined)}
             />
-            {fieldErrors.idNumber && <p className="mt-1 text-xs text-red-600">{fieldErrors.idNumber}</p>}
             {!fieldErrors.idNumber && idNumberFeedback?.outcome === "warn" && (
-              <div className="mt-1 space-y-1">
-                <p className="text-xs text-amber-600">{idNumberFeedback.message}</p>
-                <label className="flex items-center gap-2 text-xs text-midnight/60">
-                  <input
-                    type="checkbox"
-                    checked={idNumberOverrideConfirmed}
-                    onChange={(e) => setIdNumberOverrideConfirmed(e.target.checked)}
-                    className="h-3.5 w-3.5 rounded border-line"
-                  />
-                  I confirm this number is correct.
-                </label>
-              </div>
+              <label className="mt-1 flex items-center gap-2 text-xs text-midnight/60">
+                <input
+                  type="checkbox"
+                  checked={idNumberOverrideConfirmed}
+                  onChange={(e) => setIdNumberOverrideConfirmed(e.target.checked)}
+                  className="h-3.5 w-3.5 rounded border-line"
+                />
+                I confirm this number is correct.
+              </label>
             )}
           </Field>
           <Field label="Upload ID / Passport scan">
@@ -307,22 +341,21 @@ export default function ApplicantDetailsStep({
                     setLicenseNumberFeedback(null);
                   }}
                   onBlur={handleLicenseNumberBlur}
-                  className={inputClass}
+                  placeholder={licenseSample}
+                  className={fieldClass(
+                    fieldErrors.licenseNumber ? "reject" : licenseNumberFeedback?.outcome === "warn" ? "warn" : undefined
+                  )}
                 />
-                {fieldErrors.licenseNumber && <p className="mt-1 text-xs text-red-600">{fieldErrors.licenseNumber}</p>}
                 {!fieldErrors.licenseNumber && licenseNumberFeedback?.outcome === "warn" && (
-                  <div className="mt-1 space-y-1">
-                    <p className="text-xs text-amber-600">{licenseNumberFeedback.message}</p>
-                    <label className="flex items-center gap-2 text-xs text-midnight/60">
-                      <input
-                        type="checkbox"
-                        checked={licenseNumberOverrideConfirmed}
-                        onChange={(e) => setLicenseNumberOverrideConfirmed(e.target.checked)}
-                        className="h-3.5 w-3.5 rounded border-line"
-                      />
-                      I confirm this number is correct.
-                    </label>
-                  </div>
+                  <label className="mt-1 flex items-center gap-2 text-xs text-midnight/60">
+                    <input
+                      type="checkbox"
+                      checked={licenseNumberOverrideConfirmed}
+                      onChange={(e) => setLicenseNumberOverrideConfirmed(e.target.checked)}
+                      className="h-3.5 w-3.5 rounded border-line"
+                    />
+                    I confirm this number is correct.
+                  </label>
                 )}
                 {rule?.idp_recommended === "yes" && (
                   <p className="mt-1 text-xs text-midnight/50">
@@ -348,14 +381,18 @@ export default function ApplicantDetailsStep({
               type="tel"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              placeholder={rule?.phone_sample || "07XX XXX XXX"}
-              className={inputClass}
+              placeholder={phoneSample}
+              className={fieldClass(fieldErrors.phoneNumber ? "reject" : undefined)}
             />
-            {fieldErrors.phoneNumber && <p className="mt-1 text-xs text-red-600">{fieldErrors.phoneNumber}</p>}
           </Field>
           <Field label="Residential address">
-            <input required value={address} onChange={(e) => setAddress(e.target.value)} className={inputClass} />
-            {fieldErrors.address && <p className="mt-1 text-xs text-red-600">{fieldErrors.address}</p>}
+            <input
+              required
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="e.g. 123 Ngong Road, Nairobi"
+              className={fieldClass(fieldErrors.address ? "reject" : undefined)}
+            />
           </Field>
         </div>
 
@@ -367,9 +404,9 @@ export default function ApplicantDetailsStep({
                 required
                 value={guarantorName}
                 onChange={(e) => setGuarantorName(e.target.value)}
-                className={inputClass}
+                placeholder="e.g. Jane Wanjiru"
+                className={fieldClass(fieldErrors.guarantorName ? "reject" : undefined)}
               />
-              {fieldErrors.guarantorName && <p className="mt-1 text-xs text-red-600">{fieldErrors.guarantorName}</p>}
             </Field>
             <Field label="Phone number">
               <input
@@ -377,9 +414,9 @@ export default function ApplicantDetailsStep({
                 type="tel"
                 value={guarantorPhone}
                 onChange={(e) => setGuarantorPhone(e.target.value)}
-                className={inputClass}
+                placeholder={phoneSample}
+                className={fieldClass(fieldErrors.guarantorPhone ? "reject" : undefined)}
               />
-              {fieldErrors.guarantorPhone && <p className="mt-1 text-xs text-red-600">{fieldErrors.guarantorPhone}</p>}
             </Field>
             <Field label="Relationship to you">
               <input
@@ -387,11 +424,8 @@ export default function ApplicantDetailsStep({
                 value={guarantorRelationship}
                 onChange={(e) => setGuarantorRelationship(e.target.value)}
                 placeholder="e.g. Spouse, Sibling, Colleague"
-                className={inputClass}
+                className={fieldClass(fieldErrors.guarantorRelationship ? "reject" : undefined)}
               />
-              {fieldErrors.guarantorRelationship && (
-                <p className="mt-1 text-xs text-red-600">{fieldErrors.guarantorRelationship}</p>
-              )}
             </Field>
           </div>
         </div>
