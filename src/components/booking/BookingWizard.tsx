@@ -122,46 +122,41 @@ export default function BookingWizard({
         ? await uploadKycFile({ userId: user.id, bookingId, docSlug: "license", file: data.licenseFile })
         : null;
 
-      const supabase = createClient();
-      const documentRows: { booking_id: string; customer_id: string; doc_type: string; file_url: string; status: string }[] = [
-        { booking_id: bookingId, customer_id: user.id, doc_type: data.idType, file_url: idPath, status: "pending" },
-        {
-          booking_id: bookingId,
-          customer_id: user.id,
-          doc_type: "Passport Photo",
-          file_url: passportPhotoPath,
-          status: "pending",
-        },
-      ];
-      if (licensePath) {
-        documentRows.push({
-          booking_id: bookingId,
-          customer_id: user.id,
-          doc_type: "Driver's License",
-          file_url: licensePath,
-          status: "pending",
-        });
-      }
-
-      const { error: docsError } = await supabase.from("identity_documents").insert(documentRows);
-      if (docsError) throw docsError;
-
-      const { error: applicantError } = await supabase.from("booking_applicants").insert({
-        booking_id: bookingId,
-        customer_id: user.id,
-        date_of_birth: trip.dateOfBirth || null,
-        full_name: data.fullName,
-        id_type: data.idType,
-        id_number: data.idNumber,
-        license_number: data.licenseNumber || null,
-        license_issue_date: trip.licenseIssueDate || null,
-        address: data.address,
-        phone_number: data.phoneNumber,
-        guarantor_name: data.guarantorName,
-        guarantor_phone: data.guarantorPhone,
-        guarantor_relationship: data.guarantorRelationship,
+      const submitResponse = await fetch("/api/submit-applicant", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nationality: data.nationality,
+          surname: data.surname,
+          givenNames: data.givenNames,
+          middleName: data.middleName,
+          mononymDeclared: data.mononymDeclared,
+          confirmNamesIntentionallyIdentical: data.confirmNamesIntentionallyIdentical,
+          idType: data.idType,
+          idNumber: data.idNumber,
+          idNumberOverrideConfirmed: data.idNumberOverrideConfirmed,
+          requiresLicense: data.requiresLicense,
+          licenseNumber: data.licenseNumber,
+          licenseNumberOverrideConfirmed: data.licenseNumberOverrideConfirmed,
+          address: data.address,
+          phoneNumber: data.phoneNumber,
+          guarantorName: data.guarantorName,
+          guarantorPhone: data.guarantorPhone,
+          guarantorRelationship: data.guarantorRelationship,
+          bookingId,
+          dateOfBirth: trip.dateOfBirth || null,
+          licenseIssueDate: trip.licenseIssueDate || null,
+          idFilePath: idPath,
+          licenseFilePath: licensePath,
+          passportPhotoFilePath: passportPhotoPath,
+        }),
       });
-      if (applicantError) throw applicantError;
+
+      if (!submitResponse.ok) {
+        const submitResult = await submitResponse.json().catch(() => ({}));
+        const firstFieldError = submitResult.fieldErrors ? Object.values(submitResult.fieldErrors)[0] : undefined;
+        throw new Error((firstFieldError as string) ?? submitResult.error ?? "Could not submit your details. Please try again.");
+      }
 
       const verifyResponse = await fetch("/api/verify-document", {
         method: "POST",

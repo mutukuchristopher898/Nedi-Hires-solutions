@@ -106,7 +106,11 @@ export interface TripDetails {
 }
 
 export interface BookingApplicant {
-  fullName: string;
+  nationality: string;
+  surname: string;
+  givenNames: string;
+  middleName: string;
+  mononymDeclared: boolean;
   idType: IdType;
   idNumber: string;
   licenseNumber: string;

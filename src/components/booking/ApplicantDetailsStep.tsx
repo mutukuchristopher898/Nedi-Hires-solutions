@@ -1,13 +1,24 @@
 "use client";
 
-import { useState } from "react";
-import type { BookingApplicant, DriveType, IdType } from "@/lib/types";
+import { useMemo, useState } from "react";
+import type { DriveType, IdType } from "@/lib/types";
 import { Field, inputClass } from "./shared";
+import { getAllCountriesForSelect, getCountryRule } from "@/lib/documentValidation/countryReference";
+import { getNameOrderLayout } from "@/lib/documentValidation/nameValidation";
+import { validateDocumentNumber, type DocumentValidationResult } from "@/lib/documentValidation/documentNumberValidation";
+import { validateApplicantPayload, type ApplicantValidationInput } from "@/lib/documentValidation/validateApplicant";
 
-export interface ApplicantSubmission extends BookingApplicant {
+export interface ApplicantSubmission extends ApplicantValidationInput {
   idFile: File;
   licenseFile: File | null;
   passportPhotoFile: File;
+}
+
+const ALLOWED_FILE_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+const COUNTRIES = getAllCountriesForSelect();
+
+function isAllowedFile(file: File) {
+  return ALLOWED_FILE_TYPES.includes(file.type);
 }
 
 export default function ApplicantDetailsStep({
@@ -19,39 +30,97 @@ export default function ApplicantDetailsStep({
   saving: boolean;
   onSubmit: (data: ApplicantSubmission) => void;
 }) {
-  const [fullName, setFullName] = useState("");
+  const [nationality, setNationality] = useState("KE");
+  const [surname, setSurname] = useState("");
+  const [givenNames, setGivenNames] = useState("");
+  const [middleName, setMiddleName] = useState("");
+  const [grandfatherName, setGrandfatherName] = useState("");
+  const [mononymDeclared, setMononymDeclared] = useState(false);
+  const [confirmNamesIntentionallyIdentical, setConfirmNamesIntentionallyIdentical] = useState(false);
+
   const [idType, setIdType] = useState<IdType>("National ID");
   const [idNumber, setIdNumber] = useState("");
+  const [idNumberOverrideConfirmed, setIdNumberOverrideConfirmed] = useState(false);
+  const [idNumberFeedback, setIdNumberFeedback] = useState<DocumentValidationResult | null>(null);
   const [idFile, setIdFile] = useState<File | null>(null);
+
   const [licenseNumber, setLicenseNumber] = useState("");
+  const [licenseNumberOverrideConfirmed, setLicenseNumberOverrideConfirmed] = useState(false);
+  const [licenseNumberFeedback, setLicenseNumberFeedback] = useState<DocumentValidationResult | null>(null);
   const [licenseFile, setLicenseFile] = useState<File | null>(null);
+
   const [passportPhotoFile, setPassportPhotoFile] = useState<File | null>(null);
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [guarantorName, setGuarantorName] = useState("");
   const [guarantorPhone, setGuarantorPhone] = useState("");
   const [guarantorRelationship, setGuarantorRelationship] = useState("");
+
   const [formError, setFormError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const requiresLicense = driveType === "self_drive";
-  const ALLOWED_FILE_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+  const rule = useMemo(() => getCountryRule(nationality), [nationality]);
+  const nameLayout = useMemo(() => getNameOrderLayout(rule?.name_order ?? "given-first"), [rule]);
+  const showsGrandfatherSlot = nameLayout.some((slot) => slot.key === "grandfatherName");
+  const isKenyan = nationality === "KE";
 
-  function isAllowedFile(file: File) {
-    return ALLOWED_FILE_TYPES.includes(file.type);
+  function handleNationalityChange(nextIso2: string) {
+    setNationality(nextIso2);
+    const nextRule = getCountryRule(nextIso2);
+    if (nextIso2 !== "KE" && idType === "National ID") setIdType("International Passport");
+    if (nextRule?.mononym_allowed !== "yes") setMononymDeclared(false);
+    if (nextRule && !phoneNumber.trim()) setPhoneNumber(`${nextRule.calling_code} `);
+    if (nextRule && !guarantorPhone.trim()) setGuarantorPhone(`${nextRule.calling_code} `);
+  }
+
+  function combinedMiddleName() {
+    return showsGrandfatherSlot ? [middleName.trim(), grandfatherName.trim()].filter(Boolean).join(" ") : middleName;
+  }
+
+  function buildValidationInput(): ApplicantValidationInput {
+    return {
+      nationality,
+      surname,
+      givenNames,
+      middleName: combinedMiddleName(),
+      mononymDeclared,
+      confirmNamesIntentionallyIdentical,
+      idType,
+      idNumber,
+      idNumberOverrideConfirmed,
+      requiresLicense,
+      licenseNumber,
+      licenseNumberOverrideConfirmed,
+      address,
+      phoneNumber,
+      guarantorName,
+      guarantorPhone,
+      guarantorRelationship,
+    };
+  }
+
+  function handleIdNumberBlur() {
+    if (!rule || !idNumber.trim()) return;
+    setIdNumberFeedback(
+      validateDocumentNumber({
+        rawValue: idNumber,
+        field: idType === "National ID" ? "national_id" : "passport",
+        iso2: nationality,
+        rule,
+      })
+    );
+  }
+
+  function handleLicenseNumberBlur() {
+    if (!rule || !licenseNumber.trim()) return;
+    setLicenseNumberFeedback(validateDocumentNumber({ rawValue: licenseNumber, field: "driving_licence", iso2: nationality, rule }));
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError(null);
 
-    if (!fullName.trim()) {
-      setFormError("Please enter your full name as it appears on your ID/Passport.");
-      return;
-    }
-    if (guarantorName.trim().toLowerCase() === fullName.trim().toLowerCase()) {
-      setFormError("Your guarantor can't be yourself — please provide someone else's details.");
-      return;
-    }
     if (!idFile || !passportPhotoFile) {
       setFormError("Please attach both your ID/passport scan and a passport photo.");
       return;
@@ -60,21 +129,26 @@ export default function ApplicantDetailsStep({
       setFormError("Only image (JPG/PNG/WebP) or PDF files are accepted for ID, license, and passport photo uploads.");
       return;
     }
-    if (requiresLicense && (!licenseFile || !licenseNumber)) {
-      setFormError("Self-drive requires your driving license number and a scan of it.");
+    if (requiresLicense && !licenseFile) {
+      setFormError("Self-drive requires a scan of your driving license.");
+      return;
+    }
+
+    const validationInput = buildValidationInput();
+    const result = validateApplicantPayload(validationInput);
+    setFieldErrors(result.fieldErrors);
+
+    if (!result.valid) {
+      setFormError("Please fix the highlighted fields below before continuing.");
+      return;
+    }
+    if (Object.keys(result.warnings).length > 0) {
+      setFormError("Please review and tick the confirmation next to each highlighted warning below.");
       return;
     }
 
     onSubmit({
-      fullName: fullName.trim(),
-      idType,
-      idNumber,
-      licenseNumber,
-      address,
-      phoneNumber,
-      guarantorName,
-      guarantorPhone,
-      guarantorRelationship,
+      ...validationInput,
       idFile,
       licenseFile: requiresLicense ? licenseFile : null,
       passportPhotoFile,
@@ -90,17 +164,117 @@ export default function ApplicantDetailsStep({
 
       <form onSubmit={handleSubmit} className="mt-5 space-y-5">
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Full name (as on ID / Passport)">
-            <input required value={fullName} onChange={(e) => setFullName(e.target.value)} className={inputClass} />
-          </Field>
-          <Field label="ID type">
-            <select value={idType} onChange={(e) => setIdType(e.target.value as IdType)} className={inputClass}>
-              <option value="National ID">National ID</option>
-              <option value="International Passport">International Passport</option>
+          <Field label="Nationality">
+            <select value={nationality} onChange={(e) => handleNationalityChange(e.target.value)} className={inputClass}>
+              {COUNTRIES.map((c) => (
+                <option key={c.iso2} value={c.iso2}>
+                  {c.name}
+                </option>
+              ))}
             </select>
           </Field>
-          <Field label="ID / Passport number">
-            <input required value={idNumber} onChange={(e) => setIdNumber(e.target.value)} className={inputClass} />
+        </div>
+
+        {rule?.mononym_allowed === "yes" && (
+          <label className="flex items-center gap-2 text-sm text-midnight/70">
+            <input
+              type="checkbox"
+              checked={mononymDeclared}
+              onChange={(e) => setMononymDeclared(e.target.checked)}
+              className="h-4 w-4 rounded border-line"
+            />
+            I have only one name on my travel document.
+          </label>
+        )}
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          {mononymDeclared ? (
+            <Field label="Your name (as on document)">
+              <input required value={givenNames} onChange={(e) => setGivenNames(e.target.value)} className={inputClass} />
+              {fieldErrors.givenNames && <p className="mt-1 text-xs text-red-600">{fieldErrors.givenNames}</p>}
+            </Field>
+          ) : (
+            nameLayout.map((slot) => {
+              if (slot.key === "surname") {
+                return (
+                  <Field key="surname" label={slot.label}>
+                    <input required value={surname} onChange={(e) => setSurname(e.target.value)} className={inputClass} />
+                    {fieldErrors.surname && <p className="mt-1 text-xs text-red-600">{fieldErrors.surname}</p>}
+                    {fieldErrors.surname?.includes("identical") && (
+                      <label className="mt-1 flex items-center gap-2 text-xs text-midnight/60">
+                        <input
+                          type="checkbox"
+                          checked={confirmNamesIntentionallyIdentical}
+                          onChange={(e) => setConfirmNamesIntentionallyIdentical(e.target.checked)}
+                          className="h-3.5 w-3.5 rounded border-line"
+                        />
+                        My family name and given name(s) are genuinely the same.
+                      </label>
+                    )}
+                  </Field>
+                );
+              }
+              if (slot.key === "givenNames") {
+                return (
+                  <Field key="givenNames" label={slot.label}>
+                    <input required value={givenNames} onChange={(e) => setGivenNames(e.target.value)} className={inputClass} />
+                    {fieldErrors.givenNames && <p className="mt-1 text-xs text-red-600">{fieldErrors.givenNames}</p>}
+                  </Field>
+                );
+              }
+              if (slot.key === "middleName") {
+                return (
+                  <Field key="middleName" label={slot.label}>
+                    <input value={middleName} onChange={(e) => setMiddleName(e.target.value)} className={inputClass} />
+                    {fieldErrors.middleName && <p className="mt-1 text-xs text-red-600">{fieldErrors.middleName}</p>}
+                  </Field>
+                );
+              }
+              return (
+                <Field key="grandfatherName" label={slot.label}>
+                  <input value={grandfatherName} onChange={(e) => setGrandfatherName(e.target.value)} className={inputClass} />
+                </Field>
+              );
+            })
+          )}
+
+          <Field label="ID type">
+            {isKenyan ? (
+              <select value={idType} onChange={(e) => setIdType(e.target.value as IdType)} className={inputClass}>
+                <option value="National ID">National ID</option>
+                <option value="International Passport">International Passport</option>
+              </select>
+            ) : (
+              <input value="International Passport" disabled className={`${inputClass} bg-offwhite text-midnight/50`} />
+            )}
+          </Field>
+          <Field label={`${idType} number`}>
+            <input
+              required
+              value={idNumber}
+              onChange={(e) => {
+                setIdNumber(e.target.value);
+                setIdNumberOverrideConfirmed(false);
+                setIdNumberFeedback(null);
+              }}
+              onBlur={handleIdNumberBlur}
+              className={inputClass}
+            />
+            {fieldErrors.idNumber && <p className="mt-1 text-xs text-red-600">{fieldErrors.idNumber}</p>}
+            {!fieldErrors.idNumber && idNumberFeedback?.outcome === "warn" && (
+              <div className="mt-1 space-y-1">
+                <p className="text-xs text-amber-600">{idNumberFeedback.message}</p>
+                <label className="flex items-center gap-2 text-xs text-midnight/60">
+                  <input
+                    type="checkbox"
+                    checked={idNumberOverrideConfirmed}
+                    onChange={(e) => setIdNumberOverrideConfirmed(e.target.checked)}
+                    className="h-3.5 w-3.5 rounded border-line"
+                  />
+                  I confirm this number is correct.
+                </label>
+              </div>
+            )}
           </Field>
           <Field label="Upload ID / Passport scan">
             <input
@@ -127,9 +301,34 @@ export default function ApplicantDetailsStep({
                 <input
                   required
                   value={licenseNumber}
-                  onChange={(e) => setLicenseNumber(e.target.value)}
+                  onChange={(e) => {
+                    setLicenseNumber(e.target.value);
+                    setLicenseNumberOverrideConfirmed(false);
+                    setLicenseNumberFeedback(null);
+                  }}
+                  onBlur={handleLicenseNumberBlur}
                   className={inputClass}
                 />
+                {fieldErrors.licenseNumber && <p className="mt-1 text-xs text-red-600">{fieldErrors.licenseNumber}</p>}
+                {!fieldErrors.licenseNumber && licenseNumberFeedback?.outcome === "warn" && (
+                  <div className="mt-1 space-y-1">
+                    <p className="text-xs text-amber-600">{licenseNumberFeedback.message}</p>
+                    <label className="flex items-center gap-2 text-xs text-midnight/60">
+                      <input
+                        type="checkbox"
+                        checked={licenseNumberOverrideConfirmed}
+                        onChange={(e) => setLicenseNumberOverrideConfirmed(e.target.checked)}
+                        className="h-3.5 w-3.5 rounded border-line"
+                      />
+                      I confirm this number is correct.
+                    </label>
+                  </div>
+                )}
+                {rule?.idp_recommended === "yes" && (
+                  <p className="mt-1 text-xs text-midnight/50">
+                    An International Driving Permit is required alongside your national licence.
+                  </p>
+                )}
               </Field>
               <Field label="Upload driving license scan">
                 <input
@@ -149,12 +348,14 @@ export default function ApplicantDetailsStep({
               type="tel"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              placeholder="07XX XXX XXX"
+              placeholder={rule?.phone_sample || "07XX XXX XXX"}
               className={inputClass}
             />
+            {fieldErrors.phoneNumber && <p className="mt-1 text-xs text-red-600">{fieldErrors.phoneNumber}</p>}
           </Field>
           <Field label="Residential address">
             <input required value={address} onChange={(e) => setAddress(e.target.value)} className={inputClass} />
+            {fieldErrors.address && <p className="mt-1 text-xs text-red-600">{fieldErrors.address}</p>}
           </Field>
         </div>
 
@@ -168,6 +369,7 @@ export default function ApplicantDetailsStep({
                 onChange={(e) => setGuarantorName(e.target.value)}
                 className={inputClass}
               />
+              {fieldErrors.guarantorName && <p className="mt-1 text-xs text-red-600">{fieldErrors.guarantorName}</p>}
             </Field>
             <Field label="Phone number">
               <input
@@ -177,6 +379,7 @@ export default function ApplicantDetailsStep({
                 onChange={(e) => setGuarantorPhone(e.target.value)}
                 className={inputClass}
               />
+              {fieldErrors.guarantorPhone && <p className="mt-1 text-xs text-red-600">{fieldErrors.guarantorPhone}</p>}
             </Field>
             <Field label="Relationship to you">
               <input
@@ -186,6 +389,9 @@ export default function ApplicantDetailsStep({
                 placeholder="e.g. Spouse, Sibling, Colleague"
                 className={inputClass}
               />
+              {fieldErrors.guarantorRelationship && (
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.guarantorRelationship}</p>
+              )}
             </Field>
           </div>
         </div>
