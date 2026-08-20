@@ -5,6 +5,10 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { evaluatePasswordStrength } from "@/lib/passwordStrength";
+import { validateEmail } from "@/lib/formValidation/email";
+import { validateNamePart } from "@/lib/documentValidation/nameValidation";
+import { validatePhoneNumber } from "@/lib/documentValidation/phoneValidation";
+import { fieldClass } from "@/components/forms/shared";
 
 export default function SignUpPage() {
   return (
@@ -23,6 +27,7 @@ function SignUpForm() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ name?: boolean; email?: boolean; phone?: boolean; password?: boolean }>({});
   const [submitting, setSubmitting] = useState(false);
   const [needsConfirmation, setNeedsConfirmation] = useState(false);
 
@@ -32,6 +37,21 @@ function SignUpForm() {
     e.preventDefault();
     setError(null);
 
+    const nameResult = validateNamePart(name, "Full name");
+    const emailResult = validateEmail(email);
+    const phoneResult = validatePhoneNumber(phone, "KE", "Phone number");
+
+    setFieldErrors({
+      name: !nameResult.valid,
+      email: !emailResult.valid,
+      phone: !phoneResult.valid,
+      password: !strength.meetsMinimum,
+    });
+
+    if (!nameResult.valid || !emailResult.valid || !phoneResult.valid) {
+      setError("Please fix the highlighted fields below.");
+      return;
+    }
     if (!strength.meetsMinimum) {
       setError("Please choose a stronger password — at least 8 characters with a mix of upper/lowercase letters, numbers, and symbols.");
       return;
@@ -89,7 +109,7 @@ function SignUpForm() {
         Book faster, track your rentals, and manage your documents in one place.
       </p>
 
-      <form className="mt-6 space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line" onSubmit={handleSubmit}>
+      <form noValidate className="mt-6 space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line" onSubmit={handleSubmit}>
         {error && (
           <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p>
         )}
@@ -101,7 +121,7 @@ function SignUpForm() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Jane Wanjiru"
-            className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
+            className={fieldClass(fieldErrors.name ? "reject" : undefined)}
           />
         </label>
         <label className="block">
@@ -112,16 +132,18 @@ function SignUpForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="e.g. jane.wanjiru@example.com"
-            className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
+            className={fieldClass(fieldErrors.email ? "reject" : undefined)}
           />
         </label>
         <label className="block">
           <span className="text-xs font-medium text-midnight/60">Phone / WhatsApp</span>
           <input
+            required
+            type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="e.g. 0712 345 678"
-            className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
+            className={fieldClass(fieldErrors.phone ? "reject" : undefined)}
           />
         </label>
         <label className="block">
@@ -133,7 +155,7 @@ function SignUpForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="e.g. Nairobi#Drive26"
-            className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
+            className={fieldClass(fieldErrors.password ? "reject" : undefined)}
           />
           {password && (
             <div className="mt-2">

@@ -3,7 +3,8 @@
 import { useState } from "react";
 import type { TripDetails, Vehicle } from "@/lib/types";
 import { calculateAge, calculateYearsSince, MIN_LICENSE_YEARS, MIN_SELF_DRIVE_AGE } from "@/lib/eligibility";
-import { Field, inputClass } from "./shared";
+import { validateMessage } from "@/lib/formValidation/freeText";
+import { Field, fieldClass, inputClass } from "./shared";
 
 const PICKUP_POINTS = [
   "Jomo Kenyatta International Airport (JKIA)",
@@ -60,6 +61,13 @@ export default function TripDetailsStep({
 }) {
   const [trip, setTrip] = useState<TripDetails>(initial);
   const [formError, setFormError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{
+    pickupDate?: boolean;
+    pickupPoint?: boolean;
+    destination?: boolean;
+    dateOfBirth?: boolean;
+    licenseIssueDate?: boolean;
+  }>({});
 
   function update<K extends keyof TripDetails>(key: K, value: TripDetails[K]) {
     setTrip((prev) => ({ ...prev, [key]: value }));
@@ -69,12 +77,23 @@ export default function TripDetailsStep({
     e.preventDefault();
     setFormError(null);
 
+    const pickupPointResult = validateMessage(trip.pickupPoint, "Pickup point", { minLength: 2 });
+    const missingPickupDate = !trip.pickupDate.trim();
+    const missingDestination = !trip.destination.trim();
+
+    if (missingPickupDate || !pickupPointResult.valid || missingDestination) {
+      setFieldErrors({ pickupDate: missingPickupDate, pickupPoint: !pickupPointResult.valid, destination: missingDestination });
+      setFormError("Please fix the highlighted fields below.");
+      return;
+    }
+
     if (trip.driveType === "self_drive") {
       const eligible =
         calculateAge(trip.dateOfBirth) >= MIN_SELF_DRIVE_AGE &&
         calculateYearsSince(trip.licenseIssueDate) >= MIN_LICENSE_YEARS;
 
       if (!eligible) {
+        setFieldErrors({ dateOfBirth: true, licenseIssueDate: true });
         setFormError(
           "This booking doesn't meet our self-drive eligibility requirements. Please choose chauffeur-driven, or contact support for assistance."
         );
@@ -82,6 +101,7 @@ export default function TripDetailsStep({
       }
     }
 
+    setFieldErrors({});
     onSubmit(trip);
   }
 
@@ -92,7 +112,7 @@ export default function TripDetailsStep({
         Tell us about your trip with the {vehicle.make} {vehicle.model}.
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+      <form noValidate onSubmit={handleSubmit} className="mt-5 space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Pickup date">
             <input
@@ -101,7 +121,7 @@ export default function TripDetailsStep({
               min={todayIso()}
               value={trip.pickupDate}
               onChange={(e) => update("pickupDate", e.target.value)}
-              className={inputClass}
+              className={fieldClass(fieldErrors.pickupDate ? "reject" : undefined)}
             />
           </Field>
           <Field label="Rental duration (days)">
@@ -121,7 +141,8 @@ export default function TripDetailsStep({
               list="pickup-points"
               value={trip.pickupPoint}
               onChange={(e) => update("pickupPoint", e.target.value)}
-              className={inputClass}
+              placeholder="e.g. Jomo Kenyatta International Airport (JKIA)"
+              className={fieldClass(fieldErrors.pickupPoint ? "reject" : undefined)}
             />
             <datalist id="pickup-points">
               {PICKUP_POINTS.map((p) => (
@@ -134,7 +155,7 @@ export default function TripDetailsStep({
               required
               value={trip.destination}
               onChange={(e) => update("destination", e.target.value)}
-              className={inputClass}
+              className={fieldClass(fieldErrors.destination ? "reject" : undefined)}
             >
               <option value="" disabled>
                 Select a destination
@@ -176,7 +197,7 @@ export default function TripDetailsStep({
                 type="date"
                 value={trip.dateOfBirth}
                 onChange={(e) => update("dateOfBirth", e.target.value)}
-                className={inputClass}
+                className={fieldClass(fieldErrors.dateOfBirth ? "reject" : undefined)}
               />
             </Field>
             <Field label="Driving license issue date">
@@ -185,7 +206,7 @@ export default function TripDetailsStep({
                 type="date"
                 value={trip.licenseIssueDate}
                 onChange={(e) => update("licenseIssueDate", e.target.value)}
-                className={inputClass}
+                className={fieldClass(fieldErrors.licenseIssueDate ? "reject" : undefined)}
               />
             </Field>
           </div>

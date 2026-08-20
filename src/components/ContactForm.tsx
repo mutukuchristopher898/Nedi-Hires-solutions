@@ -1,9 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { validateNamePart } from "@/lib/documentValidation/nameValidation";
+import { validatePhoneNumber } from "@/lib/documentValidation/phoneValidation";
+import { validateEmail } from "@/lib/formValidation/email";
+import { validateMessage } from "@/lib/formValidation/freeText";
+import { fieldClass } from "@/components/forms/shared";
 
 export default function ContactForm() {
   const [sent, setSent] = useState(false);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ name?: boolean; phone?: boolean; email?: boolean; message?: boolean }>({});
 
   if (sent) {
     return (
@@ -19,26 +30,54 @@ export default function ContactForm() {
     );
   }
 
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setFormError(null);
+
+    const nameResult = validateNamePart(name, "Full name");
+    const phoneResult = phone.trim() ? validatePhoneNumber(phone, "KE", "Phone number") : { valid: true };
+    const emailResult = validateEmail(email);
+    const messageResult = validateMessage(message, "Message");
+
+    setFieldErrors({
+      name: !nameResult.valid,
+      phone: !phoneResult.valid,
+      email: !emailResult.valid,
+      message: !messageResult.valid,
+    });
+
+    if (!nameResult.valid || !phoneResult.valid || !emailResult.valid || !messageResult.valid) {
+      setFormError("Please fix the highlighted fields below.");
+      return;
+    }
+
+    setSent(true);
+  }
+
   return (
-    <form
-      className="space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line"
-      onSubmit={(e) => {
-        e.preventDefault();
-        setSent(true);
-      }}
-    >
+    <form noValidate className="space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line" onSubmit={handleSubmit}>
+      {formError && (
+        <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{formError}</p>
+      )}
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
           <span className="text-xs font-medium text-midnight/60">Full Name</span>
           <input
             required
-            className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g. Jane Wanjiru"
+            className={fieldClass(fieldErrors.name ? "reject" : undefined)}
           />
         </label>
         <label className="block">
           <span className="text-xs font-medium text-midnight/60">Phone / WhatsApp</span>
           <input
-            className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="e.g. 0712 345 678"
+            className={fieldClass(fieldErrors.phone ? "reject" : undefined)}
           />
         </label>
       </div>
@@ -47,7 +86,10 @@ export default function ContactForm() {
         <input
           required
           type="email"
-          className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="e.g. jane.wanjiru@example.com"
+          className={fieldClass(fieldErrors.email ? "reject" : undefined)}
         />
       </label>
       <label className="block">
@@ -55,8 +97,10 @@ export default function ContactForm() {
         <textarea
           required
           rows={4}
-          className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           placeholder="Tell us about your trip, dates, and preferred vehicle..."
+          className={fieldClass(fieldErrors.message ? "reject" : undefined)}
         />
       </label>
       <button

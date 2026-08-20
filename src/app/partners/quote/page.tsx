@@ -4,6 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
+import { validateBusinessName } from "@/lib/formValidation/businessName";
+import { validateEmail } from "@/lib/formValidation/email";
+import { validatePhoneNumber } from "@/lib/documentValidation/phoneValidation";
+import { fieldClass } from "@/components/forms/shared";
 
 export default function PartnerQuotePage() {
   const { user, profile, ready } = useAuth();
@@ -16,6 +20,7 @@ export default function PartnerQuotePage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ businessName?: boolean; email?: boolean; phone?: boolean }>({});
 
   const email = contactEmail || user?.email || "";
 
@@ -23,15 +28,27 @@ export default function PartnerQuotePage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitting(true);
     setError(null);
+
+    const nameResult = validateBusinessName(businessName, "Business name");
+    const emailResult = validateEmail(email, "Contact email");
+    const phoneResult = validatePhoneNumber(contactPhone, "KE", "Contact phone");
+
+    setFieldErrors({ businessName: !nameResult.valid, email: !emailResult.valid, phone: !phoneResult.valid });
+
+    if (!nameResult.valid || !emailResult.valid || !phoneResult.valid) {
+      setError("Please fix the highlighted fields below.");
+      return;
+    }
+
+    setSubmitting(true);
 
     const supabase = createClient();
     const { error: insertError } = await supabase.from("quote_requests").insert({
       requester_profile_id: user!.id,
       business_name: businessName,
       contact_email: email,
-      contact_phone: contactPhone,
+      contact_phone: phoneResult.e164,
       vehicle_count: vehicleCount,
       vehicle_types: vehicleTypes || null,
       notes: notes || null,
@@ -76,7 +93,7 @@ export default function PartnerQuotePage() {
         fleet and we&apos;ll follow up with pricing.
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line">
+      <form noValidate onSubmit={handleSubmit} className="mt-6 space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line">
         {error && (
           <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p>
         )}
@@ -87,7 +104,8 @@ export default function PartnerQuotePage() {
             required
             value={businessName}
             onChange={(e) => setBusinessName(e.target.value)}
-            className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
+            placeholder="e.g. Rift Valley Rides"
+            className={fieldClass(fieldErrors.businessName ? "reject" : undefined)}
           />
         </label>
         <label className="block">
@@ -97,7 +115,8 @@ export default function PartnerQuotePage() {
             type="email"
             value={email}
             onChange={(e) => setContactEmail(e.target.value)}
-            className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
+            placeholder="e.g. bookings@riftvalleyrides.co.ke"
+            className={fieldClass(fieldErrors.email ? "reject" : undefined)}
           />
         </label>
         <label className="block">
@@ -107,7 +126,8 @@ export default function PartnerQuotePage() {
             type="tel"
             value={contactPhone}
             onChange={(e) => setContactPhone(e.target.value)}
-            className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
+            placeholder="e.g. 0712 345 678"
+            className={fieldClass(fieldErrors.phone ? "reject" : undefined)}
           />
         </label>
         <label className="block">
@@ -136,6 +156,7 @@ export default function PartnerQuotePage() {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
+            placeholder="e.g. Need vehicles ready by March for a corporate conference"
             className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
           />
         </label>

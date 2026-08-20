@@ -4,14 +4,33 @@ import { useState } from "react";
 import Link from "next/link";
 import { classifications } from "@/lib/data";
 import { findCatalogEntry, getMakes, getModelsForMake } from "@/lib/vehicleCatalog";
+import { validateBusinessName } from "@/lib/formValidation/businessName";
+import { validateEmail } from "@/lib/formValidation/email";
+import { validateKenyanPlate } from "@/lib/formValidation/licensePlate";
+import { Field, fieldClass } from "@/components/forms/shared";
 
 type Stage = "account" | "unit" | "done";
+
+const ALLOWED_DOCUMENT_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+
+function isAllowedDocument(file: File) {
+  return ALLOWED_DOCUMENT_TYPES.includes(file.type);
+}
 
 export default function PartnerOnboardingPage() {
   const [stage, setStage] = useState<Stage>("account");
   const [businessName, setBusinessName] = useState("");
+  const [businessEmail, setBusinessEmail] = useState("");
+  const [taxCredentialFile, setTaxCredentialFile] = useState<File | null>(null);
+  const [identityFile, setIdentityFile] = useState<File | null>(null);
+  const [accountFieldErrors, setAccountFieldErrors] = useState<{ businessName?: boolean; businessEmail?: boolean }>({});
+  const [accountFormError, setAccountFormError] = useState<string | null>(null);
+
   const [make, setMake] = useState("");
   const [vehicleName, setVehicleName] = useState("");
+  const [licensePlate, setLicensePlate] = useState("");
+  const [unitFieldErrors, setUnitFieldErrors] = useState<{ licensePlate?: boolean }>({});
+  const [unitFormError, setUnitFormError] = useState<string | null>(null);
 
   const makes = getMakes();
   const models = make ? getModelsForMake(make) : [];
@@ -32,29 +51,65 @@ export default function PartnerOnboardingPage() {
 
       {stage === "account" && (
         <form
+          noValidate
           className="mt-8 space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line"
           onSubmit={(e) => {
             e.preventDefault();
+            setAccountFormError(null);
+
+            const nameResult = validateBusinessName(businessName, "Business / Host name");
+            const emailResult = validateEmail(businessEmail, "Business email");
+            setAccountFieldErrors({ businessName: !nameResult.valid, businessEmail: !emailResult.valid });
+
+            if (!nameResult.valid || !emailResult.valid) {
+              setAccountFormError("Please fix the highlighted fields below.");
+              return;
+            }
+            if ((taxCredentialFile && !isAllowedDocument(taxCredentialFile)) || (identityFile && !isAllowedDocument(identityFile))) {
+              setAccountFormError("Only image (JPG/PNG/WebP) or PDF files are accepted for document uploads.");
+              return;
+            }
+
             setStage("unit");
           }}
         >
+          {accountFormError && (
+            <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{accountFormError}</p>
+          )}
           <Field label="Business / Host Name">
             <input
               required
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
-              className="w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none"
+              className={fieldClass(accountFieldErrors.businessName ? "reject" : undefined, "w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none")}
               placeholder="e.g. Rift Valley Rides"
             />
           </Field>
           <Field label="Business Email">
-            <input required type="email" className="w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none" />
+            <input
+              required
+              type="email"
+              value={businessEmail}
+              onChange={(e) => setBusinessEmail(e.target.value)}
+              placeholder="e.g. bookings@riftvalleyrides.co.ke"
+              className={fieldClass(accountFieldErrors.businessEmail ? "reject" : undefined, "w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none")}
+            />
           </Field>
           <Field label="Tax Credential / Business License">
-            <input type="file" className="block w-full text-sm text-midnight/70" />
+            <input
+              type="file"
+              accept="image/*,.pdf"
+              onChange={(e) => setTaxCredentialFile(e.target.files?.[0] ?? null)}
+              className="block w-full text-sm text-midnight/70"
+            />
           </Field>
           <Field label="Personal Identity Document (for individual hosts)">
-            <input type="file" className="block w-full text-sm text-midnight/70" />
+            <input
+              type="file"
+              accept="image/*,.pdf"
+              onChange={(e) => setIdentityFile(e.target.files?.[0] ?? null)}
+              className="block w-full text-sm text-midnight/70"
+            />
           </Field>
 
           <button
@@ -71,9 +126,22 @@ export default function PartnerOnboardingPage() {
           className="mt-8 space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line"
           onSubmit={(e) => {
             e.preventDefault();
+            setUnitFormError(null);
+
+            const plateResult = validateKenyanPlate(licensePlate);
+            setUnitFieldErrors({ licensePlate: !plateResult.valid });
+
+            if (!plateResult.valid) {
+              setUnitFormError("Please fix the highlighted fields below.");
+              return;
+            }
+
             setStage("done");
           }}
         >
+          {unitFormError && (
+            <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{unitFormError}</p>
+          )}
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Make">
               <select
@@ -117,7 +185,13 @@ export default function PartnerOnboardingPage() {
               <input required type="number" min={1990} max={2027} className="w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none" placeholder="2023" />
             </Field>
             <Field label="License Plate">
-              <input required className="w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none" placeholder="KDX 123A" />
+              <input
+                required
+                value={licensePlate}
+                onChange={(e) => setLicensePlate(e.target.value)}
+                className={fieldClass(unitFieldErrors.licensePlate ? "reject" : undefined, "w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none")}
+                placeholder="e.g. KDX 123A"
+              />
             </Field>
             <Field label="Classification">
               <select required className="w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none">
@@ -207,14 +281,5 @@ function StepPill({ active, done, label }: { active: boolean; done: boolean; lab
     >
       {label}
     </li>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="block">
-      <span className="text-xs font-medium text-midnight/60">{label}</span>
-      <div className="mt-1">{children}</div>
-    </label>
   );
 }

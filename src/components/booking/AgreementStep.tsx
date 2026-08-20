@@ -3,7 +3,19 @@
 import { useState } from "react";
 import type { Vehicle } from "@/lib/types";
 import { site } from "@/lib/site";
-import { inputClass } from "./shared";
+import { fieldClass } from "./shared";
+
+function namesRoughlyMatch(signed: string, actual: string): boolean {
+  const normalize = (v: string) =>
+    v
+      .toLowerCase()
+      .replace(/[^a-z\s]/g, "")
+      .split(/\s+/)
+      .filter(Boolean)
+      .sort()
+      .join(" ");
+  return normalize(signed) === normalize(actual);
+}
 
 const SECTIONS = [
   {
@@ -29,23 +41,33 @@ const SECTIONS = [
 ];
 
 export default function AgreementStep({
+  applicantName,
   saving,
   onSubmit,
 }: {
   vehicle: Vehicle;
+  applicantName: string | null;
   saving: boolean;
   onSubmit: (data: { signedName: string }) => void;
 }) {
   const [accepted, setAccepted] = useState(false);
   const [signedName, setSignedName] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
+  const [nameMismatch, setNameMismatch] = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError(null);
+    setNameMismatch(false);
 
     if (!accepted || !signedName.trim()) {
       setFormError("Please confirm you agree and type your full legal name to sign.");
+      return;
+    }
+
+    if (applicantName && !namesRoughlyMatch(signedName, applicantName)) {
+      setNameMismatch(true);
+      setFormError("Please type your name exactly as entered in the Applicant Details step.");
       return;
     }
 
@@ -69,7 +91,7 @@ export default function AgreementStep({
         ))}
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+      <form noValidate onSubmit={handleSubmit} className="mt-5 space-y-4">
         <label className="flex items-start gap-2 text-sm text-midnight/80">
           <input
             type="checkbox"
@@ -85,7 +107,8 @@ export default function AgreementStep({
           <input
             value={signedName}
             onChange={(e) => setSignedName(e.target.value)}
-            className={inputClass}
+            placeholder="e.g. Jane Wanjiru"
+            className={fieldClass(nameMismatch ? "reject" : undefined)}
           />
         </label>
 

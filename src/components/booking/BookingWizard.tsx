@@ -52,6 +52,7 @@ export default function BookingWizard({
   }));
   const [bookingId, setBookingId] = useState<string | null>(null);
   const [bookingRef, setBookingRef] = useState<string | null>(null);
+  const [applicantName, setApplicantName] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -157,6 +158,8 @@ export default function BookingWizard({
         const firstFieldError = submitResult.fieldErrors ? Object.values(submitResult.fieldErrors)[0] : undefined;
         throw new Error((firstFieldError as string) ?? submitResult.error ?? "Could not submit your details. Please try again.");
       }
+
+      setApplicantName(`${data.givenNames} ${data.surname}`.trim());
 
       const verifyResponse = await fetch("/api/verify-document", {
         method: "POST",
@@ -341,7 +344,9 @@ export default function BookingWizard({
 
         {step === "selfie" && <SelfieCaptureStep saving={saving} onSubmit={handleSelfieSubmit} />}
 
-        {step === "agreement" && <AgreementStep vehicle={vehicle} saving={saving} onSubmit={handleAgreementSubmit} />}
+        {step === "agreement" && (
+          <AgreementStep vehicle={vehicle} applicantName={applicantName} saving={saving} onSubmit={handleAgreementSubmit} />
+        )}
 
         {step === "deposit" && (
           <DepositStep

@@ -8,6 +8,9 @@ import { formatMoney } from "@/lib/data";
 import StatusBadge from "@/components/StatusBadge";
 import DemoTag from "@/components/DemoTag";
 import type { LoyaltyTier } from "@/lib/types";
+import { validateNamePart } from "@/lib/documentValidation/nameValidation";
+import { validatePhoneNumber } from "@/lib/documentValidation/phoneValidation";
+import { fieldClass } from "@/components/forms/shared";
 
 type Tab = "bookings" | "documents" | "loyalty" | "profile";
 
@@ -94,6 +97,8 @@ export default function AccountPage() {
   const [phoneOverride, setPhoneOverride] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [profileFieldErrors, setProfileFieldErrors] = useState<{ name?: boolean; phone?: boolean }>({});
   const [bookings, setBookings] = useState<BookingRow[]>([]);
   const [documents, setDocuments] = useState<DocumentRow[]>([]);
   const [loyaltyAccount, setLoyaltyAccount] = useState<LoyaltyAccountRow | null>(null);
@@ -174,12 +179,32 @@ export default function AccountPage() {
 
   async function handleSaveProfile(e: React.FormEvent) {
     e.preventDefault();
-    setSaving(true);
     setSaved(false);
+    setProfileError(null);
+
+    const nameResult = validateNamePart(name, "Full name");
+    const phoneResult = validatePhoneNumber(phone, "KE", "Phone number");
+    setProfileFieldErrors({ name: !nameResult.valid, phone: !phoneResult.valid });
+
+    if (!nameResult.valid || !phoneResult.valid) {
+      setProfileError("Please fix the highlighted fields below.");
+      return;
+    }
+
+    setSaving(true);
     const supabase = createClient();
-    await supabase.from("profiles").update({ full_name: name, phone }).eq("id", user!.id);
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ full_name: name, phone: phoneResult.e164 })
+      .eq("id", user!.id);
     await refreshProfile();
     setSaving(false);
+
+    if (updateError) {
+      setProfileError("Could not save your changes. Please try again.");
+      return;
+    }
+
     setSaved(true);
   }
 
@@ -361,15 +386,20 @@ export default function AccountPage() {
 
       {tab === "profile" && (
         <form
+          noValidate
           onSubmit={handleSaveProfile}
           className="mt-6 max-w-md space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line"
         >
+          {profileError && (
+            <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{profileError}</p>
+          )}
           <label className="block">
             <span className="text-xs font-medium text-midnight/60">Full Name</span>
             <input
               value={name}
               onChange={(e) => setNameOverride(e.target.value)}
-              className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
+              placeholder="e.g. Jane Wanjiru"
+              className={fieldClass(profileFieldErrors.name ? "reject" : undefined)}
             />
           </label>
           <label className="block">
@@ -383,9 +413,11 @@ export default function AccountPage() {
           <label className="block">
             <span className="text-xs font-medium text-midnight/60">Phone / WhatsApp</span>
             <input
+              type="tel"
               value={phone}
               onChange={(e) => setPhoneOverride(e.target.value)}
-              className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
+              placeholder="e.g. 0712 345 678"
+              className={fieldClass(profileFieldErrors.phone ? "reject" : undefined)}
             />
           </label>
           <button

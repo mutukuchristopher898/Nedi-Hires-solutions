@@ -175,7 +175,7 @@ export default function ApplicantDetailsStep({
         Required for identity verification before final settlement.
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-5 space-y-5">
+      <form noValidate onSubmit={handleSubmit} className="mt-5 space-y-5">
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Nationality">
             <select value={nationality} onChange={(e) => handleNationalityChange(e.target.value)} className={inputClass}>

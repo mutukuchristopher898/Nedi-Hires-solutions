@@ -4,6 +4,8 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { validateEmail } from "@/lib/formValidation/email";
+import { fieldClass } from "@/components/forms/shared";
 
 export default function SignInPage() {
   return (
@@ -20,11 +22,22 @@ function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ email?: boolean; password?: boolean }>({});
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    const emailResult = validateEmail(email);
+    const passwordMissing = !password;
+    setFieldErrors({ email: !emailResult.valid, password: passwordMissing });
+
+    if (!emailResult.valid || passwordMissing) {
+      setError("Please fix the highlighted fields below.");
+      return;
+    }
+
     setSubmitting(true);
 
     const supabase = createClient();
@@ -47,7 +60,7 @@ function SignInForm() {
         Access your bookings, documents, and profile.
       </p>
 
-      <form className="mt-6 space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line" onSubmit={handleSubmit}>
+      <form noValidate className="mt-6 space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line" onSubmit={handleSubmit}>
         {error && (
           <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p>
         )}
@@ -59,7 +72,8 @@ function SignInForm() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
+            placeholder="e.g. jane.wanjiru@example.com"
+            className={fieldClass(fieldErrors.email ? "reject" : undefined)}
           />
         </label>
         <label className="block">
@@ -69,7 +83,7 @@ function SignInForm() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none"
+            className={fieldClass(fieldErrors.password ? "reject" : undefined)}
           />
         </label>
 
