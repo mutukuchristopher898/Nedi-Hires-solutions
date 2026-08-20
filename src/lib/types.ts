@@ -47,7 +47,40 @@ export interface SubscriptionPlan {
   perks: string[];
 }
 
-export type BookingStep = "deposit" | "verification" | "settlement" | "confirmed";
+export type BookingStep =
+  | "trip"
+  | "applicant"
+  | "agreement"
+  | "deposit"
+  | "verification"
+  | "settlement"
+  | "confirmed";
+
+export type Purpose = "personal" | "commercial";
+export type DriveType = "self_drive" | "chauffeur";
+export type IdType = "International Passport" | "National ID";
+
+export interface TripDetails {
+  pickupDate: string;
+  pickupPoint: string;
+  destination: string;
+  purpose: Purpose;
+  days: number;
+  driveType: DriveType;
+  dateOfBirth: string;
+  licenseIssueDate: string;
+}
+
+export interface BookingApplicant {
+  idType: IdType;
+  idNumber: string;
+  licenseNumber: string;
+  address: string;
+  phoneNumber: string;
+  guarantorName: string;
+  guarantorPhone: string;
+  guarantorRelationship: string;
+}
 
 export interface PartnerUnit {
   id: string;

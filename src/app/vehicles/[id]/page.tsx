@@ -80,10 +80,10 @@ export default async function VehicleDetailPage({
             href={`/booking/${vehicle.id}`}
             className="mt-6 block rounded-md bg-gold px-5 py-3 text-center text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
           >
-            Reserve & Pay Deposit
+            Reserve This Vehicle
           </Link>
           <p className="mt-3 text-center text-xs text-midnight/50">
-            Reservation deposit today · Identity verification required before pickup
+            Trip details, identity verification, and a signed agreement before deposit
           </p>
         </aside>
       </div>

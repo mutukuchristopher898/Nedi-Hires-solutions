@@ -17,6 +17,10 @@ interface BookingRow {
   currency: string;
   start_date: string;
   end_date: string;
+  pickup_point: string | null;
+  destination: string | null;
+  purpose: "personal" | "commercial" | null;
+  drive_type: "self_drive" | "chauffeur" | null;
   vehicles: { make: string; model: string; year: number } | null;
 }
 
@@ -81,7 +85,9 @@ export default function AccountPage() {
       const [bookingsRes, documentsRes] = await Promise.all([
         supabase
           .from("bookings")
-          .select("id, booking_ref, status, total_amount, currency, start_date, end_date, vehicles(make, model, year)")
+          .select(
+            "id, booking_ref, status, total_amount, currency, start_date, end_date, pickup_point, destination, purpose, drive_type, vehicles(make, model, year)"
+          )
           .eq("customer_id", user.id)
           .order("created_at", { ascending: false }),
         supabase
@@ -191,6 +197,7 @@ export default function AccountPage() {
                   <tr>
                     <th className="px-5 py-3">Reference</th>
                     <th className="px-5 py-3">Vehicle</th>
+                    <th className="px-5 py-3">Trip</th>
                     <th className="px-5 py-3">Dates</th>
                     <th className="px-5 py-3">Total</th>
                     <th className="px-5 py-3">Status</th>
@@ -202,6 +209,13 @@ export default function AccountPage() {
                       <td className="px-5 py-3 font-mono text-xs text-midnight/70">{b.booking_ref}</td>
                       <td className="px-5 py-3 font-medium text-midnight">
                         {b.vehicles ? `${b.vehicles.make} ${b.vehicles.model} (${b.vehicles.year})` : "—"}
+                      </td>
+                      <td className="px-5 py-3 text-midnight/70">
+                        {b.drive_type
+                          ? `${b.drive_type === "self_drive" ? "Self-drive" : "Chauffeur"} · ${
+                              b.purpose === "commercial" ? "Commercial" : "Personal"
+                            }${b.destination ? ` · ${b.destination}` : ""}`
+                          : "—"}
                       </td>
                       <td className="px-5 py-3 text-midnight/70">{formatDateRange(b.start_date, b.end_date)}</td>
                       <td className="px-5 py-3 text-midnight/70">{formatMoney(b.total_amount, b.currency)}</td>

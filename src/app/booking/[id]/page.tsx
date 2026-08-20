@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import BookingWizard from "@/components/BookingWizard";
+import BookingWizard from "@/components/booking/BookingWizard";
 import { getVehicleById } from "@/lib/data";
 import { getVehicleDbIdBySlug } from "@/lib/supabase/queries";
 
@@ -18,7 +18,8 @@ export default async function BookingPage({
     <div className="container-shell py-10">
       <h1 className="text-2xl font-bold text-midnight">Complete Your Booking</h1>
       <p className="mt-1 text-sm text-midnight/60">
-        A security-first, two-tiered payment and verification workflow.
+        Trip details, identity verification, a signed rental agreement, and a two-tiered
+        payment workflow.
       </p>
       <div className="mt-8">
         <BookingWizard vehicle={vehicle} vehicleDbId={vehicleDbId} />
