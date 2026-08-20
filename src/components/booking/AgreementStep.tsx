@@ -54,7 +54,7 @@ export default function AgreementStep({
 
   return (
     <section className="rounded-2xl bg-white p-6 ring-1 ring-line">
-      <h2 className="text-lg font-semibold text-midnight">3. Rental Agreement</h2>
+      <h2 className="text-lg font-semibold text-midnight">4. Rental Agreement</h2>
       <p className="mt-2 rounded-lg bg-amber/10 p-3 text-sm text-amber">
         Placeholder draft for prototype purposes only — review with legal counsel before
         publishing a live version.

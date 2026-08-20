@@ -34,6 +34,11 @@ export default function ApplicantDetailsStep({
   const [formError, setFormError] = useState<string | null>(null);
 
   const requiresLicense = driveType === "self_drive";
+  const ALLOWED_FILE_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+
+  function isAllowedFile(file: File) {
+    return ALLOWED_FILE_TYPES.includes(file.type);
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -43,8 +48,16 @@ export default function ApplicantDetailsStep({
       setFormError("Please enter your full name as it appears on your ID/Passport.");
       return;
     }
+    if (guarantorName.trim().toLowerCase() === fullName.trim().toLowerCase()) {
+      setFormError("Your guarantor can't be yourself — please provide someone else's details.");
+      return;
+    }
     if (!idFile || !passportPhotoFile) {
       setFormError("Please attach both your ID/passport scan and a passport photo.");
+      return;
+    }
+    if (!isAllowedFile(idFile) || !isAllowedFile(passportPhotoFile) || (licenseFile && !isAllowedFile(licenseFile))) {
+      setFormError("Only image (JPG/PNG/WebP) or PDF files are accepted for ID, license, and passport photo uploads.");
       return;
     }
     if (requiresLicense && (!licenseFile || !licenseNumber)) {

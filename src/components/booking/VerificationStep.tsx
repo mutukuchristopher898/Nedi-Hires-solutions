@@ -3,7 +3,7 @@
 export default function VerificationStep({ onContinue }: { onContinue: () => void }) {
   return (
     <section className="rounded-2xl bg-white p-6 ring-1 ring-line">
-      <h2 className="text-lg font-semibold text-midnight">5. Identity Verification Queue</h2>
+      <h2 className="text-lg font-semibold text-midnight">6. Identity Verification Queue</h2>
       <p className="mt-1 text-sm text-midnight/60">
         Your documents and details are queued for admin review before final settlement.
       </p>

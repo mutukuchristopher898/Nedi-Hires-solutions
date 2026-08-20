@@ -10,6 +10,7 @@ import { uploadKycFile } from "@/lib/supabase/storage";
 import VehiclePhoto from "../VehiclePhoto";
 import TripDetailsStep from "./TripDetailsStep";
 import ApplicantDetailsStep, { type ApplicantSubmission } from "./ApplicantDetailsStep";
+import SelfieCaptureStep from "./SelfieCaptureStep";
 import AgreementStep from "./AgreementStep";
 import DepositStep from "./DepositStep";
 import VerificationStep from "./VerificationStep";
@@ -20,6 +21,7 @@ import { Row } from "./shared";
 const STEP_ORDER: BookingStep[] = [
   "trip",
   "applicant",
+  "selfie",
   "agreement",
   "deposit",
   "verification",
@@ -161,11 +163,56 @@ export default function BookingWizard({
       });
       if (applicantError) throw applicantError;
 
+      const verifyResponse = await fetch("/api/verify-document", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookingId, storagePath: idPath }),
+      });
+      const verifyResult = await verifyResponse.json();
+
+      setSaving(false);
+
+      if (verifyResult.status === "failed") {
+        setError(verifyResult.notes ?? "The uploaded document could not be verified. Please try again.");
+        return;
+      }
+
+      setStep("selfie");
+    } catch (err) {
+      setSaving(false);
+      setError(err instanceof Error ? err.message : "Could not submit your details. Please try again.");
+    }
+  }
+
+  async function handleSelfieSubmit(file: File) {
+    if (!user || !bookingId) return;
+    setSaving(true);
+    setError(null);
+
+    try {
+      const selfiePath = await uploadKycFile({ userId: user.id, bookingId, docSlug: "selfie", file });
+
+      const supabase = createClient();
+      const { error: docError } = await supabase.from("identity_documents").insert({
+        booking_id: bookingId,
+        customer_id: user.id,
+        doc_type: "Selfie Verification",
+        file_url: selfiePath,
+        status: "pending",
+      });
+      if (docError) throw docError;
+
+      await fetch("/api/verify-selfie", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookingId, selfieStoragePath: selfiePath }),
+      });
+
       setSaving(false);
       setStep("agreement");
     } catch (err) {
       setSaving(false);
-      setError(err instanceof Error ? err.message : "Could not submit your details. Please try again.");
+      setError(err instanceof Error ? err.message : "Could not submit your selfie. Please try again.");
     }
   }
 
@@ -296,6 +343,8 @@ export default function BookingWizard({
         {step === "applicant" && (
           <ApplicantDetailsStep driveType={trip.driveType} saving={saving} onSubmit={handleApplicantSubmit} />
         )}
+
+        {step === "selfie" && <SelfieCaptureStep saving={saving} onSubmit={handleSelfieSubmit} />}
 
         {step === "agreement" && <AgreementStep vehicle={vehicle} saving={saving} onSubmit={handleAgreementSubmit} />}
 

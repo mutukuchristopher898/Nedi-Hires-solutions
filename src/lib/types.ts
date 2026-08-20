@@ -50,6 +50,7 @@ export interface SubscriptionPlan {
 export type BookingStep =
   | "trip"
   | "applicant"
+  | "selfie"
   | "agreement"
   | "deposit"
   | "verification"

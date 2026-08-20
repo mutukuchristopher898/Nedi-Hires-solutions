@@ -18,7 +18,7 @@ export default function SettlementStep({
 
   return (
     <section className="rounded-2xl bg-white p-6 ring-1 ring-line">
-      <h2 className="text-lg font-semibold text-midnight">6. Final Settlement</h2>
+      <h2 className="text-lg font-semibold text-midnight">7. Final Settlement</h2>
       <p className="mt-1 text-sm text-midnight/60">
         Your identity is verified. Settle the remaining rental amount and security deposit
         online or at the physical vehicle handoff.
