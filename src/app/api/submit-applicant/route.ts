@@ -26,7 +26,11 @@ export async function POST(request: Request) {
 
   // RLS scopes this to bookings the caller owns — an empty result means
   // either it doesn't exist or isn't theirs, either way treated as not found.
-  const { data: booking } = await supabase.from("bookings").select("id").eq("id", body.bookingId).maybeSingle();
+  const { data: booking } = await supabase
+    .from("bookings")
+    .select("id, start_date, end_date")
+    .eq("id", body.bookingId)
+    .maybeSingle();
   if (!booking) {
     return NextResponse.json({ error: "Booking not found" }, { status: 404 });
   }
@@ -37,6 +41,23 @@ export async function POST(request: Request) {
   const result = validateApplicantPayload(body);
   if (!result.valid || !result.normalized) {
     return NextResponse.json({ fieldErrors: result.fieldErrors, warnings: result.warnings }, { status: 400 });
+  }
+
+  // spec §5.2 — reject if this same person (identified by document number)
+  // already has another active booking with overlapping dates.
+  const { data: overlap } = await supabase.rpc("find_overlapping_active_booking", {
+    p_id_number_normalized: result.normalized.idNumberNormalized,
+    p_start: booking.start_date,
+    p_end: booking.end_date,
+    p_exclude_booking_id: body.bookingId,
+  });
+  if (overlap && overlap.length > 0) {
+    return NextResponse.json(
+      {
+        error: `You already have a reservation for these dates (ref: ${overlap[0].booking_ref}). View it in your account.`,
+      },
+      { status: 409 }
+    );
   }
 
   const documentRows: { booking_id: string; customer_id: string; doc_type: string; file_url: string; status: string }[] = [

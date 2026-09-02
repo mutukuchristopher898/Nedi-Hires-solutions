@@ -8,6 +8,49 @@ import { getNameOrderLayout } from "@/lib/documentValidation/nameValidation";
 import { validateDocumentNumber, type DocumentValidationResult } from "@/lib/documentValidation/documentNumberValidation";
 import { validateApplicantPayload, type ApplicantValidationInput } from "@/lib/documentValidation/validateApplicant";
 
+// The user-entered fields only — excludes the 3 File objects (which can't
+// survive sessionStorage / a back-navigation remount, see the notice below)
+// and `requiresLicense` (derived from the `driveType` prop, never typed).
+export interface ApplicantDraftFields {
+  nationality: string;
+  surname: string;
+  givenNames: string;
+  middleName: string;
+  grandfatherName: string;
+  mononymDeclared: boolean;
+  confirmNamesIntentionallyIdentical: boolean;
+  idType: IdType;
+  idNumber: string;
+  idNumberOverrideConfirmed: boolean;
+  licenseNumber: string;
+  licenseNumberOverrideConfirmed: boolean;
+  address: string;
+  phoneNumber: string;
+  guarantorName: string;
+  guarantorPhone: string;
+  guarantorRelationship: string;
+}
+
+export const APPLICANT_DRAFT_DEFAULTS: ApplicantDraftFields = {
+  nationality: "KE",
+  surname: "",
+  givenNames: "",
+  middleName: "",
+  grandfatherName: "",
+  mononymDeclared: false,
+  confirmNamesIntentionallyIdentical: false,
+  idType: "National ID",
+  idNumber: "",
+  idNumberOverrideConfirmed: false,
+  licenseNumber: "",
+  licenseNumberOverrideConfirmed: false,
+  address: "",
+  phoneNumber: "",
+  guarantorName: "",
+  guarantorPhone: "",
+  guarantorRelationship: "",
+};
+
 export interface ApplicantSubmission extends ApplicantValidationInput {
   idFile: File;
   licenseFile: File | null;
@@ -31,39 +74,45 @@ function fieldClass(state?: "reject" | "warn") {
 }
 
 export default function ApplicantDetailsStep({
+  value,
+  onChange,
   driveType,
   saving,
   onSubmit,
 }: {
+  value: ApplicantDraftFields;
+  onChange: (patch: Partial<ApplicantDraftFields>) => void;
   driveType: DriveType;
   saving: boolean;
   onSubmit: (data: ApplicantSubmission) => void;
 }) {
-  const [nationality, setNationality] = useState("KE");
-  const [surname, setSurname] = useState("");
-  const [givenNames, setGivenNames] = useState("");
-  const [middleName, setMiddleName] = useState("");
-  const [grandfatherName, setGrandfatherName] = useState("");
-  const [mononymDeclared, setMononymDeclared] = useState(false);
-  const [confirmNamesIntentionallyIdentical, setConfirmNamesIntentionallyIdentical] = useState(false);
+  const {
+    nationality,
+    surname,
+    givenNames,
+    middleName,
+    grandfatherName,
+    mononymDeclared,
+    confirmNamesIntentionallyIdentical,
+    idType,
+    idNumber,
+    idNumberOverrideConfirmed,
+    licenseNumber,
+    licenseNumberOverrideConfirmed,
+    address,
+    phoneNumber,
+    guarantorName,
+    guarantorPhone,
+    guarantorRelationship,
+  } = value;
 
-  const [idType, setIdType] = useState<IdType>("National ID");
-  const [idNumber, setIdNumber] = useState("");
-  const [idNumberOverrideConfirmed, setIdNumberOverrideConfirmed] = useState(false);
   const [idNumberFeedback, setIdNumberFeedback] = useState<DocumentValidationResult | null>(null);
   const [idFile, setIdFile] = useState<File | null>(null);
 
-  const [licenseNumber, setLicenseNumber] = useState("");
-  const [licenseNumberOverrideConfirmed, setLicenseNumberOverrideConfirmed] = useState(false);
   const [licenseNumberFeedback, setLicenseNumberFeedback] = useState<DocumentValidationResult | null>(null);
   const [licenseFile, setLicenseFile] = useState<File | null>(null);
 
   const [passportPhotoFile, setPassportPhotoFile] = useState<File | null>(null);
-  const [address, setAddress] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [guarantorName, setGuarantorName] = useState("");
-  const [guarantorPhone, setGuarantorPhone] = useState("");
-  const [guarantorRelationship, setGuarantorRelationship] = useState("");
 
   const [formError, setFormError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -74,17 +123,24 @@ export default function ApplicantDetailsStep({
   const showsGrandfatherSlot = nameLayout.some((slot) => slot.key === "grandfatherName");
   const isKenyan = nationality === "KE";
 
+  // If the customer already typed their details on a previous visit to this
+  // step (surname is filled) but the local file state is empty, they must
+  // have navigated away and back — file inputs can never be restored by JS
+  // once a browser tab has moved on, for security reasons.
+  const showReattachNotice = surname.trim() !== "" && !idFile && !passportPhotoFile;
+
   const idSample = (idType === "National ID" ? rule?.national_id_sample : rule?.passport_sample) || "e.g. A1234567";
   const licenseSample = rule?.driving_licence_sample || "e.g. DL1234567";
   const phoneSample = rule?.phone_sample || "e.g. 0712 345 678";
 
   function handleNationalityChange(nextIso2: string) {
-    setNationality(nextIso2);
     const nextRule = getCountryRule(nextIso2);
-    if (nextIso2 !== "KE" && idType === "National ID") setIdType("International Passport");
-    if (nextRule?.mononym_allowed !== "yes") setMononymDeclared(false);
-    if (nextRule && !phoneNumber.trim()) setPhoneNumber(`${nextRule.calling_code} `);
-    if (nextRule && !guarantorPhone.trim()) setGuarantorPhone(`${nextRule.calling_code} `);
+    const patch: Partial<ApplicantDraftFields> = { nationality: nextIso2 };
+    if (nextIso2 !== "KE" && idType === "National ID") patch.idType = "International Passport";
+    if (nextRule?.mononym_allowed !== "yes") patch.mononymDeclared = false;
+    if (nextRule && !phoneNumber.trim()) patch.phoneNumber = `${nextRule.calling_code} `;
+    if (nextRule && !guarantorPhone.trim()) patch.guarantorPhone = `${nextRule.calling_code} `;
+    onChange(patch);
   }
 
   function combinedMiddleName() {
@@ -193,7 +249,7 @@ export default function ApplicantDetailsStep({
             <input
               type="checkbox"
               checked={mononymDeclared}
-              onChange={(e) => setMononymDeclared(e.target.checked)}
+              onChange={(e) => onChange({ mononymDeclared: e.target.checked })}
               className="h-4 w-4 rounded border-line"
             />
             I have only one name on my travel document.
@@ -206,7 +262,7 @@ export default function ApplicantDetailsStep({
               <input
                 required
                 value={givenNames}
-                onChange={(e) => setGivenNames(e.target.value)}
+                onChange={(e) => onChange({ givenNames: e.target.value })}
                 placeholder="e.g. Suharto"
                 className={fieldClass(fieldErrors.givenNames ? "reject" : undefined)}
               />
@@ -219,7 +275,7 @@ export default function ApplicantDetailsStep({
                     <input
                       required
                       value={surname}
-                      onChange={(e) => setSurname(e.target.value)}
+                      onChange={(e) => onChange({ surname: e.target.value })}
                       placeholder="e.g. Mwangi"
                       className={fieldClass(fieldErrors.surname ? "reject" : undefined)}
                     />
@@ -228,7 +284,7 @@ export default function ApplicantDetailsStep({
                         <input
                           type="checkbox"
                           checked={confirmNamesIntentionallyIdentical}
-                          onChange={(e) => setConfirmNamesIntentionallyIdentical(e.target.checked)}
+                          onChange={(e) => onChange({ confirmNamesIntentionallyIdentical: e.target.checked })}
                           className="h-3.5 w-3.5 rounded border-line"
                         />
                         My family name and given name(s) are genuinely the same.
@@ -243,7 +299,7 @@ export default function ApplicantDetailsStep({
                     <input
                       required
                       value={givenNames}
-                      onChange={(e) => setGivenNames(e.target.value)}
+                      onChange={(e) => onChange({ givenNames: e.target.value })}
                       placeholder="e.g. Wanjiru Grace"
                       className={fieldClass(fieldErrors.givenNames ? "reject" : undefined)}
                     />
@@ -255,7 +311,7 @@ export default function ApplicantDetailsStep({
                   <Field key="middleName" label={slot.label}>
                     <input
                       value={middleName}
-                      onChange={(e) => setMiddleName(e.target.value)}
+                      onChange={(e) => onChange({ middleName: e.target.value })}
                       placeholder="e.g. Otieno"
                       className={fieldClass(fieldErrors.middleName ? "reject" : undefined)}
                     />
@@ -266,7 +322,7 @@ export default function ApplicantDetailsStep({
                 <Field key="grandfatherName" label={slot.label}>
                   <input
                     value={grandfatherName}
-                    onChange={(e) => setGrandfatherName(e.target.value)}
+                    onChange={(e) => onChange({ grandfatherName: e.target.value })}
                     placeholder="e.g. Hassan"
                     className={inputClass}
                   />
@@ -277,7 +333,7 @@ export default function ApplicantDetailsStep({
 
           <Field label="ID type">
             {isKenyan ? (
-              <select value={idType} onChange={(e) => setIdType(e.target.value as IdType)} className={inputClass}>
+              <select value={idType} onChange={(e) => onChange({ idType: e.target.value as IdType })} className={inputClass}>
                 <option value="National ID">National ID</option>
                 <option value="International Passport">International Passport</option>
               </select>
@@ -290,8 +346,7 @@ export default function ApplicantDetailsStep({
               required
               value={idNumber}
               onChange={(e) => {
-                setIdNumber(e.target.value);
-                setIdNumberOverrideConfirmed(false);
+                onChange({ idNumber: e.target.value, idNumberOverrideConfirmed: false });
                 setIdNumberFeedback(null);
               }}
               onBlur={handleIdNumberBlur}
@@ -303,7 +358,7 @@ export default function ApplicantDetailsStep({
                 <input
                   type="checkbox"
                   checked={idNumberOverrideConfirmed}
-                  onChange={(e) => setIdNumberOverrideConfirmed(e.target.checked)}
+                  onChange={(e) => onChange({ idNumberOverrideConfirmed: e.target.checked })}
                   className="h-3.5 w-3.5 rounded border-line"
                 />
                 I confirm this number is correct.
@@ -336,8 +391,7 @@ export default function ApplicantDetailsStep({
                   required
                   value={licenseNumber}
                   onChange={(e) => {
-                    setLicenseNumber(e.target.value);
-                    setLicenseNumberOverrideConfirmed(false);
+                    onChange({ licenseNumber: e.target.value, licenseNumberOverrideConfirmed: false });
                     setLicenseNumberFeedback(null);
                   }}
                   onBlur={handleLicenseNumberBlur}
@@ -351,7 +405,7 @@ export default function ApplicantDetailsStep({
                     <input
                       type="checkbox"
                       checked={licenseNumberOverrideConfirmed}
-                      onChange={(e) => setLicenseNumberOverrideConfirmed(e.target.checked)}
+                      onChange={(e) => onChange({ licenseNumberOverrideConfirmed: e.target.checked })}
                       className="h-3.5 w-3.5 rounded border-line"
                     />
                     I confirm this number is correct.
@@ -380,7 +434,7 @@ export default function ApplicantDetailsStep({
               required
               type="tel"
               value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
+              onChange={(e) => onChange({ phoneNumber: e.target.value })}
               placeholder={phoneSample}
               className={fieldClass(fieldErrors.phoneNumber ? "reject" : undefined)}
             />
@@ -389,12 +443,18 @@ export default function ApplicantDetailsStep({
             <input
               required
               value={address}
-              onChange={(e) => setAddress(e.target.value)}
+              onChange={(e) => onChange({ address: e.target.value })}
               placeholder="e.g. 123 Ngong Road, Nairobi"
               className={fieldClass(fieldErrors.address ? "reject" : undefined)}
             />
           </Field>
         </div>
+
+        {showReattachNotice && (
+          <p className="rounded-md bg-amber/10 px-3 py-2 text-sm text-amber">
+            Please re-attach your documents below — files can&apos;t be restored when you navigate back.
+          </p>
+        )}
 
         <div className="rounded-lg bg-offwhite p-4">
           <p className="text-xs font-medium text-midnight/60">Guarantor details</p>
@@ -403,7 +463,7 @@ export default function ApplicantDetailsStep({
               <input
                 required
                 value={guarantorName}
-                onChange={(e) => setGuarantorName(e.target.value)}
+                onChange={(e) => onChange({ guarantorName: e.target.value })}
                 placeholder="e.g. Jane Wanjiru"
                 className={fieldClass(fieldErrors.guarantorName ? "reject" : undefined)}
               />
@@ -413,7 +473,7 @@ export default function ApplicantDetailsStep({
                 required
                 type="tel"
                 value={guarantorPhone}
-                onChange={(e) => setGuarantorPhone(e.target.value)}
+                onChange={(e) => onChange({ guarantorPhone: e.target.value })}
                 placeholder={phoneSample}
                 className={fieldClass(fieldErrors.guarantorPhone ? "reject" : undefined)}
               />
@@ -422,7 +482,7 @@ export default function ApplicantDetailsStep({
               <input
                 required
                 value={guarantorRelationship}
-                onChange={(e) => setGuarantorRelationship(e.target.value)}
+                onChange={(e) => onChange({ guarantorRelationship: e.target.value })}
                 placeholder="e.g. Spouse, Sibling, Colleague"
                 className={fieldClass(fieldErrors.guarantorRelationship ? "reject" : undefined)}
               />

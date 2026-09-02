@@ -1,0 +1,73 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { combineDateAndTime, computePricing, effectiveDays, formatDurationLabel, oneWayFee } from "@/lib/duration";
+import { useBookingDraft, useLockGuard, useRequireBookingId } from "@/lib/booking/draftStore";
+import DepositStep from "@/components/booking/DepositStep";
+import WizardNav from "@/components/booking/WizardNav";
+
+const DEPOSIT = 5000;
+
+export default function DepositPage() {
+  const router = useRouter();
+  const { draft, patchDraft, vehicle } = useBookingDraft();
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useLockGuard();
+  useRequireBookingId();
+
+  const { trip } = draft;
+  const pickupAt = combineDateAndTime(trip.pickupDate, trip.pickupTime);
+  const dropoffAt = combineDateAndTime(trip.dropoffDate, trip.dropoffTime);
+  const days = effectiveDays(pickupAt, dropoffAt);
+  const pricing = computePricing(vehicle.pricePerDay, days);
+  const fee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint) : 0;
+  const total = pricing.total + fee;
+  const durationLabel = formatDurationLabel(trip.durationUnit, trip.durationQuantity);
+
+  async function handlePayDeposit() {
+    if (!draft.bookingId) return;
+    setSaving(true);
+    setError(null);
+
+    const supabase = createClient();
+    const { error: updateError } = await supabase
+      .from("bookings")
+      .update({ status: "verification_pending" })
+      .eq("id", draft.bookingId);
+
+    setSaving(false);
+
+    if (updateError) {
+      setError(updateError.message);
+      return;
+    }
+
+    patchDraft({ furthestStepReached: "verification", lockedAfterPayment: true });
+    router.push(`/booking/${vehicle.id}/verification`);
+  }
+
+  return (
+    <>
+      <WizardNav vehicleId={vehicle.id} current="deposit" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
+
+      {error && <p className="mb-4 rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p>}
+
+      <DepositStep
+        deposit={DEPOSIT}
+        total={total}
+        durationLabel={durationLabel}
+        rateLabel={pricing.rateLabel}
+        savingsAmount={pricing.savingsAmount}
+        oneWayFee={fee}
+        pricePerDay={vehicle.pricePerDay}
+        currency={vehicle.currency}
+        saving={saving}
+        onSubmit={handlePayDeposit}
+      />
+    </>
+  );
+}

@@ -1,28 +1,6 @@
-import { notFound } from "next/navigation";
-import BookingWizard from "@/components/booking/BookingWizard";
-import { getVehicleById } from "@/lib/data";
-import { getVehicleDbIdBySlug } from "@/lib/supabase/queries";
+import { redirect } from "next/navigation";
 
-export default async function BookingPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function BookingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const vehicle = getVehicleById(id);
-  if (!vehicle) notFound();
-
-  const vehicleDbId = await getVehicleDbIdBySlug(id);
-
-  return (
-    <div className="container-shell py-10">
-      <h1 className="text-2xl font-bold text-midnight">Complete Your Booking</h1>
-      <p className="mt-1 text-sm text-midnight/60">
-        Just a few quick steps to secure your reservation.
-      </p>
-      <div className="mt-8">
-        <BookingWizard vehicle={vehicle} vehicleDbId={vehicleDbId} />
-      </div>
-    </div>
-  );
+  redirect(`/booking/${id}/trip`);
 }

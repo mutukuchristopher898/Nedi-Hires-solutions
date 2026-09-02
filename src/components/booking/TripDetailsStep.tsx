@@ -70,16 +70,17 @@ const todayIso = () => new Date().toISOString().slice(0, 10);
 
 export default function TripDetailsStep({
   vehicle,
-  initial,
+  value: trip,
+  onChange,
   saving,
   onSubmit,
 }: {
   vehicle: Vehicle;
-  initial: TripDetails;
+  value: TripDetails;
+  onChange: (patch: Partial<TripDetails>) => void;
   saving: boolean;
   onSubmit: (trip: TripDetails) => void;
 }) {
-  const [trip, setTrip] = useState<TripDetails>(initial);
   const [formError, setFormError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{
     pickupDate?: boolean;
@@ -98,7 +99,7 @@ export default function TripDetailsStep({
   const fee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint) : 0;
 
   function update<K extends keyof TripDetails>(key: K, value: TripDetails[K]) {
-    setTrip((prev) => ({ ...prev, [key]: value }));
+    onChange({ [key]: value } as Partial<TripDetails>);
   }
 
   // Duration control and pickup date/time drive drop-off by default — this
@@ -118,23 +119,23 @@ export default function TripDetailsStep({
 
   function handlePickupDateChange(value: string) {
     const { dropoffDate, dropoffTime } = recomputeDropoff(value, trip.pickupTime, trip.durationUnit, trip.durationQuantity);
-    setTrip((prev) => ({ ...prev, pickupDate: value, dropoffDate, dropoffTime }));
+    onChange({ pickupDate: value, dropoffDate, dropoffTime });
   }
 
   function handlePickupTimeChange(value: string) {
     const { dropoffDate, dropoffTime } = recomputeDropoff(trip.pickupDate, value, trip.durationUnit, trip.durationQuantity);
-    setTrip((prev) => ({ ...prev, pickupTime: value, dropoffDate, dropoffTime }));
+    onChange({ pickupTime: value, dropoffDate, dropoffTime });
   }
 
   function handleDurationUnitChange(unit: DurationUnit) {
     const { dropoffDate, dropoffTime } = recomputeDropoff(trip.pickupDate, trip.pickupTime, unit, trip.durationQuantity);
-    setTrip((prev) => ({ ...prev, durationUnit: unit, dropoffDate, dropoffTime }));
+    onChange({ durationUnit: unit, dropoffDate, dropoffTime });
   }
 
   function handleDurationQuantityChange(quantity: number) {
     const safeQuantity = Math.max(1, quantity || 1);
     const { dropoffDate, dropoffTime } = recomputeDropoff(trip.pickupDate, trip.pickupTime, trip.durationUnit, safeQuantity);
-    setTrip((prev) => ({ ...prev, durationQuantity: safeQuantity, dropoffDate, dropoffTime }));
+    onChange({ durationQuantity: safeQuantity, dropoffDate, dropoffTime });
   }
 
   function handleSubmit(e: React.FormEvent) {
