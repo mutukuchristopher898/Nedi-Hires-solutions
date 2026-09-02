@@ -18,6 +18,7 @@ export default function ConfirmedStep({ bookingRef, trip }: { bookingRef: string
         {trip.driveType === "self_drive" ? "Self-drive" : "Chauffeur-driven"} ·{" "}
         {trip.purpose === "personal" ? "Personal" : "Commercial"} · Pickup at {trip.pickupPoint} ·
         Heading to {trip.destination}
+        {trip.returnToDifferentLocation && <> · Returning to {trip.dropoffPoint}</>}
       </p>
       <Link
         href="/account"

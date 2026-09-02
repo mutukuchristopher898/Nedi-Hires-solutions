@@ -1,3 +1,5 @@
+import type { DurationUnit } from "./duration";
+
 export type VehicleClassification =
   | "Economy"
   | "SUV"
@@ -96,10 +98,16 @@ export type IdType = "International Passport" | "National ID";
 
 export interface TripDetails {
   pickupDate: string;
+  pickupTime: string;
   pickupPoint: string;
   destination: string;
   purpose: Purpose;
-  days: number;
+  durationUnit: DurationUnit;
+  durationQuantity: number;
+  dropoffDate: string;
+  dropoffTime: string;
+  returnToDifferentLocation: boolean;
+  dropoffPoint: string;
   driveType: DriveType;
   dateOfBirth: string;
   licenseIssueDate: string;

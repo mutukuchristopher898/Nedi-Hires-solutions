@@ -4,6 +4,16 @@ import { useState } from "react";
 import Link from "next/link";
 import type { BookingStep, TripDetails, Vehicle } from "@/lib/types";
 import { formatMoney } from "@/lib/data";
+import {
+  combineDateAndTime,
+  computeDropoff,
+  computePricing,
+  effectiveDays,
+  formatDurationLabel,
+  oneWayFee,
+  toNairobiDateInputValue,
+  toNairobiTimeInputValue,
+} from "@/lib/duration";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
 import { uploadKycFile } from "@/lib/supabase/storage";
@@ -40,16 +50,29 @@ export default function BookingWizard({
 }) {
   const { user, ready } = useAuth();
   const [step, setStep] = useState<BookingStep>("trip");
-  const [trip, setTrip] = useState<TripDetails>(() => ({
-    pickupDate: todayIso(),
-    pickupPoint: vehicle.location,
-    destination: "",
-    purpose: "personal",
-    days: 3,
-    driveType: "self_drive",
-    dateOfBirth: "",
-    licenseIssueDate: "",
-  }));
+  const [trip, setTrip] = useState<TripDetails>(() => {
+    const pickupDate = todayIso();
+    const pickupTime = "09:00";
+    const durationUnit = "days" as const;
+    const durationQuantity = 3;
+    const dropoffAt = computeDropoff(combineDateAndTime(pickupDate, pickupTime), durationUnit, durationQuantity);
+    return {
+      pickupDate,
+      pickupTime,
+      pickupPoint: vehicle.location,
+      destination: "",
+      purpose: "personal",
+      durationUnit,
+      durationQuantity,
+      dropoffDate: toNairobiDateInputValue(dropoffAt),
+      dropoffTime: toNairobiTimeInputValue(dropoffAt),
+      returnToDifferentLocation: false,
+      dropoffPoint: "",
+      driveType: "self_drive",
+      dateOfBirth: "",
+      licenseIssueDate: "",
+    };
+  });
   const [bookingId, setBookingId] = useState<string | null>(null);
   const [bookingRef, setBookingRef] = useState<string | null>(null);
   const [applicantName, setApplicantName] = useState<string | null>(null);
@@ -57,7 +80,13 @@ export default function BookingWizard({
   const [error, setError] = useState<string | null>(null);
 
   const deposit = 5000;
-  const total = vehicle.pricePerDay * trip.days;
+  const pickupAt = combineDateAndTime(trip.pickupDate, trip.pickupTime);
+  const dropoffAt = combineDateAndTime(trip.dropoffDate, trip.dropoffTime);
+  const rentalDays = effectiveDays(pickupAt, dropoffAt);
+  const pricing = computePricing(vehicle.pricePerDay, rentalDays);
+  const fee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint) : 0;
+  const total = pricing.total + fee;
+  const durationLabel = formatDurationLabel(trip.durationUnit, trip.durationQuantity);
   const securityDeposit = Math.round(total * 0.15);
   const remaining = Math.max(total - deposit, 0);
   const currentIndex = STEP_ORDER.indexOf(step);
@@ -67,11 +96,13 @@ export default function BookingWizard({
     setSaving(true);
     setError(null);
 
-    const tripTotal = vehicle.pricePerDay * tripData.days;
+    const tripPickupAt = combineDateAndTime(tripData.pickupDate, tripData.pickupTime);
+    const tripDropoffAt = combineDateAndTime(tripData.dropoffDate, tripData.dropoffTime);
+    const tripDays = effectiveDays(tripPickupAt, tripDropoffAt);
+    const tripPricing = computePricing(vehicle.pricePerDay, tripDays);
+    const tripFee = tripData.returnToDifferentLocation ? oneWayFee(tripData.pickupPoint, tripData.dropoffPoint) : 0;
+    const tripTotal = tripPricing.total + tripFee;
     const tripSecurityDeposit = Math.round(tripTotal * 0.15);
-    const endDate = new Date(new Date(tripData.pickupDate).getTime() + tripData.days * 86_400_000)
-      .toISOString()
-      .slice(0, 10);
 
     const supabase = createClient();
     const { data, error: insertError } = await supabase
@@ -80,7 +111,9 @@ export default function BookingWizard({
         customer_id: user.id,
         vehicle_id: vehicleDbId,
         start_date: tripData.pickupDate,
-        end_date: endDate,
+        end_date: tripData.dropoffDate,
+        pickup_at: tripPickupAt.toISOString(),
+        dropoff_at: tripDropoffAt.toISOString(),
         deposit_amount: deposit,
         total_amount: tripTotal,
         security_deposit: tripSecurityDeposit,
@@ -89,6 +122,10 @@ export default function BookingWizard({
         destination: tripData.destination,
         purpose: tripData.purpose,
         drive_type: tripData.driveType,
+        dropoff_point: tripData.returnToDifferentLocation ? tripData.dropoffPoint : tripData.pickupPoint,
+        one_way_fee: tripFee,
+        duration_unit: tripData.durationUnit,
+        duration_quantity: tripData.durationQuantity,
       })
       .select("id, booking_ref")
       .single();
@@ -352,7 +389,10 @@ export default function BookingWizard({
           <DepositStep
             deposit={deposit}
             total={total}
-            days={trip.days}
+            durationLabel={durationLabel}
+            rateLabel={pricing.rateLabel}
+            savingsAmount={pricing.savingsAmount}
+            oneWayFee={fee}
             pricePerDay={vehicle.pricePerDay}
             currency={vehicle.currency}
             saving={saving}
@@ -382,7 +422,8 @@ export default function BookingWizard({
         <p className="text-sm text-midnight/60">{vehicle.location}</p>
         <div className="mt-4 border-t border-line pt-4 text-sm">
           <Row label="Rate" value={`${formatMoney(vehicle.pricePerDay, vehicle.currency)}/day`} />
-          <Row label="Duration" value={`${trip.days} day(s)`} />
+          <Row label="Duration" value={durationLabel} />
+          {fee > 0 && <Row label="One-way fee" value={formatMoney(fee, vehicle.currency)} />}
           <Row label="Est. total" value={formatMoney(total, vehicle.currency)} bold />
         </div>
       </aside>

@@ -1,6 +1,14 @@
 export { fieldClass } from "@/components/forms/shared";
 
-export function Row({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
+export function Row({
+  label,
+  value,
+  bold,
+}: {
+  label: React.ReactNode;
+  value: React.ReactNode;
+  bold?: boolean;
+}) {
   return (
     <div className={`flex items-center justify-between py-1 ${bold ? "font-semibold text-midnight" : "text-midnight/70"}`}>
       <span>{label}</span>

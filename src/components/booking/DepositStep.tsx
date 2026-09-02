@@ -1,12 +1,16 @@
 "use client";
 
 import { formatMoney } from "@/lib/data";
+import DemoTag from "@/components/DemoTag";
 import { Row } from "./shared";
 
 export default function DepositStep({
   deposit,
   total,
-  days,
+  durationLabel,
+  rateLabel,
+  savingsAmount,
+  oneWayFee,
   pricePerDay,
   currency,
   saving,
@@ -14,7 +18,10 @@ export default function DepositStep({
 }: {
   deposit: number;
   total: number;
-  days: number;
+  durationLabel: string;
+  rateLabel: string | null;
+  savingsAmount: number;
+  oneWayFee: number;
   pricePerDay: number;
   currency: string;
   saving: boolean;
@@ -30,7 +37,29 @@ export default function DepositStep({
       </p>
 
       <div className="mt-5 rounded-lg bg-offwhite p-4 text-sm">
-        <Row label={`${formatMoney(pricePerDay, currency)} × ${days} day(s)`} value={money(total)} />
+        <Row label={`${formatMoney(pricePerDay, currency)}/day × ${durationLabel}`} value={money(total - oneWayFee)} />
+        {rateLabel && (
+          <Row
+            label={
+              <>
+                {rateLabel} — you save {money(savingsAmount)}
+                <DemoTag inline label="Indicative Rate" />
+              </>
+            }
+            value=""
+          />
+        )}
+        {oneWayFee > 0 && (
+          <Row
+            label={
+              <>
+                One-way fee
+                <DemoTag inline label="Indicative Fee" />
+              </>
+            }
+            value={money(oneWayFee)}
+          />
+        )}
         <Row label="Reservation deposit due now" value={money(deposit)} bold />
       </div>
 
