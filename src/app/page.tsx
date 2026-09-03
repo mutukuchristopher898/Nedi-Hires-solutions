@@ -1,5 +1,4 @@
 import Link from "next/link";
-import SearchWidget from "@/components/SearchWidget";
 import VehicleCard from "@/components/VehicleCard";
 import Testimonials from "@/components/Testimonials";
 import ServiceIcon from "@/components/ServiceIcon";
@@ -45,10 +44,23 @@ export default function Home() {
             Self-drive or chauffeur-driven car hire, airport transfers, corporate travel,
             and tours & safaris — from a verified fleet of internal and partner vehicles.
           </p>
-        </div>
 
-        <div className="container-shell relative pb-16 lg:pb-20">
-          <SearchWidget />
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link
+              href="/search"
+              className="rounded-md bg-gold px-7 py-3.5 text-center text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
+            >
+              Book a Ride Now
+            </Link>
+            <a
+              href={site.whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-md border border-white/20 px-7 py-3.5 text-center text-sm font-semibold text-white transition hover:bg-white/10"
+            >
+              Talk to Us on WhatsApp
+            </a>
+          </div>
         </div>
       </section>
 

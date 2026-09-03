@@ -1,13 +1,11 @@
 import { classifications } from "@/lib/data";
 
-export default function SearchWidget({ compact = false }: { compact?: boolean }) {
+export default function SearchWidget() {
   return (
     <form
       action="/search"
       method="get"
-      className={`w-full rounded-2xl bg-white p-5 shadow-xl ring-1 ring-black/5 ${
-        compact ? "" : "lg:p-6"
-      }`}
+      className="w-full rounded-2xl bg-white p-5 shadow-xl ring-1 ring-black/5 lg:p-6"
     >
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <label className="flex flex-col gap-1 lg:col-span-2">

@@ -31,9 +31,13 @@ export default async function SearchPage({
 
   return (
     <div className="bg-offwhite">
-      <div className="bg-charcoal py-8">
+      <div className="bg-charcoal py-10">
         <div className="container-shell">
-          <SearchWidget compact />
+          <h1 className="text-2xl font-bold text-white">Find your vehicle</h1>
+          <p className="mt-1 mb-6 text-sm text-white/60">
+            Tell us where and when, and we&apos;ll show you what&apos;s available.
+          </p>
+          <SearchWidget />
         </div>
       </div>
 
