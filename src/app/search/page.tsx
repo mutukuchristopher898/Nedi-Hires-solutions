@@ -6,6 +6,8 @@ import type { FuelType, Transmission, VehicleClassification } from "@/lib/types"
 
 type SearchParams = {
   location?: string;
+  pickup?: string;
+  return?: string;
   classification?: string;
   fuel?: string;
   transmission?: string;
@@ -20,9 +22,15 @@ export default async function SearchPage({
   const classification = params.classification as VehicleClassification | undefined;
   const fuel = params.fuel as FuelType | undefined;
   const transmission = params.transmission as Transmission | undefined;
+  const location = params.location;
+
+  // Any parameter at all means the customer has run a search — the form
+  // collapses and the page leads with results rather than chrome.
+  const hasSearched = Object.values(params).some(Boolean);
 
   const results = vehicles.filter((v) => {
     if (v.approvalStatus !== "approved") return false;
+    if (location && v.location !== location) return false;
     if (classification && v.classification !== classification) return false;
     if (fuel && v.fuelType !== fuel) return false;
     if (transmission && v.transmission !== transmission) return false;
@@ -31,59 +39,69 @@ export default async function SearchPage({
 
   return (
     <div className="bg-offwhite">
-      <div className="bg-charcoal py-10">
+      <div className={hasSearched ? "bg-charcoal py-5" : "bg-charcoal py-10"}>
         <div className="container-shell">
-          <h1 className="text-2xl font-bold text-white">Find your vehicle</h1>
-          <p className="mt-1 mb-6 text-sm text-white/60">
-            Tell us where and when, and we&apos;ll show you what&apos;s available.
-          </p>
-          <SearchWidget />
+          {!hasSearched && (
+            <>
+              <h1 className="text-2xl font-bold text-white">Find your vehicle</h1>
+              <p className="mt-1 mb-6 text-sm text-white/60">
+                Tell us where and when, and we&apos;ll show you what&apos;s available.
+              </p>
+            </>
+          )}
+          <SearchWidget
+            collapsible={hasSearched}
+            initial={{
+              location: params.location,
+              pickup: params.pickup,
+              return: params.return,
+              classification: params.classification,
+              transmission: params.transmission,
+            }}
+          />
         </div>
       </div>
 
       <div className="container-shell grid gap-8 py-10 lg:grid-cols-[240px_1fr]">
         <aside className="space-y-6">
-          <form className="space-y-6" method="get">
-            {params.location && <input type="hidden" name="location" value={params.location} />}
-            <div>
-              <h3 className="mb-2 text-sm font-semibold text-midnight">Vehicle Type</h3>
-              <div className="space-y-1.5">
-                <FilterLink label="Any type" href="/search" active={!classification} />
-                {classifications.map((c) => (
-                  <FilterLink
-                    key={c}
-                    label={c}
-                    href={`/search?classification=${encodeURIComponent(c)}`}
-                    active={classification === c}
-                  />
-                ))}
-              </div>
+          <div>
+            <h3 className="mb-2 text-sm font-semibold text-midnight">Vehicle Type</h3>
+            <div className="space-y-1.5">
+              <FilterLink label="Any type" href={buildHref(params, "classification", undefined)} active={!classification} />
+              {classifications.map((c) => (
+                <FilterLink
+                  key={c}
+                  label={c}
+                  href={buildHref(params, "classification", c)}
+                  active={classification === c}
+                />
+              ))}
             </div>
+          </div>
 
-            <div>
-              <h3 className="mb-2 text-sm font-semibold text-midnight">Transmission</h3>
-              <div className="space-y-1.5">
-                <FilterLink label="Any" href={buildHref(params, "transmission", undefined)} active={!transmission} />
-                <FilterLink
-                  label="Automatic"
-                  href={buildHref(params, "transmission", "Automatic")}
-                  active={transmission === "Automatic"}
-                />
-                <FilterLink
-                  label="Manual"
-                  href={buildHref(params, "transmission", "Manual")}
-                  active={transmission === "Manual"}
-                />
-              </div>
+          <div>
+            <h3 className="mb-2 text-sm font-semibold text-midnight">Transmission</h3>
+            <div className="space-y-1.5">
+              <FilterLink label="Any" href={buildHref(params, "transmission", undefined)} active={!transmission} />
+              <FilterLink
+                label="Automatic"
+                href={buildHref(params, "transmission", "Automatic")}
+                active={transmission === "Automatic"}
+              />
+              <FilterLink
+                label="Manual"
+                href={buildHref(params, "transmission", "Manual")}
+                active={transmission === "Manual"}
+              />
             </div>
-          </form>
+          </div>
         </aside>
 
         <div>
           <div className="mb-5 flex items-center justify-between">
             <p className="text-sm text-midnight/60">
               {results.length} vehicle{results.length === 1 ? "" : "s"} available
-              {params.location ? ` near ${params.location}` : ""}
+              {location ? ` at ${location}` : ""}
             </p>
             <DemoTag label="Illustrative Fleet Catalog" />
           </div>
@@ -105,13 +123,9 @@ export default async function SearchPage({
   );
 }
 
-function buildHref(
-  params: SearchParams,
-  key: keyof SearchParams,
-  value: string | undefined
-) {
+function buildHref(params: SearchParams, key: keyof SearchParams, value: string | undefined) {
   const next = new URLSearchParams();
-  for (const k of ["location", "classification", "fuel", "transmission"] as const) {
+  for (const k of ["location", "pickup", "return", "classification", "fuel", "transmission"] as const) {
     const v = k === key ? value : params[k];
     if (v) next.set(k, v);
   }

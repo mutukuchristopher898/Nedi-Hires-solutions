@@ -66,7 +66,9 @@ const DURATION_UNITS: { value: DurationUnit; label: string }[] = [
   { value: "months", label: "Months" },
 ];
 
-const todayIso = () => new Date().toISOString().slice(0, 10);
+// Nairobi's calendar date, not the browser's — a customer booking from
+// abroad shouldn't see a different "today" than the business does.
+const todayIso = () => toNairobiDateInputValue(new Date());
 
 export default function TripDetailsStep({
   vehicle,
@@ -142,30 +144,55 @@ export default function TripDetailsStep({
     e.preventDefault();
     setFormError(null);
 
+    const today = todayIso();
     const missingPickupDate = !trip.pickupDate.trim();
     const missingPickupPoint = !trip.pickupPoint.trim();
     const missingDestination = !trip.destination.trim();
+    // The form runs noValidate, so the inputs' own `min`/`max` attributes
+    // don't block submission — every date rule has to be checked here too.
+    const pickupInPast = !missingPickupDate && trip.pickupDate < today;
     const dropoffInvalid = dropoffAt.getTime() <= pickupAt.getTime();
     const tooLong = days > MAX_RENTAL_DAYS;
     const missingDropoffPoint = trip.returnToDifferentLocation && !trip.dropoffPoint.trim();
 
-    if (missingPickupDate || missingPickupPoint || missingDestination || dropoffInvalid || tooLong || missingDropoffPoint) {
+    if (
+      missingPickupDate ||
+      pickupInPast ||
+      missingPickupPoint ||
+      missingDestination ||
+      dropoffInvalid ||
+      tooLong ||
+      missingDropoffPoint
+    ) {
       setFieldErrors({
-        pickupDate: missingPickupDate,
+        pickupDate: missingPickupDate || pickupInPast,
         pickupPoint: missingPickupPoint,
         destination: missingDestination,
         dropoff: dropoffInvalid || tooLong,
         dropoffPoint: missingDropoffPoint,
       });
       setFormError(
-        tooLong
+        pickupInPast
+          ? "The pickup date can't be in the past. Please choose today or a later date."
+          : tooLong
           ? `The maximum rental period is ${MAX_RENTAL_DAYS} days. Please shorten your drop-off date.`
+          : dropoffInvalid
+          ? "The drop-off must be after the pickup. Please check your dates."
           : "Please fix the highlighted fields below."
       );
       return;
     }
 
     if (trip.driveType === "self_drive") {
+      const futureDob = !!trip.dateOfBirth && trip.dateOfBirth > today;
+      const futureLicense = !!trip.licenseIssueDate && trip.licenseIssueDate > today;
+
+      if (futureDob || futureLicense) {
+        setFieldErrors({ dateOfBirth: futureDob, licenseIssueDate: futureLicense });
+        setFormError("Please check your dates — they can't be in the future.");
+        return;
+      }
+
       const eligible =
         calculateAge(trip.dateOfBirth) >= MIN_SELF_DRIVE_AGE &&
         calculateYearsSince(trip.licenseIssueDate) >= MIN_LICENSE_YEARS;
@@ -299,6 +326,7 @@ export default function TripDetailsStep({
               <input
                 required
                 type="date"
+                min={trip.pickupDate || todayIso()}
                 value={trip.dropoffDate}
                 onChange={(e) => update("dropoffDate", e.target.value)}
                 className={inputClass}
@@ -376,6 +404,7 @@ export default function TripDetailsStep({
               <input
                 required
                 type="date"
+                max={todayIso()}
                 value={trip.dateOfBirth}
                 onChange={(e) => update("dateOfBirth", e.target.value)}
                 className={fieldClass(fieldErrors.dateOfBirth ? "reject" : undefined)}
@@ -385,6 +414,7 @@ export default function TripDetailsStep({
               <input
                 required
                 type="date"
+                max={todayIso()}
                 value={trip.licenseIssueDate}
                 onChange={(e) => update("licenseIssueDate", e.target.value)}
                 className={fieldClass(fieldErrors.licenseIssueDate ? "reject" : undefined)}
