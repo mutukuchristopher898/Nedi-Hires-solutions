@@ -15,6 +15,21 @@ alter table booking_applicants
   add column mononym_declared boolean not null default false,
   add column id_number_normalized text;
 
+-- find_duplicate_id_number previously compared raw id_number values, so
+-- e.g. "AB-123" and "AB123" wouldn't be caught as the same document once
+-- normalisation (strip separators/case) was introduced. Compare on the
+-- normalised column instead; existing rows have it backfilled to their
+-- current raw value as a reasonable approximation (they predate
+-- normalisation, so no separators to strip in practice).
+--
+-- This runs BEFORE the structural constraints below are added: an UPDATE
+-- re-checks every constraint on the rows it touches, even ones marked NOT
+-- VALID, so backfilling first (while there's nothing yet to violate) avoids
+-- tripping the new length/shape constraints against old test/legacy rows
+-- that predate this migration and were never meant to satisfy them.
+update booking_applicants set id_number_normalized = upper(regexp_replace(id_number, '[\s\-./]', '', 'g'))
+where id_number_normalized is null;
+
 alter table booking_applicants
   add constraint applicant_nationality_shape check (nationality ~ '^[A-Z]{2}$') not valid;
 
@@ -51,15 +66,6 @@ alter table booking_applicants
     (surname is null or surname !~ '(.)\1{2,}') and
     (given_names is null or given_names !~ '(.)\1{2,}')
   ) not valid;
-
--- find_duplicate_id_number previously compared raw id_number values, so
--- e.g. "AB-123" and "AB123" wouldn't be caught as the same document once
--- normalisation (strip separators/case) was introduced. Compare on the
--- normalised column instead; existing rows have it backfilled to their
--- current raw value as a reasonable approximation (they predate
--- normalisation, so no separators to strip in practice).
-update booking_applicants set id_number_normalized = upper(regexp_replace(id_number, '[\s\-./]', '', 'g'))
-where id_number_normalized is null;
 
 create or replace function find_duplicate_id_number(p_id_number text, p_exclude_customer_id uuid)
 returns boolean
