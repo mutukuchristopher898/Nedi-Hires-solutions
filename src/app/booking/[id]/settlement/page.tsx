@@ -1,17 +1,25 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { combineDateAndTime, computePricing, effectiveDays, oneWayFee } from "@/lib/duration";
+import {
+  combineDateAndTime,
+  computePricing,
+  effectiveDays,
+  oneWayFee,
+  reservationDeposit,
+  securityDeposit,
+} from "@/lib/duration";
 import { useBookingDraft, useRequireBookingId } from "@/lib/booking/draftStore";
 import SettlementStep from "@/components/booking/SettlementStep";
 import WizardNav from "@/components/booking/WizardNav";
 
-const DEPOSIT = 5000;
-
 export default function SettlementPage() {
   const router = useRouter();
   const { draft, patchDraft, vehicle } = useBookingDraft();
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useRequireBookingId();
 
@@ -20,16 +28,38 @@ export default function SettlementPage() {
   const dropoffAt = combineDateAndTime(trip.dropoffDate, trip.dropoffTime);
   const days = effectiveDays(pickupAt, dropoffAt);
   const pricing = computePricing(vehicle.pricePerDay, days);
-  const fee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint) : 0;
-  const total = pricing.total + fee;
-  const securityDeposit = Math.round(total * 0.15);
-  const remaining = Math.max(total - DEPOSIT, 0);
+  const estimatedFee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint) : 0;
+
+  // Prefer the database's figures; the local calculation is only a fallback.
+  const total = draft.quote?.total ?? pricing.total + estimatedFee;
+  const security = draft.quote?.securityDeposit ?? securityDeposit(total);
+  // No Math.max clamp: with a percentage deposit this cannot go negative, and
+  // the clamp is exactly what hid the old flat-KES-5,000 overcharge (a 3,200
+  // rental asked 5,000 up front, then floored the difference to zero).
+  const remaining = total - (draft.quote?.deposit ?? reservationDeposit(total));
 
   async function handleCompletePayment() {
-    if (draft.bookingId) {
-      const supabase = createClient();
-      await supabase.from("bookings").update({ status: "confirmed" }).eq("id", draft.bookingId);
+    if (!draft.bookingId) return;
+    setSaving(true);
+    setError(null);
+
+    const supabase = createClient();
+    const { error: updateError } = await supabase
+      .from("bookings")
+      .update({ status: "confirmed" })
+      .eq("id", draft.bookingId);
+
+    setSaving(false);
+
+    // Previously discarded, which meant a rejected write still showed the
+    // customer "Booking Confirmed" while the record stayed
+    // settlement_pending. Now that a trigger can reject an out-of-order
+    // transition, swallowing this would hide a real failure.
+    if (updateError) {
+      setError(updateError.message);
+      return;
     }
+
     patchDraft({ furthestStepReached: "confirmed" });
     router.push(`/booking/${vehicle.id}/confirmed`);
   }
@@ -37,10 +67,14 @@ export default function SettlementPage() {
   return (
     <>
       <WizardNav vehicleId={vehicle.id} current="settlement" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
+
+      {error && <p className="mb-4 rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p>}
+
       <SettlementStep
         remaining={remaining}
-        securityDeposit={securityDeposit}
+        securityDeposit={security}
         currency={vehicle.currency}
+        saving={saving}
         onSubmit={handleCompletePayment}
       />
     </>

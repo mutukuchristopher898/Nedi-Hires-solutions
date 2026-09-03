@@ -22,6 +22,31 @@ export const MONTHLY_THRESHOLD_DAYS = 28;
 export const WEEKLY_DISCOUNT = 0.1;
 export const MONTHLY_DISCOUNT = 0.25;
 
+// The reservation deposit taken up front to hold the vehicle. A percentage,
+// not a flat figure: a flat KES 5,000 exceeded the entire rental total on 77
+// of the 245 catalogue vehicles (anything at KES 3,200-4,000/day hired for a
+// single day), and settlement's Math.max(total - 5000, 0) silently absorbed
+// the overpayment instead of surfacing it.
+//
+// Distinct from SECURITY_DEPOSIT_RATE, and both survive: the reservation
+// deposit is a slice of the rental total; the security deposit is refundable
+// and held on top at handover.
+//
+// Mirrored in SQL by enforce_booking_money() in
+// supabase/migrations/20260903120000_booking_money_status_and_eligibility_integrity.sql,
+// which is authoritative — the figures here are a display estimate only.
+// Keep both in sync if these rates change.
+export const RESERVATION_DEPOSIT_RATE = 0.3;
+export const SECURITY_DEPOSIT_RATE = 0.15;
+
+export function reservationDeposit(total: number): number {
+  return Math.round(total * RESERVATION_DEPOSIT_RATE);
+}
+
+export function securityDeposit(total: number): number {
+  return Math.round(total * SECURITY_DEPOSIT_RATE);
+}
+
 const NAIROBI_OFFSET_MS = 3 * 60 * 60 * 1000; // Africa/Nairobi is a fixed UTC+3, no DST.
 
 interface WallClock {

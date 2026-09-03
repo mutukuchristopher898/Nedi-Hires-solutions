@@ -6,12 +6,26 @@ import type { BookingStep, TripDetails, Vehicle } from "@/lib/types";
 import { combineDateAndTime, computeDropoff, toNairobiDateInputValue, toNairobiTimeInputValue } from "@/lib/duration";
 import { APPLICANT_DRAFT_DEFAULTS, type ApplicantDraftFields } from "@/components/booking/ApplicantDetailsStep";
 
+// The money as the database computed it. enforce_booking_money() is
+// authoritative — it derives every figure from vehicles.price_per_day and
+// discards whatever the browser sent — so once a booking row exists these
+// are the real numbers and the client-side computation is only an estimate
+// used before the row is created.
+export interface BookingQuote {
+  ratePerDay: number;
+  total: number;
+  deposit: number;
+  securityDeposit: number;
+  oneWayFee: number;
+}
+
 export interface BookingDraft {
   trip: TripDetails;
   applicant: ApplicantDraftFields;
   bookingId: string | null;
   bookingRef: string | null;
   applicantName: string | null;
+  quote: BookingQuote | null;
   furthestStepReached: BookingStep;
   idempotencyKey: string;
   lockedAfterPayment: boolean;
@@ -66,6 +80,7 @@ function createAndPersistDraft(vehicle: Vehicle): BookingDraft {
     bookingId: null,
     bookingRef: null,
     applicantName: null,
+    quote: null,
     furthestStepReached: "trip",
     idempotencyKey: crypto.randomUUID(),
     lockedAfterPayment: false,
@@ -85,6 +100,7 @@ function loadInitialDraft(vehicle: Vehicle): BookingDraft {
       bookingId: null,
       bookingRef: null,
       applicantName: null,
+      quote: null,
       furthestStepReached: "trip",
       idempotencyKey: "",
       lockedAfterPayment: false,

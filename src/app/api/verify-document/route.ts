@@ -64,7 +64,22 @@ export async function POST(request: Request) {
     }
   }
 
-  await supabase.from("booking_applicants").update({ verification_status: status, verification_notes: notes }).eq("booking_id", bookingId);
+  // Written through a capability-gated RPC rather than a direct update.
+  // This route authenticates with the anon key plus the customer's own JWT,
+  // so it executes AS the customer — meaning a direct PATCH from the browser
+  // was indistinguishable from this write and customers could mark their own
+  // KYC 'verified'. The RPC requires a server-only secret the browser has no
+  // access to. Not a service_role key: it grants this one power and nothing else.
+  const { error: applyError } = await supabase.rpc("apply_verification_result", {
+    p_booking_id: bookingId,
+    p_status: status,
+    p_notes: notes,
+    p_writer_secret: process.env.VERIFICATION_WRITER_SECRET ?? "",
+  });
+
+  if (applyError) {
+    return NextResponse.json({ error: "Could not record the verification result." }, { status: 500 });
+  }
 
   return NextResponse.json({ status, notes });
 }

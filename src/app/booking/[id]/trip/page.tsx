@@ -5,12 +5,22 @@ import { useRouter } from "next/navigation";
 import type { TripDetails } from "@/lib/types";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
-import { combineDateAndTime, computePricing, effectiveDays, oneWayFee } from "@/lib/duration";
+import {
+  combineDateAndTime,
+  computePricing,
+  effectiveDays,
+  oneWayFee,
+  reservationDeposit,
+  securityDeposit,
+} from "@/lib/duration";
 import { useBookingDraft } from "@/lib/booking/draftStore";
 import TripDetailsStep from "@/components/booking/TripDetailsStep";
 import WizardNav from "@/components/booking/WizardNav";
 
-const DEPOSIT = 5000;
+// Every figure sent below is only an opening estimate: enforce_booking_money()
+// recomputes all of it from vehicles.price_per_day and overwrites whatever
+// arrives here, so the row that comes back is the authoritative quote.
+const QUOTE_COLUMNS = "id, booking_ref, rate_per_day, total_amount, deposit_amount, security_deposit, one_way_fee";
 
 export default function TripPage() {
   const router = useRouter();
@@ -30,7 +40,6 @@ export default function TripPage() {
     const pricing = computePricing(vehicle.pricePerDay, days);
     const fee = tripData.returnToDifferentLocation ? oneWayFee(tripData.pickupPoint, tripData.dropoffPoint) : 0;
     const total = pricing.total + fee;
-    const securityDeposit = Math.round(total * 0.15);
 
     const supabase = createClient();
     const insertPayload = {
@@ -40,9 +49,9 @@ export default function TripPage() {
       end_date: tripData.dropoffDate,
       pickup_at: pickupAt.toISOString(),
       dropoff_at: dropoffAt.toISOString(),
-      deposit_amount: DEPOSIT,
+      deposit_amount: reservationDeposit(total),
       total_amount: total,
-      security_deposit: securityDeposit,
+      security_deposit: securityDeposit(total),
       currency: vehicle.currency,
       pickup_point: tripData.pickupPoint,
       destination: tripData.destination,
@@ -55,7 +64,11 @@ export default function TripPage() {
       idempotency_key: draft.idempotencyKey,
     };
 
-    const { data, error: insertError } = await supabase.from("bookings").insert(insertPayload).select("id, booking_ref").single();
+    const { data, error: insertError } = await supabase
+      .from("bookings")
+      .insert(insertPayload)
+      .select(QUOTE_COLUMNS)
+      .single();
 
     let bookingRow = data;
 
@@ -66,7 +79,7 @@ export default function TripPage() {
     if (insertError?.code === "23505" && insertError.message.includes("idx_booking_idempotency")) {
       const { data: existing } = await supabase
         .from("bookings")
-        .select("id, booking_ref")
+        .select(QUOTE_COLUMNS)
         .eq("idempotency_key", draft.idempotencyKey)
         .single();
       bookingRow = existing;
@@ -87,6 +100,14 @@ export default function TripPage() {
       trip: tripData,
       bookingId: bookingRow.id,
       bookingRef: bookingRow.booking_ref,
+      // The server-computed figures, which override the estimate above.
+      quote: {
+        ratePerDay: Number(bookingRow.rate_per_day),
+        total: Number(bookingRow.total_amount),
+        deposit: Number(bookingRow.deposit_amount),
+        securityDeposit: Number(bookingRow.security_deposit),
+        oneWayFee: Number(bookingRow.one_way_fee),
+      },
       furthestStepReached: "applicant",
     });
     router.push(`/booking/${vehicle.id}/applicant`);

@@ -3,12 +3,17 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { combineDateAndTime, computePricing, effectiveDays, formatDurationLabel, oneWayFee } from "@/lib/duration";
+import {
+  combineDateAndTime,
+  computePricing,
+  effectiveDays,
+  formatDurationLabel,
+  oneWayFee,
+  reservationDeposit,
+} from "@/lib/duration";
 import { useBookingDraft, useLockGuard, useRequireBookingId } from "@/lib/booking/draftStore";
 import DepositStep from "@/components/booking/DepositStep";
 import WizardNav from "@/components/booking/WizardNav";
-
-const DEPOSIT = 5000;
 
 export default function DepositPage() {
   const router = useRouter();
@@ -24,9 +29,15 @@ export default function DepositPage() {
   const dropoffAt = combineDateAndTime(trip.dropoffDate, trip.dropoffTime);
   const days = effectiveDays(pickupAt, dropoffAt);
   const pricing = computePricing(vehicle.pricePerDay, days);
-  const fee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint) : 0;
-  const total = pricing.total + fee;
+  const estimatedFee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint) : 0;
   const durationLabel = formatDurationLabel(trip.durationUnit, trip.durationQuantity);
+
+  // Prefer the figures the database computed when the booking was created —
+  // enforce_booking_money() is authoritative and the local calculation is
+  // only a fallback for a draft that predates the quote being captured.
+  const total = draft.quote?.total ?? pricing.total + estimatedFee;
+  const fee = draft.quote?.oneWayFee ?? estimatedFee;
+  const deposit = draft.quote?.deposit ?? reservationDeposit(total);
 
   async function handlePayDeposit() {
     if (!draft.bookingId) return;
@@ -57,7 +68,7 @@ export default function DepositPage() {
       {error && <p className="mb-4 rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p>}
 
       <DepositStep
-        deposit={DEPOSIT}
+        deposit={deposit}
         total={total}
         durationLabel={durationLabel}
         rateLabel={pricing.rateLabel}

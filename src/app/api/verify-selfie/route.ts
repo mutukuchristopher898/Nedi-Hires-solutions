@@ -60,10 +60,19 @@ export async function POST(request: Request) {
   const status: "pending" | "verified" | "needs_review" =
     matchResult.outcome === "unconfigured" ? "pending" : matchResult.outcome === "failed" ? "needs_review" : matchResult.outcome;
 
-  await supabase
-    .from("booking_applicants")
-    .update({ verification_status: status, verification_notes: matchResult.notes })
-    .eq("booking_id", bookingId);
+  // See the note in verify-document/route.ts: this write goes through a
+  // capability-gated RPC because this route holds the customer's own
+  // credential and cannot otherwise be distinguished from the browser.
+  const { error: applyError } = await supabase.rpc("apply_verification_result", {
+    p_booking_id: bookingId,
+    p_status: status,
+    p_notes: matchResult.notes,
+    p_writer_secret: process.env.VERIFICATION_WRITER_SECRET ?? "",
+  });
+
+  if (applyError) {
+    return NextResponse.json({ error: "Could not record the verification result." }, { status: 500 });
+  }
 
   return NextResponse.json({ status, notes: matchResult.notes });
 }

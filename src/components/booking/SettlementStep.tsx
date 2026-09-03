@@ -7,11 +7,13 @@ export default function SettlementStep({
   remaining,
   securityDeposit,
   currency,
+  saving,
   onSubmit,
 }: {
   remaining: number;
   securityDeposit: number;
   currency: string;
+  saving: boolean;
   onSubmit: () => void;
 }) {
   const money = (amount: number) => formatMoney(amount, currency);
@@ -32,9 +34,10 @@ export default function SettlementStep({
 
       <button
         onClick={onSubmit}
-        className="mt-6 w-full rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white sm:w-auto"
+        disabled={saving}
+        className="mt-6 w-full rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white disabled:opacity-60 sm:w-auto"
       >
-        Complete Payment
+        {saving ? "Processing…" : "Complete Payment"}
       </button>
     </section>
   );

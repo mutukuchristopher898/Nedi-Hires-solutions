@@ -28,11 +28,25 @@ export async function POST(request: Request) {
   // either it doesn't exist or isn't theirs, either way treated as not found.
   const { data: booking } = await supabase
     .from("bookings")
-    .select("id, start_date, end_date")
+    .select("id, start_date, end_date, drive_type")
     .eq("id", body.bookingId)
     .maybeSingle();
   if (!booking) {
     return NextResponse.json({ error: "Booking not found" }, { status: 404 });
+  }
+
+  // Self-drive eligibility depends on two dates that validateApplicantPayload
+  // never sees, because they're collected in the trip step rather than this
+  // form. Requiring them here is the TypeScript half of the fix; the
+  // check_driver_eligibility trigger enforces the actual age and experience
+  // thresholds. Previously a POST omitting dateOfBirth passed both layers,
+  // because a NULL date made the trigger's age comparison NULL, which
+  // PL/pgSQL treats as false.
+  if (booking.drive_type === "self_drive" && (!body.dateOfBirth || !body.licenseIssueDate)) {
+    return NextResponse.json(
+      { error: "Self-drive bookings require your date of birth and driving licence issue date." },
+      { status: 400 }
+    );
   }
 
   // spec §0.1 — the server is the only authority. Re-run the exact same
