@@ -25,6 +25,7 @@
   --color-emerald-dark: var(--color-emerald-dark);
   --color-amber: var(--color-amber);
   --font-sans: var(--font-inter);
+  --font-serif: var(--font-cormorant);
 }
 
 body {

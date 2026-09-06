@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="bg-midnight text-white/70">
       <div className="container-shell grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-5">
         <div className="sm:col-span-2 lg:col-span-2">
-          <Logo size={34} light tagline />
+          <Logo light tagline />
           <p className="mt-4 max-w-xs text-sm">{site.description}</p>
         </div>
 

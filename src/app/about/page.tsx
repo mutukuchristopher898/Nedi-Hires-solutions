@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { LogoLockup } from "@/components/Logo";
 import Testimonials from "@/components/Testimonials";
 import DemoTag from "@/components/DemoTag";
 import { site } from "@/lib/site";
@@ -42,8 +42,8 @@ export default function AboutPage() {
               Nairobi to safari transfers across the country.
             </p>
           </div>
-          <div className="hidden justify-self-center rounded-2xl bg-white p-4 shadow-xl sm:block">
-            <Image src="/logo.png" alt={site.name} width={220} height={220} className="h-44 w-44 object-contain" />
+          <div className="hidden justify-self-center sm:block">
+            <LogoLockup light width={340} priority />
           </div>
         </div>
       </section>

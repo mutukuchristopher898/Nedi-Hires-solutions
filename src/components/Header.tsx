@@ -23,7 +23,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-midnight text-white">
       <div className="container-shell flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center">
-          <Logo size={34} light />
+          <Logo light />
         </Link>
 
         <nav aria-label="Main" className="hidden items-center gap-8 text-sm font-medium text-white/80 lg:flex">

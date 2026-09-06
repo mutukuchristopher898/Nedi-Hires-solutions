@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -11,6 +11,14 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+// The wordmark's lettering — a high-contrast serif set wide. Only the logo
+// uses it, so it is loaded at the two weights the mark actually needs.
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["400", "500"],
+});
+
 export const metadata: Metadata = {
   title: `${site.name} — ${site.tagline}`,
   description: site.description,
@@ -18,7 +26,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
+    <html lang="en" className={`${inter.variable} ${cormorant.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-offwhite text-midnight">
         <AuthProvider>
           {/* Every page has a sticky header with roughly eight focusable

@@ -1,6 +1,6 @@
 export const site = {
   name: "Nedi Hires Solutions",
-  tagline: "Drive. Explore. Experience Kenya.",
+  tagline: "Drive. Explore. Experience.",
   description:
     "Reliable transport and memorable travel experiences — car hire, self-drive, chauffeur-driven, airport transfers, tours & safaris across Kenya.",
   phoneDisplay: "+254 794 772 271",
