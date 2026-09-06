@@ -7,7 +7,7 @@ import { validateNamePart } from "@/lib/documentValidation/nameValidation";
 import { validatePhoneNumber } from "@/lib/documentValidation/phoneValidation";
 import { validateEmail } from "@/lib/formValidation/email";
 import { validateMessage } from "@/lib/formValidation/freeText";
-import { fieldClass } from "@/components/forms/shared";
+import { fieldProps, FormError } from "@/components/forms/shared";
 
 export default function ContactForm() {
   const { user } = useAuth();
@@ -83,7 +83,7 @@ export default function ContactForm() {
   return (
     <form noValidate className="space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line" onSubmit={handleSubmit}>
       {formError && (
-        <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{formError}</p>
+        <FormError message={formError} details={fieldErrors} />
       )}
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
@@ -93,7 +93,7 @@ export default function ContactForm() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Jane Wanjiru"
-            className={fieldClass(fieldErrors.name ? "reject" : undefined)}
+            {...fieldProps(fieldErrors.name ? "reject" : undefined)}
           />
         </label>
         <label className="block">
@@ -103,7 +103,7 @@ export default function ContactForm() {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="e.g. 0712 345 678"
-            className={fieldClass(fieldErrors.phone ? "reject" : undefined)}
+            {...fieldProps(fieldErrors.phone ? "reject" : undefined)}
           />
         </label>
       </div>
@@ -115,7 +115,7 @@ export default function ContactForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="e.g. jane.wanjiru@example.com"
-          className={fieldClass(fieldErrors.email ? "reject" : undefined)}
+          {...fieldProps(fieldErrors.email ? "reject" : undefined)}
         />
       </label>
       <label className="block">
@@ -126,7 +126,7 @@ export default function ContactForm() {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Tell us about your trip, dates, and preferred vehicle..."
-          className={fieldClass(fieldErrors.message ? "reject" : undefined)}
+          {...fieldProps(fieldErrors.message ? "reject" : undefined)}
         />
       </label>
       <button

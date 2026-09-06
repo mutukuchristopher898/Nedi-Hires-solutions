@@ -26,7 +26,7 @@ export default function Header() {
           <Logo size={34} light />
         </Link>
 
-        <nav className="hidden items-center gap-8 text-sm font-medium text-white/80 lg:flex">
+        <nav aria-label="Main" className="hidden items-center gap-8 text-sm font-medium text-white/80 lg:flex">
           {NAV_LINKS.map((link) => (
             <Link key={link.href} href={link.href} className="transition hover:text-white">
               {link.label}
@@ -64,16 +64,18 @@ export default function Header() {
         <button
           className="flex h-9 w-9 items-center justify-center rounded-md border border-white/15 lg:hidden"
           onClick={() => setOpen((v) => !v)}
-          aria-label="Toggle menu"
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          aria-controls="mobile-nav"
         >
-          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             {open ? <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" /> : <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />}
           </svg>
         </button>
       </div>
 
       {open && (
-        <div className="border-t border-white/10 bg-midnight lg:hidden">
+        <nav id="mobile-nav" aria-label="Main" className="border-t border-white/10 bg-midnight lg:hidden">
           <div className="container-shell flex flex-col gap-4 py-4 text-sm font-medium text-white/85">
             {NAV_LINKS.map((link) => (
               <Link key={link.href} href={link.href} onClick={() => setOpen(false)}>
@@ -94,7 +96,7 @@ export default function Header() {
               Book Now
             </Link>
           </div>
-        </div>
+        </nav>
       )}
     </header>
   );

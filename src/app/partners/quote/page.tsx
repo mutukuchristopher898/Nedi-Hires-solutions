@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { validateBusinessName } from "@/lib/formValidation/businessName";
 import { validateEmail } from "@/lib/formValidation/email";
 import { validatePhoneNumber } from "@/lib/documentValidation/phoneValidation";
-import { fieldClass } from "@/components/forms/shared";
+import { fieldProps, FormError } from "@/components/forms/shared";
 
 export default function PartnerQuotePage() {
   const { user, profile, ready } = useAuth();
@@ -95,7 +95,7 @@ export default function PartnerQuotePage() {
 
       <form noValidate onSubmit={handleSubmit} className="mt-6 space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line">
         {error && (
-          <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p>
+          <FormError message={error} details={fieldErrors} />
         )}
 
         <label className="block">
@@ -105,7 +105,7 @@ export default function PartnerQuotePage() {
             value={businessName}
             onChange={(e) => setBusinessName(e.target.value)}
             placeholder="e.g. Rift Valley Rides"
-            className={fieldClass(fieldErrors.businessName ? "reject" : undefined)}
+            {...fieldProps(fieldErrors.businessName ? "reject" : undefined)}
           />
         </label>
         <label className="block">
@@ -116,7 +116,7 @@ export default function PartnerQuotePage() {
             value={email}
             onChange={(e) => setContactEmail(e.target.value)}
             placeholder="e.g. bookings@riftvalleyrides.co.ke"
-            className={fieldClass(fieldErrors.email ? "reject" : undefined)}
+            {...fieldProps(fieldErrors.email ? "reject" : undefined)}
           />
         </label>
         <label className="block">
@@ -127,7 +127,7 @@ export default function PartnerQuotePage() {
             value={contactPhone}
             onChange={(e) => setContactPhone(e.target.value)}
             placeholder="e.g. 0712 345 678"
-            className={fieldClass(fieldErrors.phone ? "reject" : undefined)}
+            {...fieldProps(fieldErrors.phone ? "reject" : undefined)}
           />
         </label>
         <label className="block">

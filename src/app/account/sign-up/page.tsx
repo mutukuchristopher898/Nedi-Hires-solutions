@@ -8,7 +8,7 @@ import { evaluatePasswordStrength } from "@/lib/passwordStrength";
 import { validateEmail } from "@/lib/formValidation/email";
 import { validateNamePart } from "@/lib/documentValidation/nameValidation";
 import { validatePhoneNumber } from "@/lib/documentValidation/phoneValidation";
-import { fieldClass } from "@/components/forms/shared";
+import { fieldProps, FormError } from "@/components/forms/shared";
 
 export default function SignUpPage() {
   return (
@@ -111,7 +111,7 @@ function SignUpForm() {
 
       <form noValidate className="mt-6 space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line" onSubmit={handleSubmit}>
         {error && (
-          <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p>
+          <FormError message={error} details={fieldErrors} />
         )}
 
         <label className="block">
@@ -121,7 +121,7 @@ function SignUpForm() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Jane Wanjiru"
-            className={fieldClass(fieldErrors.name ? "reject" : undefined)}
+            {...fieldProps(fieldErrors.name ? "reject" : undefined)}
           />
         </label>
         <label className="block">
@@ -132,7 +132,7 @@ function SignUpForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="e.g. jane.wanjiru@example.com"
-            className={fieldClass(fieldErrors.email ? "reject" : undefined)}
+            {...fieldProps(fieldErrors.email ? "reject" : undefined)}
           />
         </label>
         <label className="block">
@@ -143,7 +143,7 @@ function SignUpForm() {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="e.g. 0712 345 678"
-            className={fieldClass(fieldErrors.phone ? "reject" : undefined)}
+            {...fieldProps(fieldErrors.phone ? "reject" : undefined)}
           />
         </label>
         <label className="block">
@@ -155,7 +155,7 @@ function SignUpForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="e.g. Nairobi#Drive26"
-            className={fieldClass(fieldErrors.password ? "reject" : undefined)}
+            {...fieldProps(fieldErrors.password ? "reject" : undefined)}
           />
           {password && (
             <div className="mt-2">

@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useBookingDraft, useRequireBookingId } from "@/lib/booking/draftStore";
 import VerificationStep from "@/components/booking/VerificationStep";
 import WizardNav from "@/components/booking/WizardNav";
+import { FormError } from "@/components/booking/shared";
 
 export default function VerificationPage() {
   const router = useRouter();
@@ -39,7 +40,7 @@ export default function VerificationPage() {
     <>
       <WizardNav vehicleId={vehicle.id} current="verification" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
 
-      {error && <p className="mb-4 rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p>}
+      {error && <FormError message={error} className="mb-4" />}
 
       <VerificationStep onContinue={handleContinueToSettlement} />
     </>

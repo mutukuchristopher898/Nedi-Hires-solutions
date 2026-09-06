@@ -10,9 +10,10 @@ import DemoTag from "@/components/DemoTag";
 import type { LoyaltyTier } from "@/lib/types";
 import { validateNamePart } from "@/lib/documentValidation/nameValidation";
 import { validatePhoneNumber } from "@/lib/documentValidation/phoneValidation";
-import { fieldClass } from "@/components/forms/shared";
+import { fieldProps, FormError } from "@/components/forms/shared";
 
-type Tab = "bookings" | "documents" | "loyalty" | "profile";
+const TABS = ["bookings", "documents", "loyalty", "profile"] as const;
+type Tab = (typeof TABS)[number];
 
 interface BookingRow {
   id: string;
@@ -227,11 +228,29 @@ export default function AccountPage() {
         </button>
       </div>
 
-      <div className="mt-6 flex gap-2 border-b border-line">
-        {(["bookings", "documents", "loyalty", "profile"] as Tab[]).map((t) => (
+      {/* A real tablist, not just buttons that look like one: only the selected
+          tab is in the Tab order, and Left/Right move between them, which is
+          what the role promises a keyboard user. */}
+      <div role="tablist" aria-label="Account sections" className="mt-6 flex gap-2 border-b border-line">
+        {TABS.map((t, i) => (
           <button
             key={t}
+            id={`account-tab-${t}`}
+            role="tab"
+            type="button"
+            aria-selected={tab === t}
+            // Only the selected panel is in the DOM, so an unselected tab
+            // must not point aria-controls at an id that isn't there.
+            aria-controls={tab === t ? `account-panel-${t}` : undefined}
+            tabIndex={tab === t ? 0 : -1}
             onClick={() => setTab(t)}
+            onKeyDown={(e) => {
+              if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+              e.preventDefault();
+              const next = TABS[(i + (e.key === "ArrowRight" ? 1 : TABS.length - 1)) % TABS.length];
+              setTab(next);
+              document.getElementById(`account-tab-${next}`)?.focus();
+            }}
             className={`px-4 py-2.5 text-sm font-medium capitalize transition ${
               tab === t
                 ? "border-b-2 border-gold text-midnight"
@@ -244,7 +263,7 @@ export default function AccountPage() {
       </div>
 
       {tab === "bookings" && (
-        <div className="mt-4">
+        <div id="account-panel-bookings" role="tabpanel" aria-labelledby="account-tab-bookings" tabIndex={0} className="mt-4">
           {loadingRecords ? (
             <p className="text-sm text-midnight/50">Loading your bookings…</p>
           ) : bookings.length === 0 ? (
@@ -299,7 +318,7 @@ export default function AccountPage() {
       )}
 
       {tab === "documents" && (
-        <div className="mt-6 space-y-3">
+        <div id="account-panel-documents" role="tabpanel" aria-labelledby="account-tab-documents" tabIndex={0} className="mt-6 space-y-3">
           {loadingRecords ? (
             <p className="text-sm text-midnight/50">Loading your documents…</p>
           ) : documents.length === 0 ? (
@@ -325,7 +344,7 @@ export default function AccountPage() {
       )}
 
       {tab === "loyalty" && (
-        <div className="mt-6 space-y-6">
+        <div id="account-panel-loyalty" role="tabpanel" aria-labelledby="account-tab-loyalty" tabIndex={0} className="mt-6 space-y-6">
           {loadingRecords ? (
             <p className="text-sm text-midnight/50">Loading your loyalty status…</p>
           ) : (
@@ -387,11 +406,14 @@ export default function AccountPage() {
       {tab === "profile" && (
         <form
           noValidate
+          id="account-panel-profile"
+          role="tabpanel"
+          aria-labelledby="account-tab-profile"
           onSubmit={handleSaveProfile}
           className="mt-6 max-w-md space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line"
         >
           {profileError && (
-            <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{profileError}</p>
+            <FormError message={profileError} details={profileFieldErrors} />
           )}
           <label className="block">
             <span className="text-xs font-medium text-midnight/60">Full Name</span>
@@ -399,7 +421,7 @@ export default function AccountPage() {
               value={name}
               onChange={(e) => setNameOverride(e.target.value)}
               placeholder="e.g. Jane Wanjiru"
-              className={fieldClass(profileFieldErrors.name ? "reject" : undefined)}
+              {...fieldProps(profileFieldErrors.name ? "reject" : undefined)}
             />
           </label>
           <label className="block">
@@ -417,7 +439,7 @@ export default function AccountPage() {
               value={phone}
               onChange={(e) => setPhoneOverride(e.target.value)}
               placeholder="e.g. 0712 345 678"
-              className={fieldClass(profileFieldErrors.phone ? "reject" : undefined)}
+              {...fieldProps(profileFieldErrors.phone ? "reject" : undefined)}
             />
           </label>
           <button

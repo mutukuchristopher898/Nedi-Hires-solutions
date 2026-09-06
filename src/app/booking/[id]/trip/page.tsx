@@ -16,6 +16,7 @@ import {
 import { useBookingDraft } from "@/lib/booking/draftStore";
 import TripDetailsStep from "@/components/booking/TripDetailsStep";
 import WizardNav from "@/components/booking/WizardNav";
+import { FormError } from "@/components/booking/shared";
 
 // Every figure sent below is only an opening estimate: enforce_booking_money()
 // recomputes all of it from vehicles.price_per_day and overwrites whatever
@@ -117,7 +118,7 @@ export default function TripPage() {
     <>
       <WizardNav vehicleId={vehicle.id} current="trip" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
 
-      {error && <p className="mb-4 rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p>}
+      {error && <FormError message={error} className="mb-4" />}
 
       <TripDetailsStep
         vehicle={vehicle}

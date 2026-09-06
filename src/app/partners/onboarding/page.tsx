@@ -7,7 +7,7 @@ import { findCatalogEntry, getMakes, getModelsForMake } from "@/lib/vehicleCatal
 import { validateBusinessName } from "@/lib/formValidation/businessName";
 import { validateEmail } from "@/lib/formValidation/email";
 import { validateKenyanPlate } from "@/lib/formValidation/licensePlate";
-import { Field, fieldClass } from "@/components/forms/shared";
+import { Field, fieldProps, FormError } from "@/components/forms/shared";
 
 type Stage = "account" | "unit" | "done";
 
@@ -74,14 +74,14 @@ export default function PartnerOnboardingPage() {
           }}
         >
           {accountFormError && (
-            <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{accountFormError}</p>
+            <FormError message={accountFormError} details={accountFieldErrors} />
           )}
           <Field label="Business / Host Name">
             <input
               required
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
-              className={fieldClass(accountFieldErrors.businessName ? "reject" : undefined, "w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none")}
+              {...fieldProps(accountFieldErrors.businessName ? "reject" : undefined, "w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none")}
               placeholder="e.g. Rift Valley Rides"
             />
           </Field>
@@ -92,7 +92,7 @@ export default function PartnerOnboardingPage() {
               value={businessEmail}
               onChange={(e) => setBusinessEmail(e.target.value)}
               placeholder="e.g. bookings@riftvalleyrides.co.ke"
-              className={fieldClass(accountFieldErrors.businessEmail ? "reject" : undefined, "w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none")}
+              {...fieldProps(accountFieldErrors.businessEmail ? "reject" : undefined, "w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none")}
             />
           </Field>
           <Field label="Tax Credential / Business License">
@@ -140,7 +140,7 @@ export default function PartnerOnboardingPage() {
           }}
         >
           {unitFormError && (
-            <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{unitFormError}</p>
+            <FormError message={unitFormError} details={unitFieldErrors} />
           )}
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Make">
@@ -189,7 +189,7 @@ export default function PartnerOnboardingPage() {
                 required
                 value={licensePlate}
                 onChange={(e) => setLicensePlate(e.target.value)}
-                className={fieldClass(unitFieldErrors.licensePlate ? "reject" : undefined, "w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none")}
+                {...fieldProps(unitFieldErrors.licensePlate ? "reject" : undefined, "w-full rounded-md border border-line px-3 py-2 text-sm focus:border-emerald focus:outline-none")}
                 placeholder="e.g. KDX 123A"
               />
             </Field>

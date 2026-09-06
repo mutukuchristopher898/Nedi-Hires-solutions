@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { classifications } from "@/lib/data";
 import { toNairobiDateInputValue } from "@/lib/duration";
+import { FormError } from "@/components/forms/shared";
 
 export const SEARCH_LOCATIONS = [
   "Jomo Kenyatta International Airport (JKIA)",
@@ -180,7 +181,7 @@ export default function SearchWidget({
         </label>
       </div>
 
-      {error && <p className="mt-3 rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p>}
+      {error && <FormError message={error} className="mt-3" />}
 
       <button
         type="submit"

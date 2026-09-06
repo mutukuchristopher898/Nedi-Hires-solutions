@@ -8,6 +8,7 @@ import { uploadKycFile } from "@/lib/supabase/storage";
 import { useBookingDraft, useLockGuard, useRequireBookingId } from "@/lib/booking/draftStore";
 import SelfieCaptureStep from "@/components/booking/SelfieCaptureStep";
 import WizardNav from "@/components/booking/WizardNav";
+import { FormError } from "@/components/booking/shared";
 
 export default function SelfiePage() {
   const router = useRouter();
@@ -58,7 +59,7 @@ export default function SelfiePage() {
     <>
       <WizardNav vehicleId={vehicle.id} current="selfie" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
 
-      {error && <p className="mb-4 rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p>}
+      {error && <FormError message={error} className="mb-4" />}
 
       <SelfieCaptureStep saving={saving} onSubmit={handleSelfieSubmit} />
     </>

@@ -17,7 +17,7 @@ import {
 } from "@/lib/duration";
 import { formatMoney } from "@/lib/data";
 import DemoTag from "@/components/DemoTag";
-import { Field, fieldClass, inputClass } from "./shared";
+import { Field, fieldProps, FormError, inputClass } from "./shared";
 
 export const PICKUP_POINTS = [
   "Jomo Kenyatta International Airport (JKIA)",
@@ -226,7 +226,7 @@ export default function TripDetailsStep({
               min={todayIso()}
               value={trip.pickupDate}
               onChange={(e) => handlePickupDateChange(e.target.value)}
-              className={fieldClass(fieldErrors.pickupDate ? "reject" : undefined)}
+              {...fieldProps(fieldErrors.pickupDate ? "reject" : undefined)}
             />
           </Field>
           <Field label="Pickup time">
@@ -244,7 +244,7 @@ export default function TripDetailsStep({
               required
               value={trip.pickupPoint}
               onChange={(e) => update("pickupPoint", e.target.value)}
-              className={fieldClass(fieldErrors.pickupPoint ? "reject" : undefined)}
+              {...fieldProps(fieldErrors.pickupPoint ? "reject" : undefined)}
             >
               <option value="" disabled>
                 Select a pickup point
@@ -261,7 +261,7 @@ export default function TripDetailsStep({
               required
               value={trip.destination}
               onChange={(e) => update("destination", e.target.value)}
-              className={fieldClass(fieldErrors.destination ? "reject" : undefined)}
+              {...fieldProps(fieldErrors.destination ? "reject" : undefined)}
             >
               <option value="" disabled>
                 Select a destination
@@ -296,31 +296,41 @@ export default function TripDetailsStep({
         </div>
 
         <div className="rounded-lg bg-offwhite p-4">
-          <p className="text-xs font-medium text-midnight/60">Rental duration</p>
+          <p id="duration-label" className="text-xs font-medium text-midnight/60">Rental duration</p>
           <div className="mt-2 flex flex-wrap gap-2">
-            {DURATION_UNITS.map((u) => (
-              <button
-                key={u.value}
-                type="button"
-                onClick={() => handleDurationUnitChange(u.value)}
-                className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
-                  trip.durationUnit === u.value
-                    ? "bg-gold text-midnight"
-                    : "bg-white text-midnight/60 ring-1 ring-line hover:bg-midnight/5"
-                }`}
-              >
-                {u.label}
-              </button>
-            ))}
+            {/* Toggle buttons rather than a radiogroup: aria-pressed describes
+                what these actually do, and claiming radio semantics would
+                promise arrow-key navigation the group doesn't implement. */}
+            <div role="group" aria-labelledby="duration-label" className="flex flex-wrap gap-2">
+              {DURATION_UNITS.map((u) => (
+                <button
+                  key={u.value}
+                  type="button"
+                  aria-pressed={trip.durationUnit === u.value}
+                  onClick={() => handleDurationUnitChange(u.value)}
+                  className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
+                    trip.durationUnit === u.value
+                      ? "bg-gold text-midnight"
+                      : "bg-white text-midnight/60 ring-1 ring-line hover:bg-midnight/5"
+                  }`}
+                >
+                  {u.label}
+                </button>
+              ))}
+            </div>
             <input
               type="number"
               min={1}
+              aria-label={`Number of ${trip.durationUnit}`}
               value={trip.durationQuantity}
               onChange={(e) => handleDurationQuantityChange(Number(e.target.value))}
               className="w-20 rounded-md border border-line px-3 py-1.5 text-sm focus:border-gold focus:outline-none"
             />
           </div>
 
+          {/* The red ring sits on the container because the problem is the pair
+              of values, not either one alone — but the ring alone is invisible
+              to assistive tech, so both inputs report invalid too. */}
           <div className={`mt-4 grid gap-4 sm:grid-cols-2 ${fieldErrors.dropoff ? "rounded-md ring-1 ring-red-500" : ""}`}>
             <Field label="Drop-off date">
               <input
@@ -329,6 +339,7 @@ export default function TripDetailsStep({
                 min={trip.pickupDate || todayIso()}
                 value={trip.dropoffDate}
                 onChange={(e) => update("dropoffDate", e.target.value)}
+                aria-invalid={fieldErrors.dropoff ? true : undefined}
                 className={inputClass}
               />
             </Field>
@@ -339,6 +350,7 @@ export default function TripDetailsStep({
                 step={900}
                 value={trip.dropoffTime}
                 onChange={(e) => update("dropoffTime", e.target.value)}
+                aria-invalid={fieldErrors.dropoff ? true : undefined}
                 className={inputClass}
               />
             </Field>
@@ -376,7 +388,7 @@ export default function TripDetailsStep({
                   required
                   value={trip.dropoffPoint}
                   onChange={(e) => update("dropoffPoint", e.target.value)}
-                  className={fieldClass(fieldErrors.dropoffPoint ? "reject" : undefined)}
+                  {...fieldProps(fieldErrors.dropoffPoint ? "reject" : undefined)}
                 >
                   <option value="" disabled>
                     Select a drop-off point
@@ -407,7 +419,7 @@ export default function TripDetailsStep({
                 max={todayIso()}
                 value={trip.dateOfBirth}
                 onChange={(e) => update("dateOfBirth", e.target.value)}
-                className={fieldClass(fieldErrors.dateOfBirth ? "reject" : undefined)}
+                {...fieldProps(fieldErrors.dateOfBirth ? "reject" : undefined)}
               />
             </Field>
             <Field label="Driving license issue date">
@@ -417,14 +429,14 @@ export default function TripDetailsStep({
                 max={todayIso()}
                 value={trip.licenseIssueDate}
                 onChange={(e) => update("licenseIssueDate", e.target.value)}
-                className={fieldClass(fieldErrors.licenseIssueDate ? "reject" : undefined)}
+                {...fieldProps(fieldErrors.licenseIssueDate ? "reject" : undefined)}
               />
             </Field>
           </div>
         )}
 
         {formError && (
-          <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{formError}</p>
+          <FormError message={formError} details={fieldErrors} />
         )}
 
         <button

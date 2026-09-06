@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { validateEmail } from "@/lib/formValidation/email";
-import { fieldClass } from "@/components/forms/shared";
+import { fieldProps, FormError } from "@/components/forms/shared";
 
 export default function SignInPage() {
   return (
@@ -62,7 +62,7 @@ function SignInForm() {
 
       <form noValidate className="mt-6 space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line" onSubmit={handleSubmit}>
         {error && (
-          <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p>
+          <FormError message={error} details={fieldErrors} />
         )}
 
         <label className="block">
@@ -73,7 +73,7 @@ function SignInForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="e.g. jane.wanjiru@example.com"
-            className={fieldClass(fieldErrors.email ? "reject" : undefined)}
+            {...fieldProps(fieldErrors.email ? "reject" : undefined)}
           />
         </label>
         <label className="block">
@@ -83,7 +83,7 @@ function SignInForm() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className={fieldClass(fieldErrors.password ? "reject" : undefined)}
+            {...fieldProps(fieldErrors.password ? "reject" : undefined)}
           />
         </label>
 

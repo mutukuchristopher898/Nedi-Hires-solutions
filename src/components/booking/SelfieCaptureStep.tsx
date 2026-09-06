@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { FormError } from "./shared";
 
 export default function SelfieCaptureStep({
   saving,
@@ -82,7 +83,7 @@ export default function SelfieCaptureStep({
       </p>
 
       {cameraError && (
-        <p className="mt-4 rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{cameraError}</p>
+        <FormError message={cameraError} className="mt-4" />
       )}
 
       <div className="mt-5 flex flex-col items-center">

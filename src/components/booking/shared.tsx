@@ -1,4 +1,4 @@
-export { fieldClass } from "@/components/forms/shared";
+export { fieldClass, fieldProps, FormError } from "@/components/forms/shared";
 
 export function Row({
   label,

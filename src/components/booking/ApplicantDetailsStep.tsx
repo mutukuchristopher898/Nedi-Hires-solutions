@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { DriveType, IdType } from "@/lib/types";
-import { Field, inputClass } from "./shared";
+import { Field, fieldProps, FormError, inputClass } from "./shared";
 import { getAllCountriesForSelect, getCountryRule } from "@/lib/documentValidation/countryReference";
 import { getNameOrderLayout } from "@/lib/documentValidation/nameValidation";
 import { validateDocumentNumber, type DocumentValidationResult } from "@/lib/documentValidation/documentNumberValidation";
@@ -62,15 +62,6 @@ const COUNTRIES = getAllCountriesForSelect();
 
 function isAllowedFile(file: File) {
   return ALLOWED_FILE_TYPES.includes(file.type);
-}
-
-// Invalid fields are shown with a colored border only — no written
-// explanation under the field itself (a summary banner still appears once,
-// above the Continue button).
-function fieldClass(state?: "reject" | "warn") {
-  if (state === "reject") return `${inputClass} border-red-500 focus:border-red-500`;
-  if (state === "warn") return `${inputClass} border-amber-500 focus:border-amber-500`;
-  return inputClass;
 }
 
 export default function ApplicantDetailsStep({
@@ -264,7 +255,7 @@ export default function ApplicantDetailsStep({
                 value={givenNames}
                 onChange={(e) => onChange({ givenNames: e.target.value })}
                 placeholder="e.g. Suharto"
-                className={fieldClass(fieldErrors.givenNames ? "reject" : undefined)}
+                {...fieldProps(fieldErrors.givenNames ? "reject" : undefined)}
               />
             </Field>
           ) : (
@@ -277,7 +268,7 @@ export default function ApplicantDetailsStep({
                       value={surname}
                       onChange={(e) => onChange({ surname: e.target.value })}
                       placeholder="e.g. Mwangi"
-                      className={fieldClass(fieldErrors.surname ? "reject" : undefined)}
+                      {...fieldProps(fieldErrors.surname ? "reject" : undefined)}
                     />
                     {fieldErrors.surname?.includes("identical") && (
                       <label className="mt-1 flex items-center gap-2 text-xs text-midnight/60">
@@ -301,7 +292,7 @@ export default function ApplicantDetailsStep({
                       value={givenNames}
                       onChange={(e) => onChange({ givenNames: e.target.value })}
                       placeholder="e.g. Wanjiru Grace"
-                      className={fieldClass(fieldErrors.givenNames ? "reject" : undefined)}
+                      {...fieldProps(fieldErrors.givenNames ? "reject" : undefined)}
                     />
                   </Field>
                 );
@@ -313,7 +304,7 @@ export default function ApplicantDetailsStep({
                       value={middleName}
                       onChange={(e) => onChange({ middleName: e.target.value })}
                       placeholder="e.g. Otieno"
-                      className={fieldClass(fieldErrors.middleName ? "reject" : undefined)}
+                      {...fieldProps(fieldErrors.middleName ? "reject" : undefined)}
                     />
                   </Field>
                 );
@@ -351,7 +342,7 @@ export default function ApplicantDetailsStep({
               }}
               onBlur={handleIdNumberBlur}
               placeholder={idSample}
-              className={fieldClass(fieldErrors.idNumber ? "reject" : idNumberFeedback?.outcome === "warn" ? "warn" : undefined)}
+              {...fieldProps(fieldErrors.idNumber ? "reject" : idNumberFeedback?.outcome === "warn" ? "warn" : undefined)}
             />
             {!fieldErrors.idNumber && idNumberFeedback?.outcome === "warn" && (
               <label className="mt-1 flex items-center gap-2 text-xs text-midnight/60">
@@ -396,7 +387,7 @@ export default function ApplicantDetailsStep({
                   }}
                   onBlur={handleLicenseNumberBlur}
                   placeholder={licenseSample}
-                  className={fieldClass(
+                  {...fieldProps(
                     fieldErrors.licenseNumber ? "reject" : licenseNumberFeedback?.outcome === "warn" ? "warn" : undefined
                   )}
                 />
@@ -436,7 +427,7 @@ export default function ApplicantDetailsStep({
               value={phoneNumber}
               onChange={(e) => onChange({ phoneNumber: e.target.value })}
               placeholder={phoneSample}
-              className={fieldClass(fieldErrors.phoneNumber ? "reject" : undefined)}
+              {...fieldProps(fieldErrors.phoneNumber ? "reject" : undefined)}
             />
           </Field>
           <Field label="Residential address">
@@ -445,7 +436,7 @@ export default function ApplicantDetailsStep({
               value={address}
               onChange={(e) => onChange({ address: e.target.value })}
               placeholder="e.g. 123 Ngong Road, Nairobi"
-              className={fieldClass(fieldErrors.address ? "reject" : undefined)}
+              {...fieldProps(fieldErrors.address ? "reject" : undefined)}
             />
           </Field>
         </div>
@@ -465,7 +456,7 @@ export default function ApplicantDetailsStep({
                 value={guarantorName}
                 onChange={(e) => onChange({ guarantorName: e.target.value })}
                 placeholder="e.g. Jane Wanjiru"
-                className={fieldClass(fieldErrors.guarantorName ? "reject" : undefined)}
+                {...fieldProps(fieldErrors.guarantorName ? "reject" : undefined)}
               />
             </Field>
             <Field label="Phone number">
@@ -475,7 +466,7 @@ export default function ApplicantDetailsStep({
                 value={guarantorPhone}
                 onChange={(e) => onChange({ guarantorPhone: e.target.value })}
                 placeholder={phoneSample}
-                className={fieldClass(fieldErrors.guarantorPhone ? "reject" : undefined)}
+                {...fieldProps(fieldErrors.guarantorPhone ? "reject" : undefined)}
               />
             </Field>
             <Field label="Relationship to you">
@@ -484,14 +475,14 @@ export default function ApplicantDetailsStep({
                 value={guarantorRelationship}
                 onChange={(e) => onChange({ guarantorRelationship: e.target.value })}
                 placeholder="e.g. Spouse, Sibling, Colleague"
-                className={fieldClass(fieldErrors.guarantorRelationship ? "reject" : undefined)}
+                {...fieldProps(fieldErrors.guarantorRelationship ? "reject" : undefined)}
               />
             </Field>
           </div>
         </div>
 
         {formError && (
-          <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{formError}</p>
+          <FormError message={formError} details={fieldErrors} />
         )}
 
         <button

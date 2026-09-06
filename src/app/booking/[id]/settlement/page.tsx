@@ -14,6 +14,7 @@ import {
 import { useBookingDraft, useRequireBookingId } from "@/lib/booking/draftStore";
 import SettlementStep from "@/components/booking/SettlementStep";
 import WizardNav from "@/components/booking/WizardNav";
+import { FormError } from "@/components/booking/shared";
 
 export default function SettlementPage() {
   const router = useRouter();
@@ -68,7 +69,7 @@ export default function SettlementPage() {
     <>
       <WizardNav vehicleId={vehicle.id} current="settlement" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
 
-      {error && <p className="mb-4 rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p>}
+      {error && <FormError message={error} className="mb-4" />}
 
       <SettlementStep
         remaining={remaining}

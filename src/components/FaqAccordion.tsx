@@ -40,16 +40,28 @@ export default function FaqAccordion() {
     <div className="divide-y divide-line rounded-2xl bg-white ring-1 ring-line">
       {FAQS.map((item, i) => (
         <div key={item.q}>
-          <button
-            onClick={() => setOpen(open === i ? null : i)}
-            className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-medium text-midnight"
+          <h3>
+            <button
+              type="button"
+              aria-expanded={open === i}
+              aria-controls={`faq-answer-${i}`}
+              onClick={() => setOpen(open === i ? null : i)}
+              className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-medium text-midnight"
+            >
+              {item.q}
+              {/* The rotating "+" is decoration; aria-expanded carries the state. */}
+              <span aria-hidden="true" className={`shrink-0 text-gold-dark transition ${open === i ? "rotate-45" : ""}`}>
+                +
+              </span>
+            </button>
+          </h3>
+          <p
+            id={`faq-answer-${i}`}
+            hidden={open !== i}
+            className="px-5 pb-4 text-sm text-midnight/60"
           >
-            {item.q}
-            <span className={`shrink-0 text-gold-dark transition ${open === i ? "rotate-45" : ""}`}>+</span>
-          </button>
-          {open === i && (
-            <p className="px-5 pb-4 text-sm text-midnight/60">{item.a}</p>
-          )}
+            {item.a}
+          </p>
         </div>
       ))}
     </div>

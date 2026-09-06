@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { Vehicle } from "@/lib/types";
 import { site } from "@/lib/site";
-import { fieldClass } from "./shared";
+import { fieldProps, FormError } from "./shared";
 
 function namesRoughlyMatch(signed: string, actual: string): boolean {
   const normalize = (v: string) =>
@@ -108,12 +108,12 @@ export default function AgreementStep({
             value={signedName}
             onChange={(e) => setSignedName(e.target.value)}
             placeholder="e.g. Jane Wanjiru"
-            className={fieldClass(nameMismatch ? "reject" : undefined)}
+            {...fieldProps(nameMismatch ? "reject" : undefined)}
           />
         </label>
 
         {formError && (
-          <p className="rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-600">{formError}</p>
+          <FormError message={formError} />
         )}
 
         <button
