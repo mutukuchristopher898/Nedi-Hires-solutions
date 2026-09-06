@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/client";
 import { validateNamePart } from "@/lib/documentValidation/nameValidation";
 import { validatePhoneNumber } from "@/lib/documentValidation/phoneValidation";
 import { validateEmail } from "@/lib/formValidation/email";
@@ -8,7 +10,9 @@ import { validateMessage } from "@/lib/formValidation/freeText";
 import { fieldClass } from "@/components/forms/shared";
 
 export default function ContactForm() {
+  const { user } = useAuth();
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -30,7 +34,7 @@ export default function ContactForm() {
     );
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError(null);
 
@@ -48,6 +52,28 @@ export default function ContactForm() {
 
     if (!nameResult.valid || !phoneResult.valid || !emailResult.valid || !messageResult.valid) {
       setFormError("Please fix the highlighted fields below.");
+      return;
+    }
+
+    setSending(true);
+
+    // This used to be a bare setSent(true): the message was validated and then
+    // thrown away while the customer was told it had been sent. There is no
+    // mail provider in this project, so enquiries are stored for the admin
+    // queue at /admin/messages instead.
+    const supabase = createClient();
+    const { error } = await supabase.from("contact_messages").insert({
+      name: name.trim(),
+      email: email.trim(),
+      phone: phone.trim() || null,
+      message: message.trim(),
+      sender_profile_id: user?.id ?? null,
+    });
+
+    setSending(false);
+
+    if (error) {
+      setFormError("We couldn't send your message just now. Please try again, or reach us on WhatsApp.");
       return;
     }
 
@@ -105,9 +131,10 @@ export default function ContactForm() {
       </label>
       <button
         type="submit"
-        className="rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
+        disabled={sending}
+        className="rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white disabled:opacity-60"
       >
-        Send Message
+        {sending ? "Sending…" : "Send Message"}
       </button>
     </form>
   );

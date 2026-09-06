@@ -137,6 +137,29 @@ export interface PartnerUnit {
   status: ApprovalStatus;
 }
 
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  message: string;
+  status: "new" | "read" | "replied";
+  createdAt: string;
+}
+
+// A real identity document awaiting review, joined to the booking it belongs
+// to and the customer who submitted it. Distinct from DocumentQueueItem
+// below, which is the shape of the illustrative sample data in data.ts.
+export interface PendingDocument {
+  id: string;
+  customerName: string | null;
+  bookingRef: string | null;
+  docType: string;
+  fileUrl: string;
+  status: ApprovalStatus;
+  submittedAt: string;
+}
+
 export interface DocumentQueueItem {
   id: string;
   customerName: string;

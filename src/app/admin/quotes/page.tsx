@@ -44,7 +44,7 @@ export default async function AdminQuotesPage() {
                   <td className="px-5 py-3 max-w-xs text-midnight/70">{q.notes ?? "—"}</td>
                   <td className="px-5 py-3 text-midnight/70">{new Date(q.createdAt).toLocaleDateString()}</td>
                   <td className="px-5 py-3">
-                    <QuoteStatusSelect id={q.id} status={q.status} />
+                    <QuoteStatusSelect id={q.id} status={q.status} businessName={q.businessName} />
                   </td>
                 </tr>
               ))}

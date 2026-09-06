@@ -1,5 +1,6 @@
 import Link from "next/link";
 import StatusBadge from "@/components/StatusBadge";
+import DemoTag from "@/components/DemoTag";
 import { partnerUnits } from "@/lib/data";
 
 export default function PartnerDashboardPage() {
@@ -12,8 +13,14 @@ export default function PartnerDashboardPage() {
     <div className="container-shell py-10">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-midnight">Partner Dashboard</h1>
-          <p className="mt-1 text-sm text-midnight/60">Rift Valley Rides · Partner since Jan 2026</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-midnight">Partner Dashboard</h1>
+            <DemoTag label="Sample Data" />
+          </div>
+          <p className="mt-1 text-sm text-midnight/60">
+            A preview of how your fleet will appear here. The units below are examples — vehicle
+            submissions aren&apos;t stored yet, so nothing here is your own inventory.
+          </p>
         </div>
         <Link
           href="/partners/onboarding"
@@ -23,14 +30,14 @@ export default function PartnerDashboardPage() {
         </Link>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-4">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Total Units" value={total} />
         <Stat label="Pending Review" value={pending} accent="text-amber" />
         <Stat label="Approved" value={approved} accent="text-emerald-dark" />
         <Stat label="Rejected" value={rejected} accent="text-red-600" />
       </div>
 
-      <div className="mt-8 overflow-hidden rounded-2xl bg-white ring-1 ring-line">
+      <div className="mt-8 overflow-x-auto rounded-2xl bg-white ring-1 ring-line">
         <table className="w-full text-sm">
           <thead className="bg-offwhite text-left text-xs uppercase tracking-wide text-midnight/50">
             <tr>

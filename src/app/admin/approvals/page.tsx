@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import StatusBadge from "@/components/StatusBadge";
+import DemoTag from "@/components/DemoTag";
 import { partnerUnits as initialUnits } from "@/lib/data";
 import type { ApprovalStatus } from "@/lib/types";
 
@@ -14,7 +15,10 @@ export default function AdminApprovalsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-midnight">Unit Approval Queue</h1>
+      <div className="flex items-center gap-2">
+        <h1 className="text-2xl font-bold text-midnight">Unit Approval Queue</h1>
+        <DemoTag label="Sample Data" />
+      </div>
       <p className="mt-1 text-sm text-midnight/60">
         Newly uploaded partner units are visible on the customer frontend only after approval.
         Actions here are simulated for this prototype.

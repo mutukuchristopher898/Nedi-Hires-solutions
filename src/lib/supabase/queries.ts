@@ -1,5 +1,13 @@
 import { createClient } from "./server";
-import type { QuoteRequest, SubscriptionAudience, SubscriptionPlan, VehicleClassification } from "@/lib/types";
+import type {
+  ApprovalStatus,
+  ContactMessage,
+  PendingDocument,
+  QuoteRequest,
+  SubscriptionAudience,
+  SubscriptionPlan,
+  VehicleClassification,
+} from "@/lib/types";
 
 interface SubscriptionPlanRow {
   id: string;
@@ -90,4 +98,70 @@ export async function getVehicleDbIdBySlug(slug: string): Promise<string | null>
     .maybeSingle();
 
   return (data as { id: string } | null)?.id ?? null;
+}
+
+interface ContactMessageRow {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  message: string;
+  status: ContactMessage["status"];
+  created_at: string;
+}
+
+export async function getContactMessages(): Promise<ContactMessage[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("contact_messages")
+    .select("id, name, email, phone, message, status, created_at")
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(`Failed to load contact messages: ${error.message}`);
+
+  return (data as ContactMessageRow[]).map((row) => ({
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    phone: row.phone,
+    message: row.message,
+    status: row.status,
+    createdAt: row.created_at,
+  }));
+}
+
+interface IdentityDocumentRow {
+  id: string;
+  doc_type: string;
+  file_url: string;
+  status: ApprovalStatus;
+  submitted_at: string;
+  bookings: { booking_ref: string } | null;
+  profiles: { full_name: string | null } | null;
+}
+
+// The real verification queue. Reading the customer's name depends on the
+// admin SELECT policy on profiles added in 20260904090000 — without it the
+// join silently returns null for every row.
+export async function getPendingDocuments(): Promise<PendingDocument[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("identity_documents")
+    .select(
+      "id, doc_type, file_url, status, submitted_at, bookings(booking_ref), profiles(full_name)"
+    )
+    .order("submitted_at", { ascending: false })
+    .limit(200);
+
+  if (error) throw new Error(`Failed to load identity documents: ${error.message}`);
+
+  return (data as unknown as IdentityDocumentRow[]).map((row) => ({
+    id: row.id,
+    customerName: row.profiles?.full_name ?? null,
+    bookingRef: row.bookings?.booking_ref ?? null,
+    docType: row.doc_type,
+    fileUrl: row.file_url,
+    status: row.status,
+    submittedAt: row.submitted_at,
+  }));
 }
