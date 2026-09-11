@@ -105,6 +105,7 @@ export default function AccountPage() {
   const [loyaltyAccount, setLoyaltyAccount] = useState<LoyaltyAccountRow | null>(null);
   const [loyaltyTransactions, setLoyaltyTransactions] = useState<LoyaltyTransactionRow[]>([]);
   const [loadingRecords, setLoadingRecords] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   const name = nameOverride ?? profile?.full_name ?? "";
   const phone = phoneOverride ?? profile?.phone ?? "";
@@ -144,6 +145,13 @@ export default function AccountPage() {
       ]);
 
       if (!ignore) {
+        // A failed read used to fall through `?? []` and render as "no bookings
+        // yet" — telling a customer whose booking exists that it doesn't. An
+        // empty list and a broken query have to look different.
+        const failed = [bookingsRes, documentsRes, loyaltyAccountRes, loyaltyTransactionsRes]
+          .some((r) => r.error);
+        setLoadError(failed);
+
         setBookings((bookingsRes.data as unknown as BookingRow[]) ?? []);
         setDocuments((documentsRes.data as DocumentRow[]) ?? []);
         setLoyaltyAccount((loyaltyAccountRes.data as LoyaltyAccountRow | null) ?? null);
@@ -227,6 +235,13 @@ export default function AccountPage() {
           Sign Out
         </button>
       </div>
+
+      {loadError && (
+        <FormError
+          className="mt-6"
+          message="We couldn't load some of your records just now. They haven't gone anywhere — please refresh, and contact us if this keeps happening."
+        />
+      )}
 
       {/* A real tablist, not just buttons that look like one: only the selected
           tab is in the Tab order, and Left/Right move between them, which is

@@ -16,8 +16,8 @@ export default function Footer() {
           <ul className="mt-3 space-y-2 text-sm">
             <li><Link href="/search">Search Fleet</Link></li>
             <li><Link href="/subscriptions">Mobility Subscriptions</Link></li>
-            <li><Link href="/search?classification=Luxury">Chauffeur-Driven</Link></li>
-            <li><Link href="/search?classification=Bus">Tours & Safaris</Link></li>
+            <li><Link href="/search?classification=Luxury">Luxury Fleet</Link></li>
+            <li><Link href="/search?classification=Bus">Buses &amp; Group Travel</Link></li>
           </ul>
         </div>
 
@@ -51,10 +51,9 @@ export default function Footer() {
           <span>
             © {new Date().getFullYear()} {site.name}. All rights reserved. ·{" "}
             <Link href="/terms" className="underline hover:text-white">Terms</Link> ·{" "}
-            <Link href="/privacy" className="underline hover:text-white">Privacy</Link> ·{" "}
-            <Link href="/admin" className="underline hover:text-white">Admin Console</Link>
+            <Link href="/privacy" className="underline hover:text-white">Privacy</Link>
           </span>
-          <span>KES · USD · EUR · GBP</span>
+          <span>All prices in KES</span>
         </div>
       </div>
     </footer>
