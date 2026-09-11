@@ -24,6 +24,12 @@ const GLYPH_N = { left: 385, top: 741, width: 551 - 385 + 1, height: 900 - 741 +
 // back here — without it the tagline collides with whatever sits below it.
 const PAD = { top: 60, bottom: 60, left: 60, right: 60, background: { r: 0, g: 0, b: 0, alpha: 0 } };
 
+// The emblem is used as a header mark where CSS handles the spacing, so it
+// gets only enough padding to keep the strokes off the edge. Generous padding
+// here would shrink the visible mark inside its box at exactly the size where
+// the artwork can least afford it.
+const EMBLEM_PAD = { top: 10, bottom: 10, left: 10, right: 10, background: { r: 0, g: 0, b: 0, alpha: 0 } };
+
 // The designer's reversed variant lightens the gold for dark grounds. Reusing
 // the light-background gold instead goes muddy against navy.
 const GOLD_ON_DARK = [225, 173, 102];
@@ -62,9 +68,9 @@ const png = { compressionLevel: 9, palette: true };
 
   // Emblem alone, for contexts with at least ~76px of height available —
   // below that its hairline strokes drop under one device pixel.
-  await master.clone().extract(EMBLEM).extend(PAD).resize({ width: 600 })
+  await master.clone().extract(EMBLEM).extend(EMBLEM_PAD).resize({ width: 600 })
     .png(png).toFile(PUB + "logo-emblem.png");
-  const emblem = await master.clone().extract(EMBLEM).extend(PAD).resize({ width: 600 }).png().toBuffer();
+  const emblem = await master.clone().extract(EMBLEM).extend(EMBLEM_PAD).resize({ width: 600 }).png().toBuffer();
   await sharp(await recolorForDarkBackground(emblem)).png(png).toFile(PUB + "logo-emblem-dark.png");
 
   // Browser-tab icon. The emblem is unreadable at 16px, so this uses the
@@ -72,7 +78,7 @@ const png = { compressionLevel: 9, palette: true };
   const n = await master.clone().extract(GLYPH_N).resize({ width: 300, fit: "inside" }).png().toBuffer();
   const nWhite = await recolorForDarkBackground(n);
   const m = await sharp(nWhite).metadata();
-  await sharp({ create: { width: 512, height: 512, channels: 4, background: "#0c1730" } })
+  await sharp({ create: { width: 512, height: 512, channels: 4, background: "#1b1a18" } })
     .composite([{ input: nWhite, left: Math.round((512 - m.width) / 2), top: Math.round((512 - m.height) / 2) }])
     .png({ compressionLevel: 9 })
     .toFile("src/app/icon.png");

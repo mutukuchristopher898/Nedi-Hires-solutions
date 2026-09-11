@@ -31,7 +31,9 @@ export default function Home() {
     <div>
       <section className="relative overflow-hidden bg-midnight">
         <div className="absolute inset-0 bg-gradient-to-br from-midnight via-charcoal to-charcoal-soft" />
-        <div className="absolute inset-0 opacity-40 [background:radial-gradient(circle_at_20%_20%,rgba(200,153,46,0.25),transparent_45%),radial-gradient(circle_at_80%_0%,rgba(18,165,117,0.25),transparent_40%)]" />
+        {/* Two warm glows for depth. The second was emerald, which read as a teal
+            accent against the old navy but goes olive against warm charcoal. */}
+        <div className="absolute inset-0 opacity-40 [background:radial-gradient(circle_at_20%_20%,rgba(182,130,53,0.28),transparent_45%),radial-gradient(circle_at_80%_0%,rgba(143,101,39,0.22),transparent_40%)]" />
 
         <div className="container-shell relative py-20 lg:py-28">
           <p className="mb-4 inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/80">

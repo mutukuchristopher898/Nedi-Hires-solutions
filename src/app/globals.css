@@ -1,13 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --color-midnight: #0c1730;
-  --color-charcoal: #142547;
-  --color-charcoal-soft: #1c356b;
+  /* The dark family is the logo's own ground: #1b1a18 is the exact background
+     of the designer's "reversed" artwork, so the mark sits on the colour it
+     was drawn for. The golds match the artwork's antique tone rather than the
+     brighter yellow the site used against navy. */
+  --color-midnight: #1b1a18;
+  --color-charcoal: #262420;
+  --color-charcoal-soft: #34312b;
   --color-offwhite: #f8f7f2;
   --color-line: #e3e0d6;
-  --color-gold: #c8992e;
-  --color-gold-dark: #a97c1f;
+  --color-gold: #b68235;
+  --color-gold-dark: #8f6527;
   --color-emerald: #12a575;
   --color-emerald-dark: #0e8a62;
   --color-amber: #d97706;

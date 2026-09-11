@@ -1,9 +1,9 @@
 const GRADIENTS: Record<string, string> = {
-  econ: "from-[#12a575] to-[#0c1730]",
-  suv: "from-[#0c1730] to-[#1c356b]",
-  luxury: "from-[#0c1730] to-[#3a3f47]",
-  bus: "from-[#a97c1f] to-[#0c1730]",
-  van: "from-[#c8992e] to-[#142547]",
+  econ: "from-[#12a575] to-[#1b1a18]",
+  suv: "from-[#1b1a18] to-[#34312b]",
+  luxury: "from-[#1b1a18] to-[#3a3f47]",
+  bus: "from-[#8f6527] to-[#1b1a18]",
+  van: "from-[#b68235] to-[#262420]",
 };
 
 function VehicleGlyph({ image }: { image: string }) {

@@ -21,7 +21,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-midnight text-white">
-      <div className="container-shell flex h-16 items-center justify-between">
+      <div className="container-shell flex h-20 items-center justify-between">
         <Link href="/" className="flex items-center">
           <Logo light />
         </Link>
