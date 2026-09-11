@@ -8,14 +8,9 @@ import { validateBusinessName } from "@/lib/formValidation/businessName";
 import { validateEmail } from "@/lib/formValidation/email";
 import { validateKenyanPlate } from "@/lib/formValidation/licensePlate";
 import { Field, fieldProps, FormError } from "@/components/forms/shared";
+import { MAX_UPLOAD_LABEL, isAllowedUpload, isWithinSizeLimit } from "@/lib/uploads";
 
 type Stage = "account" | "unit" | "done";
-
-const ALLOWED_DOCUMENT_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
-
-function isAllowedDocument(file: File) {
-  return ALLOWED_DOCUMENT_TYPES.includes(file.type);
-}
 
 export default function PartnerOnboardingPage() {
   const [stage, setStage] = useState<Stage>("account");
@@ -65,7 +60,12 @@ export default function PartnerOnboardingPage() {
               setAccountFormError("Please fix the highlighted fields below.");
               return;
             }
-            if ((taxCredentialFile && !isAllowedDocument(taxCredentialFile)) || (identityFile && !isAllowedDocument(identityFile))) {
+            const docs = [taxCredentialFile, identityFile].filter((f): f is File => f !== null);
+            if (docs.some((f) => !isWithinSizeLimit(f))) {
+              setAccountFormError(`Each uploaded file must be ${MAX_UPLOAD_LABEL} or smaller.`);
+              return;
+            }
+            if (docs.some((f) => !isAllowedUpload(f))) {
               setAccountFormError("Only image (JPG/PNG/WebP) or PDF files are accepted for document uploads.");
               return;
             }

@@ -7,6 +7,7 @@ import { getAllCountriesForSelect, getCountryRule } from "@/lib/documentValidati
 import { getNameOrderLayout } from "@/lib/documentValidation/nameValidation";
 import { validateDocumentNumber, type DocumentValidationResult } from "@/lib/documentValidation/documentNumberValidation";
 import { validateApplicantPayload, type ApplicantValidationInput } from "@/lib/documentValidation/validateApplicant";
+import { MAX_UPLOAD_LABEL, isAllowedUpload, isWithinSizeLimit } from "@/lib/uploads";
 
 // The user-entered fields only — excludes the 3 File objects (which can't
 // survive sessionStorage / a back-navigation remount, see the notice below)
@@ -57,12 +58,7 @@ export interface ApplicantSubmission extends ApplicantValidationInput {
   passportPhotoFile: File;
 }
 
-const ALLOWED_FILE_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
 const COUNTRIES = getAllCountriesForSelect();
-
-function isAllowedFile(file: File) {
-  return ALLOWED_FILE_TYPES.includes(file.type);
-}
 
 export default function ApplicantDetailsStep({
   value,
@@ -185,7 +181,12 @@ export default function ApplicantDetailsStep({
       setFormError("Please attach both your ID/passport scan and a passport photo.");
       return;
     }
-    if (!isAllowedFile(idFile) || !isAllowedFile(passportPhotoFile) || (licenseFile && !isAllowedFile(licenseFile))) {
+    const uploads = [idFile, passportPhotoFile, ...(licenseFile ? [licenseFile] : [])];
+    if (uploads.some((f) => !isWithinSizeLimit(f))) {
+      setFormError(`Each uploaded file must be ${MAX_UPLOAD_LABEL} or smaller.`);
+      return;
+    }
+    if (uploads.some((f) => !isAllowedUpload(f))) {
       setFormError("Only image (JPG/PNG/WebP) or PDF files are accepted for ID, license, and passport photo uploads.");
       return;
     }

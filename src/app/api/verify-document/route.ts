@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { isOwnBookingStoragePath } from "@/lib/uploads";
 import { verifyDocument } from "@/lib/smileIdentity";
 
 export async function POST(request: Request) {
@@ -20,6 +21,10 @@ export async function POST(request: Request) {
   const { data: booking } = await supabase.from("bookings").select("id").eq("id", bookingId).maybeSingle();
   if (!booking) {
     return NextResponse.json({ error: "Booking not found" }, { status: 404 });
+  }
+
+  if (!isOwnBookingStoragePath(storagePath, userData.user.id, bookingId)) {
+    return NextResponse.json({ error: "That file does not belong to this booking." }, { status: 400 });
   }
 
   const { data: applicant } = await supabase
