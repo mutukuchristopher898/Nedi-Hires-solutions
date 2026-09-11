@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { bookingErrorMessage } from "@/lib/bookingErrors";
 import { useBookingDraft, useRequireBookingId } from "@/lib/booking/draftStore";
 import VerificationStep from "@/components/booking/VerificationStep";
 import WizardNav from "@/components/booking/WizardNav";
@@ -28,7 +29,7 @@ export default function VerificationPage() {
     // Previously discarded, so the wizard advanced regardless of whether the
     // write landed. A status-transition trigger can now reject this.
     if (updateError) {
-      setError(updateError.message);
+      setError(bookingErrorMessage(updateError, "Could not continue. Please try again."));
       return;
     }
 

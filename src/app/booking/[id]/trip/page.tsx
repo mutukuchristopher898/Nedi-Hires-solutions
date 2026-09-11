@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { TripDetails } from "@/lib/types";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
+import { VEHICLE_UNAVAILABLE_MESSAGE, bookingErrorMessage } from "@/lib/bookingErrors";
 import {
   combineDateAndTime,
   computePricing,
@@ -65,6 +66,22 @@ export default function TripPage() {
       idempotency_key: draft.idempotencyKey,
     };
 
+    // Ask first, so a customer who has lost the vehicle gets told plainly
+    // instead of watching a write fail. The database still enforces this —
+    // between this check and the insert the car can be taken, and that race
+    // is what the exclusion constraint exists for.
+    const { data: available, error: availabilityError } = await supabase.rpc("is_vehicle_available", {
+      p_vehicle_id: vehicleDbId,
+      p_start: insertPayload.start_date,
+      p_end: insertPayload.end_date,
+    });
+
+    if (!availabilityError && available === false) {
+      setSaving(false);
+      setError(VEHICLE_UNAVAILABLE_MESSAGE);
+      return;
+    }
+
     const { data, error: insertError } = await supabase
       .from("bookings")
       .insert(insertPayload)
@@ -86,7 +103,7 @@ export default function TripPage() {
       bookingRow = existing;
     } else if (insertError) {
       setSaving(false);
-      setError(insertError.message ?? "Could not start your booking. Please try again.");
+      setError(bookingErrorMessage(insertError, "Could not start your booking. Please try again."));
       return;
     }
 

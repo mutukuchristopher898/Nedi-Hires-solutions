@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { bookingErrorMessage } from "@/lib/bookingErrors";
 import {
   combineDateAndTime,
   computePricing,
@@ -54,7 +55,7 @@ export default function DepositPage() {
     setSaving(false);
 
     if (updateError) {
-      setError(updateError.message);
+      setError(bookingErrorMessage(updateError, "Could not record your deposit. Please try again."));
       return;
     }
 

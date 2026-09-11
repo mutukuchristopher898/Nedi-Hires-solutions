@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { bookingErrorMessage } from "@/lib/bookingErrors";
 import {
   combineDateAndTime,
   computePricing,
@@ -57,7 +58,7 @@ export default function SettlementPage() {
     // settlement_pending. Now that a trigger can reject an out-of-order
     // transition, swallowing this would hide a real failure.
     if (updateError) {
-      setError(updateError.message);
+      setError(bookingErrorMessage(updateError, "Could not confirm your booking. Please try again."));
       return;
     }
 
