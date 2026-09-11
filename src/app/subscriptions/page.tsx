@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import { getSubscriptionPlans } from "@/lib/supabase/queries";
 import SubscriptionPlansExplorer from "@/components/subscriptions/SubscriptionPlansExplorer";
+
+export const metadata: Metadata = {
+  title: "Mobility Subscriptions",
+  description: "All-inclusive monthly vehicle plans with a set number of swaps — for when you need a vehicle regularly without owning one.",
+  alternates: { canonical: "/subscriptions" },
+  openGraph: { title: "Mobility Subscriptions", description: "All-inclusive monthly vehicle plans with a set number of swaps — for when you need a vehicle regularly without owning one.", url: "/subscriptions" },
+};
 
 export default async function SubscriptionsPage() {
   const subscriptionPlans = await getSubscriptionPlans();

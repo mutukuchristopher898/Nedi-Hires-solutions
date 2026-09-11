@@ -1,5 +1,8 @@
 export const site = {
   name: "Nedi Hires Solutions",
+  // Canonical origin, used for metadataBase, the sitemap and robots. Change
+  // this the day a custom domain is pointed at the site.
+  url: "https://nedi-hires-solutions.vercel.app",
   tagline: "Drive. Explore. Experience.",
   description:
     "Reliable transport and memorable travel experiences — car hire, self-drive, chauffeur-driven, airport transfers, tours & safaris across Kenya.",

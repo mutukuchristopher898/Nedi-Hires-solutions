@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import ContactForm from "@/components/ContactForm";
 import { site } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: "Contact Support",
+  description: "Talk to the Nedi Hires Solutions team about a booking, a quote, or group and event transport across Kenya.",
+  alternates: { canonical: "/contact" },
+  openGraph: { title: "Contact Support", description: "Talk to the Nedi Hires Solutions team about a booking, a quote, or group and event transport across Kenya.", url: "/contact" },
+};
 
 export default function ContactPage() {
   return (

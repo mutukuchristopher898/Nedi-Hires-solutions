@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import { site } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "How Nedi Hires Solutions collects, uses and protects your personal data.",
+  alternates: { canonical: "/privacy" },
+  openGraph: { title: "Privacy Policy", description: "How Nedi Hires Solutions collects, uses and protects your personal data.", url: "/privacy" },
+};
 
 const SECTIONS = [
   {

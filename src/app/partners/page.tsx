@@ -1,6 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { partnerNetwork } from "@/lib/data";
 import DemoTag from "@/components/DemoTag";
+
+export const metadata: Metadata = {
+  title: "Become a Partner",
+  description: "List your vehicle with Nedi Hires Solutions — register your business or host profile and reach verified customers across Kenya.",
+  alternates: { canonical: "/partners" },
+  openGraph: { title: "Become a Partner", description: "List your vehicle with Nedi Hires Solutions — register your business or host profile and reach verified customers across Kenya.", url: "/partners" },
+};
 
 const STEPS = [
   {

@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import { site } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: "Terms & Conditions",
+  description: "The terms governing use of Nedi Hires Solutions and its vehicle hire services.",
+  alternates: { canonical: "/terms" },
+  openGraph: { title: "Terms & Conditions", description: "The terms governing use of Nedi Hires Solutions and its vehicle hire services.", url: "/terms" },
+};
 
 const SECTIONS = [
   {

@@ -1,8 +1,34 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import VehiclePhoto from "@/components/VehiclePhoto";
 import DemoTag from "@/components/DemoTag";
 import { formatMoney, getVehicleById } from "@/lib/data";
+
+// Not listed in sitemap.ts while the fleet is still illustrative, but these
+// URLs get shared directly, so they still need a real title and card.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const vehicle = getVehicleById(id);
+
+  if (!vehicle || vehicle.approvalStatus !== "approved") {
+    return { title: "Vehicle not found" };
+  }
+
+  const title = `${vehicle.make} ${vehicle.model} ${vehicle.year}`;
+  const description = `Hire a ${vehicle.year} ${vehicle.make} ${vehicle.model} in ${vehicle.location} — ${vehicle.classification}, ${vehicle.transmission}, ${vehicle.fuelType}, seats ${vehicle.capacity}. Self-drive or chauffeur-driven.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/vehicles/${vehicle.id}` },
+    openGraph: { title, description, url: `/vehicles/${vehicle.id}` },
+  };
+}
 
 export default async function VehicleDetailPage({
   params,

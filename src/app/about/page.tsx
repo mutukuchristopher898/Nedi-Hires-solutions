@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { LogoLockup } from "@/components/Logo";
 import Testimonials from "@/components/Testimonials";
 import DemoTag from "@/components/DemoTag";
 import { site } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: "About Us",
+  description: "Nedi Hires Solutions connects travellers, businesses and everyday drivers with a verified network of self-drive and chauffeur-driven vehicles across Kenya.",
+  alternates: { canonical: "/about" },
+  openGraph: { title: "About Us", description: "Nedi Hires Solutions connects travellers, businesses and everyday drivers with a verified network of self-drive and chauffeur-driven vehicles across Kenya.", url: "/about" },
+};
 
 const STATS = [
   { label: "Vehicles in Network", value: "50+" },

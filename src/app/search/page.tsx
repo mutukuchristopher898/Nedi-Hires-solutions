@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
 import VehicleCard from "@/components/VehicleCard";
 import SearchWidget from "@/components/SearchWidget";
 import DemoTag from "@/components/DemoTag";
 import { classifications, vehicles } from "@/lib/data";
 import type { FuelType, Transmission, VehicleClassification } from "@/lib/types";
+
+export const metadata: Metadata = {
+  title: "Book a Car",
+  description: "Search verified self-drive and chauffeur-driven vehicles across Kenya — filter by location, dates, vehicle type, fuel and transmission.",
+  alternates: { canonical: "/search" },
+  openGraph: { title: "Book a Car", description: "Search verified self-drive and chauffeur-driven vehicles across Kenya — filter by location, dates, vehicle type, fuel and transmission.", url: "/search" },
+};
 
 type SearchParams = {
   location?: string;
