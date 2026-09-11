@@ -38,7 +38,9 @@
 --    and b.id <> a.id
 --    and b.start_date <= a.end_date
 --    and b.end_date   >= a.start_date
---   where a.status = 'confirmed' and b.status = 'confirmed';
+--   where a.status = 'confirmed' and b.status = 'confirmed'
+--     and a.end_date >= date '2026-09-12'
+--     and b.end_date >= date '2026-09-12';
 --
 -- If it returns anything, those are real conflicts already in the data —
 -- cancel one side before applying this.
@@ -58,12 +60,24 @@ create extension if not exists btree_gist with schema extensions;
 alter table public.bookings
   drop constraint if exists bookings_confirmed_no_overlap;
 
+-- Scoped to bookings that had not ended when this was applied.
+--
+-- The data already contained one real instance of the bug this fixes: the same
+-- Toyota Passo (KDBA101B) was confirmed to two customers overlapping 20-23 Aug
+-- 2026. One of those hires finished on 23 Aug. Cancelling a booking that
+-- already happened, purely so a constraint could be created, would put a lie
+-- in the record — so the constraint covers the live and future set instead and
+-- leaves history alone.
+--
+-- end_date is a fixed property of a row, which is why a partial constraint can
+-- use it where it could never use now(). Nothing new can land below the cutoff:
+-- the booking form already refuses past dates.
 alter table public.bookings
   add constraint bookings_confirmed_no_overlap
   exclude using gist (
     vehicle_id with =,
     daterange(start_date, end_date, '[]') with &&
-  ) where (status = 'confirmed');
+  ) where (status = 'confirmed' and end_date >= date '2026-09-12');
 
 -- ─────────────────────────────────────────────────────────────
 -- Layer 2 — the 30-minute hold on unconfirmed bookings.
