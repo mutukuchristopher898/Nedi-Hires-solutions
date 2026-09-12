@@ -87,6 +87,12 @@ function SignInForm() {
           />
         </label>
 
+        <p className="text-right">
+          <Link href="/account/forgot-password" className="text-xs font-medium text-gold-dark hover:text-gold">
+            Forgot your password?
+          </Link>
+        </p>
+
         <button
           type="submit"
           disabled={submitting}
