@@ -158,24 +158,35 @@ export async function getPendingDocuments(): Promise<PendingDocument[]> {
   // Signed here rather than in the page because only an admin session can
   // sign these — "kyc_documents_admin_select" is what permits it.
   //
+  // createSignedUrls (plural) signs the whole batch in one request. Signing
+  // them one at a time meant up to 200 sequential storage round-trips inside
+  // a single server render, which is a timeout rather than a slow page.
+  //
   // One hour: long enough to work through a queue, short enough that a URL
   // copied out of the page stops working the same day.
-  const signed = await Promise.all(
-    rows.map(async (row) => {
-      const { data: signedData } = await supabase.storage
-        .from("kyc-documents")
-        .createSignedUrl(row.file_url, 60 * 60);
-      return signedData?.signedUrl ?? null;
-    })
-  );
+  const signedByPath = new Map<string, string>();
 
-  return rows.map((row, i) => ({
+  if (rows.length > 0) {
+    const { data: signedData } = await supabase.storage
+      .from("kyc-documents")
+      .createSignedUrls(rows.map((row) => row.file_url), 60 * 60);
+
+    for (const entry of signedData ?? []) {
+      // Each entry carries its own error: one unreadable object must not cost
+      // the whole queue its links.
+      if (entry.path && entry.signedUrl && !entry.error) {
+        signedByPath.set(entry.path, entry.signedUrl);
+      }
+    }
+  }
+
+  return rows.map((row) => ({
     id: row.id,
     customerName: row.profiles?.full_name ?? null,
     bookingRef: row.bookings?.booking_ref ?? null,
     docType: row.doc_type,
     fileUrl: row.file_url,
-    signedUrl: signed[i],
+    signedUrl: signedByPath.get(row.file_url) ?? null,
     status: row.status,
     submittedAt: row.submitted_at,
   }));
