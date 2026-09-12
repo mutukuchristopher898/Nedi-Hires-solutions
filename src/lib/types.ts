@@ -223,3 +223,39 @@ export interface PartnerVehicle {
   partnerName?: string | null;
   partnerId?: string | null;
 }
+
+/**
+ * A vehicle as customers see it, read from the database.
+ *
+ * Deliberately has no `rating` or `trips`: those columns don't exist, they
+ * only ever lived in the illustrative catalogue, and a partner listing nobody
+ * has hired yet cannot honestly have either.
+ */
+export interface VehicleListing {
+  id: string;
+  slug: string;
+  make: string;
+  model: string;
+  year: number;
+  classification: VehicleClassification;
+  fuelType: FuelType;
+  transmission: Transmission;
+  capacity: number;
+  location: string;
+  pricePerDay: number;
+  currency: string;
+  description: string;
+  features: string[];
+  photoPaths: string[];
+  /** Gradient key, still used as the fallback when a listing has no photo. */
+  imageKey: string;
+  partnerName: string | null;
+  isDemo: boolean;
+}
+
+export interface VehicleFilters {
+  location?: string;
+  classification?: VehicleClassification;
+  fuelType?: FuelType;
+  transmission?: Transmission;
+}

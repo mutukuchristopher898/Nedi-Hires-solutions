@@ -3,7 +3,8 @@ import VehicleCard from "@/components/VehicleCard";
 import Testimonials from "@/components/Testimonials";
 import ServiceIcon from "@/components/ServiceIcon";
 import DemoTag from "@/components/DemoTag";
-import { partnerNetwork, services, vehicles } from "@/lib/data";
+import { partnerNetwork, services } from "@/lib/data";
+import { getApprovedVehicles } from "@/lib/supabase/queries";
 import { site } from "@/lib/site";
 
 const STEPS = [
@@ -24,9 +25,9 @@ const STEPS = [
   },
 ];
 
-const featured = vehicles.filter((v) => v.approvalStatus === "approved").slice(0, 4);
-
-export default function Home() {
+export default async function Home() {
+  // Live inventory, cheapest first, rather than a slice of the catalogue.
+  const featured = (await getApprovedVehicles()).slice(0, 4);
   return (
     <div>
       <section className="relative overflow-hidden bg-midnight">
@@ -110,22 +111,34 @@ export default function Home() {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-2xl font-bold text-midnight">Featured vehicles</h2>
-              <DemoTag />
             </div>
             <p className="mt-1 text-sm text-midnight/60">
-              A mix of our internal fleet and verified partner inventory — illustrating full
-              platform capability as our fleet grows.
+              Verified vehicles from our partner network, ready to book.
             </p>
           </div>
           <Link href="/search" className="text-sm font-semibold text-gold-dark hover:text-gold">
             View all →
           </Link>
         </div>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {featured.map((v) => (
-            <VehicleCard key={v.id} vehicle={v} />
-          ))}
-        </div>
+        {featured.length === 0 ? (
+          <div className="rounded-xl bg-white p-10 text-center ring-1 ring-line">
+            <p className="text-sm text-midnight/60">
+              No vehicles are listed yet — our partner network is being built.
+            </p>
+            <Link
+              href="/partners/onboarding"
+              className="mt-3 inline-block text-sm font-semibold text-gold-dark hover:text-gold"
+            >
+              Have a vehicle to hire out? List it &rarr;
+            </Link>
+          </div>
+        ) : (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {featured.map((v) => (
+              <VehicleCard key={v.id} vehicle={v} />
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="bg-offwhite py-14">

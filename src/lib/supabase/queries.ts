@@ -7,6 +7,8 @@ import type {
   PartnerAccount,
   PartnerVehicle,
   Transmission,
+  VehicleFilters,
+  VehicleListing,
   ContactMessage,
   PendingDocument,
   QuoteRequest,
@@ -371,4 +373,109 @@ export async function getFleetCounts(): Promise<FleetCounts> {
     ]);
 
   return { liveVehicles, pendingVehicles, rejectedVehicles, demoVehicles, pendingPartners };
+}
+
+const LISTING_COLUMNS =
+  "id, slug, make, model, year, classification, fuel_type, transmission, capacity, location, price_per_day, currency, description, features, photo_paths, image_key, partner_name, is_demo, partners(business_name)";
+
+interface ListingRow {
+  id: string;
+  slug: string | null;
+  make: string;
+  model: string;
+  year: number;
+  classification: VehicleClassification;
+  fuel_type: FuelType;
+  transmission: Transmission;
+  capacity: number;
+  location: string;
+  price_per_day: number;
+  currency: string;
+  description: string;
+  features: string[] | null;
+  photo_paths: string[] | null;
+  image_key: string;
+  partner_name: string | null;
+  is_demo: boolean;
+  partners?: { business_name: string } | null;
+}
+
+function toListing(row: ListingRow): VehicleListing {
+  return {
+    id: row.id,
+    // Slug is the public URL. Every row has one: hand-written for the seeded
+    // fleet, minted by trigger for anything a partner submits.
+    slug: row.slug ?? row.id,
+    make: row.make,
+    model: row.model,
+    year: row.year,
+    classification: row.classification,
+    fuelType: row.fuel_type,
+    transmission: row.transmission,
+    capacity: row.capacity,
+    location: row.location,
+    pricePerDay: row.price_per_day,
+    currency: row.currency,
+    description: row.description,
+    features: row.features ?? [],
+    photoPaths: row.photo_paths ?? [],
+    imageKey: row.image_key,
+    // partners.business_name is the real link; partner_name is the flat text
+    // the seeded rows carry, since they have no partner record.
+    partnerName: row.partners?.business_name ?? row.partner_name,
+    isDemo: row.is_demo,
+  };
+}
+
+/**
+ * Approved vehicles, for search. Relies on "Approved vehicles are publicly
+ * viewable", so this works for signed-out visitors.
+ */
+export async function getApprovedVehicles(filters: VehicleFilters = {}): Promise<VehicleListing[]> {
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("vehicles")
+    .select(LISTING_COLUMNS)
+    .eq("approval_status", "approved");
+
+  // Filtering in the database rather than in JS: the fleet is meant to grow
+  // past the point where fetching all of it per search is reasonable.
+  if (filters.location) query = query.eq("location", filters.location);
+  if (filters.classification) query = query.eq("classification", filters.classification);
+  if (filters.fuelType) query = query.eq("fuel_type", filters.fuelType);
+  if (filters.transmission) query = query.eq("transmission", filters.transmission);
+
+  const { data, error } = await query.order("price_per_day", { ascending: true });
+
+  if (error) throw new Error(`Failed to load vehicles: ${error.message}`);
+  return (data as unknown as ListingRow[]).map(toListing);
+}
+
+/** One approved vehicle by its public slug, or null. */
+export async function getApprovedVehicleBySlug(slug: string): Promise<VehicleListing | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("vehicles")
+    .select(LISTING_COLUMNS)
+    .eq("slug", slug)
+    .eq("approval_status", "approved")
+    .maybeSingle();
+
+  if (error) throw new Error(`Failed to load vehicle: ${error.message}`);
+  return data ? toListing(data as unknown as ListingRow) : null;
+}
+
+/** The distinct pickup points that currently have an approved vehicle. */
+export async function getVehicleLocations(): Promise<string[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("vehicles")
+    .select("location")
+    .eq("approval_status", "approved");
+
+  if (error) throw new Error(`Failed to load locations: ${error.message}`);
+
+  const seen = new Set((data as { location: string }[]).map((r) => r.location));
+  return [...seen].sort();
 }

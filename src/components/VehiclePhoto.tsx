@@ -1,3 +1,6 @@
+import Image from "next/image";
+import { publicVehiclePhotoUrl } from "@/lib/supabase/vehiclePhotos";
+
 const GRADIENTS: Record<string, string> = {
   econ: "from-[#12a575] to-[#1b1a18]",
   suv: "from-[#1b1a18] to-[#34312b]",
@@ -62,13 +65,39 @@ function VehicleGlyph({ image }: { image: string }) {
   );
 }
 
+/**
+ * A real photograph when the listing has one, the class gradient when it
+ * doesn't. Partner listings can't be approved without a photo, so the
+ * gradient is now only reached by the seeded illustrative rows — it stays as
+ * the fallback rather than leaving a hole if a photo ever fails to load.
+ */
 export default function VehiclePhoto({
   image,
+  photoPath,
+  alt = "",
+  sizes,
   className = "",
 }: {
   image: string;
+  photoPath?: string;
+  alt?: string;
+  sizes?: string;
   className?: string;
 }) {
+  if (photoPath) {
+    return (
+      <div className={`relative overflow-hidden ${className}`}>
+        <Image
+          src={publicVehiclePhotoUrl(photoPath)}
+          alt={alt}
+          fill
+          sizes={sizes ?? "(max-width: 768px) 100vw, 33vw"}
+          className="object-cover"
+        />
+      </div>
+    );
+  }
+
   const gradient = GRADIENTS[image] ?? GRADIENTS.econ;
   return (
     <div

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import VehicleCard from "@/components/VehicleCard";
 import SearchWidget from "@/components/SearchWidget";
-import DemoTag from "@/components/DemoTag";
-import { classifications, vehicles } from "@/lib/data";
+import { classifications } from "@/lib/data";
+import { getApprovedVehicles } from "@/lib/supabase/queries";
 import type { FuelType, Transmission, VehicleClassification } from "@/lib/types";
 
 export const metadata: Metadata = {
@@ -36,14 +37,9 @@ export default async function SearchPage({
   // collapses and the page leads with results rather than chrome.
   const hasSearched = Object.values(params).some(Boolean);
 
-  const results = vehicles.filter((v) => {
-    if (v.approvalStatus !== "approved") return false;
-    if (location && v.location !== location) return false;
-    if (classification && v.classification !== classification) return false;
-    if (fuel && v.fuelType !== fuel) return false;
-    if (transmission && v.transmission !== transmission) return false;
-    return true;
-  });
+  // Approved vehicles, filtered in the database. This is live inventory now:
+  // what a partner lists and an admin approves appears here.
+  const results = await getApprovedVehicles({ location, classification, fuelType: fuel, transmission });
 
   return (
     <div className="bg-offwhite">
@@ -111,12 +107,21 @@ export default async function SearchPage({
               {results.length} vehicle{results.length === 1 ? "" : "s"} available
               {location ? ` at ${location}` : ""}
             </p>
-            <DemoTag label="Illustrative Fleet Catalog" />
           </div>
 
           {results.length === 0 ? (
-            <div className="rounded-xl bg-white p-10 text-center text-sm text-midnight/60 ring-1 ring-line">
-              No vehicles match those filters yet. Try widening your search.
+            <div className="rounded-xl bg-white p-10 text-center ring-1 ring-line">
+              <p className="text-sm text-midnight/60">
+                {hasSearched
+                  ? "No vehicles match those filters. Try widening your search."
+                  : "No vehicles are listed yet."}
+              </p>
+              <Link
+                href="/partners/onboarding"
+                className="mt-3 inline-block text-sm font-semibold text-gold-dark hover:text-gold"
+              >
+                Have a vehicle to hire out? List it &rarr;
+              </Link>
             </div>
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

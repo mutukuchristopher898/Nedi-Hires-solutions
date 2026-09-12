@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import VehiclePhoto from "@/components/VehiclePhoto";
-import DemoTag from "@/components/DemoTag";
-import { formatMoney, getVehicleById } from "@/lib/data";
+import { formatMoney } from "@/lib/data";
+import { getApprovedVehicleBySlug } from "@/lib/supabase/queries";
 
 // Not listed in sitemap.ts while the fleet is still illustrative, but these
 // URLs get shared directly, so they still need a real title and card.
@@ -13,9 +13,9 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const vehicle = getVehicleById(id);
+  const vehicle = await getApprovedVehicleBySlug(id);
 
-  if (!vehicle || vehicle.approvalStatus !== "approved") {
+  if (!vehicle) {
     return { title: "Vehicle not found" };
   }
 
@@ -25,8 +25,8 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: { canonical: `/vehicles/${vehicle.id}` },
-    openGraph: { title, description, url: `/vehicles/${vehicle.id}` },
+    alternates: { canonical: `/vehicles/${vehicle.slug}` },
+    openGraph: { title, description, url: `/vehicles/${vehicle.slug}` },
   };
 }
 
@@ -36,8 +36,8 @@ export default async function VehicleDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const vehicle = getVehicleById(id);
-  if (!vehicle || vehicle.approvalStatus !== "approved") notFound();
+  const vehicle = await getApprovedVehicleBySlug(id);
+  if (!vehicle) notFound();
 
   return (
     <div className="container-shell py-10">
@@ -47,22 +47,38 @@ export default async function VehicleDetailPage({
 
       <div className="mt-4 grid gap-8 lg:grid-cols-[1.4fr_1fr]">
         <div>
-          <VehiclePhoto image={vehicle.image} className="h-72 w-full rounded-2xl" />
+          <VehiclePhoto
+            image={vehicle.imageKey}
+            photoPath={vehicle.photoPaths[0]}
+            alt={`${vehicle.make} ${vehicle.model}`}
+            sizes="(max-width: 1024px) 100vw, 60vw"
+            className="h-72 w-full rounded-2xl"
+          />
+
+          {vehicle.photoPaths.length > 1 && (
+            <div className="mt-3 grid grid-cols-4 gap-3">
+              {vehicle.photoPaths.slice(1, 5).map((path) => (
+                <VehiclePhoto
+                  key={path}
+                  image={vehicle.imageKey}
+                  photoPath={path}
+                  alt={`${vehicle.make} ${vehicle.model}`}
+                  sizes="(max-width: 1024px) 25vw, 15vw"
+                  className="h-20 w-full rounded-lg"
+                />
+              ))}
+            </div>
+          )}
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <span className="rounded-full bg-midnight/5 px-3 py-1 text-xs font-medium text-midnight/70">
               {vehicle.classification}
             </span>
-            {vehicle.fleetSource === "internal" ? (
-              <span className="rounded-full bg-emerald/10 px-3 py-1 text-xs font-medium text-emerald-dark">
-                Verified Internal Fleet
-              </span>
-            ) : (
+            {vehicle.partnerName && (
               <span className="rounded-full bg-gold/10 px-3 py-1 text-xs font-medium text-gold-dark">
                 Partner Fleet · {vehicle.partnerName}
               </span>
             )}
-            <DemoTag label="Illustrative Fleet Catalog" />
           </div>
 
           <h1 className="mt-4 text-3xl font-bold text-midnight">
@@ -75,7 +91,7 @@ export default async function VehicleDetailPage({
             <Spec label="Transmission" value={vehicle.transmission} />
             <Spec label="Fuel Type" value={vehicle.fuelType} />
             <Spec label="Capacity" value={`${vehicle.capacity} seats`} />
-            <Spec label="Plate" value={vehicle.licensePlate} />
+            <Spec label="Year" value={String(vehicle.year)} />
           </div>
 
           <div className="mt-8">
@@ -97,15 +113,12 @@ export default async function VehicleDetailPage({
             </span>
             <span className="text-sm text-midnight/60">/ day</span>
           </div>
-          <p className="mt-1 flex items-center gap-1 text-sm text-midnight/60">
-            <svg viewBox="0 0 20 20" className="h-4 w-4 fill-amber">
-              <path d="M10 1.5l2.6 5.7 6.2.6-4.7 4.1 1.4 6.1L10 15l-5.5 3 1.4-6.1-4.7-4.1 6.2-.6L10 1.5z" />
-            </svg>
-            {vehicle.rating.toFixed(1)} · {vehicle.trips} trips
+          <p className="mt-1 text-sm text-midnight/60">
+            {vehicle.classification} · {vehicle.capacity} seats · {vehicle.transmission}
           </p>
 
           <Link
-            href={`/booking/${vehicle.id}`}
+            href={`/booking/${vehicle.slug}`}
             className="mt-6 block rounded-md bg-gold px-5 py-3 text-center text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
           >
             Reserve This Vehicle
