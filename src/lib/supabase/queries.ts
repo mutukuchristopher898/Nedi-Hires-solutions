@@ -716,3 +716,52 @@ export async function getVehiclePricing(): Promise<VehiclePricingRow[]> {
     },
   }));
 }
+
+export interface AdminAccount {
+  id: string;
+  fullName: string;
+  email: string | null;
+  phone: string | null;
+  role: "customer" | "partner" | "admin";
+  createdAt: string;
+  bookingCount: number;
+  partnerName: string | null;
+}
+
+/**
+ * Every account, for the admin accounts page. Relies on "Admins can view all
+ * profiles" (20260904090000).
+ *
+ * The booking count is here so an operator can tell an account that has done
+ * something from one that hasn't — which is what you need before deleting
+ * anything.
+ */
+export async function getAdminAccounts(): Promise<AdminAccount[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, full_name, email, phone, role, created_at, bookings(count), partners(business_name)")
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(`Failed to load accounts: ${error.message}`);
+
+  return (data as unknown as {
+    id: string;
+    full_name: string;
+    email: string | null;
+    phone: string | null;
+    role: AdminAccount["role"];
+    created_at: string;
+    bookings: { count: number }[];
+    partners: { business_name: string }[];
+  }[]).map((row) => ({
+    id: row.id,
+    fullName: row.full_name,
+    email: row.email,
+    phone: row.phone,
+    role: row.role,
+    createdAt: row.created_at,
+    bookingCount: row.bookings?.[0]?.count ?? 0,
+    partnerName: row.partners?.[0]?.business_name ?? null,
+  }));
+}

@@ -8,6 +8,7 @@ const LINKS = [
   { href: "/admin/documents", label: "Document Verification" },
   { href: "/admin/quotes", label: "Partner Quote Requests" },
   { href: "/admin/messages", label: "Contact Enquiries" },
+  { href: "/admin/accounts", label: "Accounts" },
   { href: "/admin/pricing", label: "Pricing & Fees" },
   { href: "/admin/pricing/vehicles", label: "Per-vehicle Pricing" },
 ];
