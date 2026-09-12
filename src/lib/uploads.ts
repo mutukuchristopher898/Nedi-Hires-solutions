@@ -55,3 +55,28 @@ export function isOwnBookingStoragePath(
     path.startsWith(`${userId}/${bookingId}/`)
   );
 }
+
+// ── Vehicle listing photographs ──────────────────────────────
+// Separate limits from the KYC documents above: these are marketing images,
+// so no PDFs, and a tighter cap because they are served to every visitor
+// browsing search. Mirrors the vehicle-photos bucket in 20260912090000.
+
+export const MAX_VEHICLE_PHOTO_BYTES = 5 * 1024 * 1024;
+
+export const VEHICLE_PHOTO_EXTENSION_BY_TYPE: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+};
+
+export const ALLOWED_VEHICLE_PHOTO_TYPES = Object.keys(VEHICLE_PHOTO_EXTENSION_BY_TYPE);
+
+export const MAX_VEHICLE_PHOTO_LABEL = `${MAX_VEHICLE_PHOTO_BYTES / (1024 * 1024)}MB`;
+
+export function isAllowedVehiclePhoto(file: File): boolean {
+  return ALLOWED_VEHICLE_PHOTO_TYPES.includes(file.type);
+}
+
+export function isVehiclePhotoWithinLimit(file: File): boolean {
+  return file.size <= MAX_VEHICLE_PHOTO_BYTES;
+}

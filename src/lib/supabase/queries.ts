@@ -3,6 +3,10 @@ import type {
   AdminBooking,
   ApprovalStatus,
   BookingStatus,
+  FuelType,
+  PartnerAccount,
+  PartnerVehicle,
+  Transmission,
   ContactMessage,
   PendingDocument,
   QuoteRequest,
@@ -215,4 +219,156 @@ export async function getAdminBookings(): Promise<AdminBooking[]> {
     // window is about to stop holding anyway.
     holdsVehicle: row.status !== "cancelled" && row.end_date >= today,
   }));
+}
+
+interface VehicleRow {
+  id: string;
+  slug: string | null;
+  make: string;
+  model: string;
+  year: number;
+  classification: VehicleClassification;
+  fuel_type: FuelType;
+  transmission: Transmission;
+  capacity: number;
+  license_plate: string;
+  location: string;
+  price_per_day: number;
+  currency: string;
+  description: string;
+  features: string[];
+  photo_paths: string[] | null;
+  approval_status: ApprovalStatus;
+  created_at: string;
+  partner_id: string | null;
+  partners?: { business_name: string } | null;
+}
+
+const VEHICLE_COLUMNS =
+  "id, slug, make, model, year, classification, fuel_type, transmission, capacity, license_plate, location, price_per_day, currency, description, features, photo_paths, approval_status, created_at, partner_id";
+
+function toPartnerVehicle(row: VehicleRow): PartnerVehicle {
+  return {
+    id: row.id,
+    slug: row.slug,
+    make: row.make,
+    model: row.model,
+    year: row.year,
+    classification: row.classification,
+    fuelType: row.fuel_type,
+    transmission: row.transmission,
+    capacity: row.capacity,
+    licensePlate: row.license_plate,
+    location: row.location,
+    pricePerDay: row.price_per_day,
+    currency: row.currency,
+    description: row.description,
+    features: row.features ?? [],
+    photoPaths: row.photo_paths ?? [],
+    approvalStatus: row.approval_status,
+    createdAt: row.created_at,
+    partnerId: row.partner_id,
+    partnerName: row.partners?.business_name ?? null,
+  };
+}
+
+/** The signed-in user's own partner account, or null if they don't have one. */
+export async function getMyPartnerAccount(): Promise<PartnerAccount | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("partners")
+    .select("id, business_name, business_email, status, created_at")
+    .maybeSingle();
+
+  if (error) throw new Error(`Failed to load partner account: ${error.message}`);
+  if (!data) return null;
+
+  const row = data as { id: string; business_name: string; business_email: string | null; status: ApprovalStatus; created_at: string };
+  return {
+    id: row.id,
+    businessName: row.business_name,
+    businessEmail: row.business_email,
+    status: row.status,
+    createdAt: row.created_at,
+  };
+}
+
+/**
+ * The signed-in partner's own vehicles, at any approval status.
+ * "Partners can view their own vehicles regardless of status" is what returns
+ * the pending and rejected ones.
+ */
+export async function getMyPartnerVehicles(partnerId: string): Promise<PartnerVehicle[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("vehicles")
+    .select(VEHICLE_COLUMNS)
+    .eq("partner_id", partnerId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(`Failed to load your vehicles: ${error.message}`);
+  return (data as unknown as VehicleRow[]).map(toPartnerVehicle);
+}
+
+/** Admin queue: every vehicle awaiting a decision, newest last so the oldest is dealt with first. */
+export async function getVehiclesAwaitingApproval(): Promise<PartnerVehicle[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("vehicles")
+    .select(`${VEHICLE_COLUMNS}, partners(business_name)`)
+    .eq("approval_status", "pending")
+    .order("created_at", { ascending: true });
+
+  if (error) throw new Error(`Failed to load the approval queue: ${error.message}`);
+  return (data as unknown as VehicleRow[]).map(toPartnerVehicle);
+}
+
+export interface FleetCounts {
+  /** Real partner-supplied inventory, excluding the illustrative demo rows. */
+  liveVehicles: number;
+  pendingVehicles: number;
+  rejectedVehicles: number;
+  pendingPartners: number;
+  /** Illustrative rows still in the table, counted separately so they never
+      inflate a figure an operator might act on. */
+  demoVehicles: number;
+}
+
+export async function getFleetCounts(): Promise<FleetCounts> {
+  const supabase = await createClient();
+
+  // head: true returns the count without transferring any rows.
+  async function countVehicles(isDemo: boolean, approvalStatus?: ApprovalStatus) {
+    let query = supabase
+      .from("vehicles")
+      .select("id", { count: "exact", head: true })
+      .eq("is_demo", isDemo);
+
+    if (approvalStatus) query = query.eq("approval_status", approvalStatus);
+
+    const { count, error } = await query;
+    if (error) throw new Error(`Failed to count vehicles: ${error.message}`);
+    return count ?? 0;
+  }
+
+  async function countPendingPartners() {
+    const { count, error } = await supabase
+      .from("partners")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "pending");
+
+    if (error) throw new Error(`Failed to count partners: ${error.message}`);
+    return count ?? 0;
+  }
+
+  const [liveVehicles, pendingVehicles, rejectedVehicles, demoVehicles, pendingPartners] =
+    await Promise.all([
+      countVehicles(false, "approved"),
+      countVehicles(false, "pending"),
+      countVehicles(false, "rejected"),
+      countVehicles(true),
+      countPendingPartners(),
+    ]);
+
+  return { liveVehicles, pendingVehicles, rejectedVehicles, demoVehicles, pendingPartners };
 }

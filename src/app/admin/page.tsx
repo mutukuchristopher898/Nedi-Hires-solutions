@@ -1,19 +1,14 @@
 import Link from "next/link";
-import DemoTag from "@/components/DemoTag";
-import { partnerUnits, vehicles } from "@/lib/data";
-import { getContactMessages, getPendingDocuments } from "@/lib/supabase/queries";
+import { getContactMessages, getFleetCounts, getPendingDocuments } from "@/lib/supabase/queries";
 
 export default async function AdminOverviewPage() {
-  // Real, from the database.
-  const [documents, messages] = await Promise.all([getPendingDocuments(), getContactMessages()]);
+  const [documents, messages, fleet] = await Promise.all([
+    getPendingDocuments(),
+    getContactMessages(),
+    getFleetCounts(),
+  ]);
   const pendingDocs = documents.filter((d) => d.status === "pending").length;
   const newMessages = messages.filter((m) => m.status === "new").length;
-
-  // Still from the illustrative catalogue in src/lib/data.ts — no partner has
-  // ever submitted a vehicle, because partner onboarding does not persist yet.
-  const pendingUnits = partnerUnits.filter((u) => u.status === "pending").length;
-  const liveVehicles = vehicles.filter((v) => v.approvalStatus === "approved").length;
-  const partnerShare = vehicles.filter((v) => v.fleetSource === "partner").length;
 
   return (
     <div>
@@ -28,18 +23,16 @@ export default async function AdminOverviewPage() {
         <Card label="New Contact Enquiries" value={newMessages} accent="text-amber" href="/admin/messages" />
       </div>
 
-      <div className="mt-8 flex items-center gap-2">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-midnight/50">Fleet catalogue</h2>
-        <DemoTag label="Sample Data" />
-      </div>
+      <h2 className="mt-8 text-xs font-semibold uppercase tracking-wide text-midnight/50">Fleet</h2>
       <p className="mt-1 text-sm text-midnight/60">
-        These count the illustrative catalogue rather than live inventory, and no partner has
-        submitted a vehicle yet.
+        Real partner inventory. The {fleet.demoVehicles} illustrative rows still in the table are
+        excluded from these figures.
       </p>
-      <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card label="Vehicles in Catalogue" value={liveVehicles} />
-        <Card label="Partner Share of Catalogue" value={partnerShare} />
-        <Card label="Units Pending Approval" value={pendingUnits} href="/admin/approvals" />
+      <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card label="Live Vehicles" value={fleet.liveVehicles} />
+        <Card label="Units Pending Approval" value={fleet.pendingVehicles} accent="text-amber" href="/admin/approvals" />
+        <Card label="Partners Pending" value={fleet.pendingPartners} accent="text-amber" />
+        <Card label="Rejected" value={fleet.rejectedVehicles} />
       </div>
 
       <div className="mt-10 grid gap-6 lg:grid-cols-2">

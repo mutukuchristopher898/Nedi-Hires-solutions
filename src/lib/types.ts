@@ -191,3 +191,35 @@ export interface AdminBooking {
   /** True while this booking still withholds its vehicle from other customers. */
   holdsVehicle: boolean;
 }
+
+export interface PartnerAccount {
+  id: string;
+  businessName: string;
+  businessEmail: string | null;
+  status: ApprovalStatus;
+  createdAt: string;
+}
+
+export interface PartnerVehicle {
+  id: string;
+  slug: string | null;
+  make: string;
+  model: string;
+  year: number;
+  classification: VehicleClassification;
+  fuelType: FuelType;
+  transmission: Transmission;
+  capacity: number;
+  licensePlate: string;
+  location: string;
+  pricePerDay: number;
+  currency: string;
+  description: string;
+  features: string[];
+  photoPaths: string[];
+  approvalStatus: ApprovalStatus;
+  createdAt: string;
+  /** Only populated for the admin queue, where the owning business matters. */
+  partnerName?: string | null;
+  partnerId?: string | null;
+}

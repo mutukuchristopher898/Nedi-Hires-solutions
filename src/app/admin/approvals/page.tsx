@@ -1,79 +1,88 @@
-"use client";
+import Image from "next/image";
+import VehicleApprovalActions from "@/components/admin/VehicleApprovalActions";
+import { getVehiclesAwaitingApproval } from "@/lib/supabase/queries";
+import { publicVehiclePhotoUrl } from "@/lib/supabase/vehiclePhotos";
+import { formatMoney } from "@/lib/data";
 
-import { useState } from "react";
-import StatusBadge from "@/components/StatusBadge";
-import DemoTag from "@/components/DemoTag";
-import { partnerUnits as initialUnits } from "@/lib/data";
-import type { ApprovalStatus } from "@/lib/types";
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-KE", { day: "numeric", month: "short", year: "numeric" });
+}
 
-export default function AdminApprovalsPage() {
-  const [units, setUnits] = useState(initialUnits);
-
-  function setStatus(id: string, status: ApprovalStatus) {
-    setUnits((prev) => prev.map((u) => (u.id === id ? { ...u, status } : u)));
-  }
+export default async function AdminApprovalsPage() {
+  const vehicles = await getVehiclesAwaitingApproval();
 
   return (
     <div>
-      <div className="flex items-center gap-2">
-        <h1 className="text-2xl font-bold text-midnight">Unit Approval Queue</h1>
-        <DemoTag label="Sample Data" />
-      </div>
+      <h1 className="text-2xl font-bold text-midnight">Unit Approval Queue</h1>
       <p className="mt-1 text-sm text-midnight/60">
-        Newly uploaded partner units are visible on the customer frontend only after approval.
-        Actions here are simulated for this prototype.
+        Vehicles partners have submitted. Approving one publishes it to search immediately;
+        rejecting leaves it visible only to the partner. Oldest first.
       </p>
 
-      <div className="mt-6 overflow-x-auto rounded-2xl bg-white ring-1 ring-line">
-        <table className="w-full text-sm">
-          <thead className="bg-offwhite text-left text-xs uppercase tracking-wide text-midnight/50">
-            <tr>
-              <th className="px-5 py-3">Vehicle</th>
-              <th className="px-5 py-3">Classification</th>
-              <th className="px-5 py-3">Submitted</th>
-              <th className="px-5 py-3">Status</th>
-              <th className="px-5 py-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-line">
-            {units.map((unit) => (
-              <tr key={unit.id}>
-                <td className="px-5 py-3 font-medium text-midnight">{unit.vehicleName}</td>
-                <td className="px-5 py-3 text-midnight/70">{unit.classification}</td>
-                <td className="px-5 py-3 text-midnight/70">{unit.submittedOn}</td>
-                <td className="px-5 py-3">
-                  <StatusBadge status={unit.status} />
-                </td>
-                <td className="px-5 py-3">
-                  {unit.status === "pending" ? (
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setStatus(unit.id, "approved")}
-                        className="rounded-md bg-emerald px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-dark"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => setStatus(unit.id, "rejected")}
-                        className="rounded-md bg-red-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-600"
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => setStatus(unit.id, "pending")}
-                      className="text-xs font-medium text-midnight/50 hover:text-midnight"
-                    >
-                      Revert to pending
-                    </button>
+      {vehicles.length === 0 ? (
+        <div className="mt-6 rounded-2xl bg-white p-8 text-center ring-1 ring-line">
+          <p className="text-sm text-midnight/60">Nothing waiting for review.</p>
+        </div>
+      ) : (
+        <>
+          <p className="mt-4 text-sm text-midnight/60">
+            {vehicles.length} awaiting review
+          </p>
+
+          <div className="mt-4 space-y-4">
+            {vehicles.map((v) => (
+              <article key={v.id} className="flex flex-wrap gap-4 rounded-2xl bg-white p-4 ring-1 ring-line">
+                {v.photoPaths.length > 0 ? (
+                  <Image
+                    src={publicVehiclePhotoUrl(v.photoPaths[0])}
+                    alt={`${v.make} ${v.model}`}
+                    width={160}
+                    height={120}
+                    className="h-28 w-40 shrink-0 rounded-lg object-cover"
+                  />
+                ) : (
+                  <div className="flex h-28 w-40 shrink-0 items-center justify-center rounded-lg bg-amber/10 text-xs text-amber">
+                    No photo
+                  </div>
+                )}
+
+                <div className="min-w-0 flex-1">
+                  <h2 className="font-semibold text-midnight">
+                    {v.make} {v.model} {v.year}
+                  </h2>
+                  <p className="mt-0.5 text-sm text-midnight/70">
+                    {v.partnerName ?? "Unknown partner"} · submitted {formatDate(v.createdAt)}
+                  </p>
+                  <p className="mt-1 text-sm text-midnight/60">
+                    {v.licensePlate} · {v.classification} · {v.transmission} · {v.fuelType} ·{" "}
+                    {v.capacity} seats · {v.location}
+                  </p>
+                  <p className="mt-1 text-sm font-medium text-midnight">
+                    {formatMoney(v.pricePerDay, v.currency)} / day
+                  </p>
+                  {v.description && (
+                    <p className="mt-2 text-sm text-midnight/70">{v.description}</p>
                   )}
-                </td>
-              </tr>
+                  {v.features.length > 0 && (
+                    <p className="mt-2 text-xs text-midnight/50">{v.features.join(" · ")}</p>
+                  )}
+                  {v.photoPaths.length > 1 && (
+                    <p className="mt-2 text-xs text-midnight/50">
+                      +{v.photoPaths.length - 1} more photo{v.photoPaths.length - 1 === 1 ? "" : "s"}
+                    </p>
+                  )}
+                </div>
+
+                <VehicleApprovalActions
+                  id={v.id}
+                  label={`${v.make} ${v.model} ${v.year}`}
+                  hasPhoto={v.photoPaths.length > 0}
+                />
+              </article>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
