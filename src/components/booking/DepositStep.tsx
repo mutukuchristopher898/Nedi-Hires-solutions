@@ -54,7 +54,6 @@ export default function DepositStep({
             label={
               <>
                 One-way fee
-                <DemoTag inline label="Indicative Fee" />
               </>
             }
             value={money(oneWayFee)}

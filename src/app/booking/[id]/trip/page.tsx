@@ -27,7 +27,7 @@ const QUOTE_COLUMNS = "id, booking_ref, rate_per_day, total_amount, deposit_amou
 export default function TripPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const { draft, patchDraft, vehicle, vehicleDbId } = useBookingDraft();
+  const { draft, patchDraft, vehicle, vehicleDbId, feeTable } = useBookingDraft();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,7 +40,7 @@ export default function TripPage() {
     const dropoffAt = combineDateAndTime(tripData.dropoffDate, tripData.dropoffTime);
     const days = effectiveDays(pickupAt, dropoffAt);
     const pricing = computePricing(vehicle.pricePerDay, days);
-    const fee = tripData.returnToDifferentLocation ? oneWayFee(tripData.pickupPoint, tripData.dropoffPoint) : 0;
+    const fee = tripData.returnToDifferentLocation ? oneWayFee(tripData.pickupPoint, tripData.dropoffPoint, feeTable) : 0;
     const total = pricing.total + fee;
 
     const supabase = createClient();
@@ -128,17 +128,18 @@ export default function TripPage() {
       },
       furthestStepReached: "applicant",
     });
-    router.push(`/booking/${vehicle.id}/applicant`);
+    router.push(`/booking/${vehicle.slug}/applicant`);
   }
 
   return (
     <>
-      <WizardNav vehicleId={vehicle.id} current="trip" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
+      <WizardNav vehicleId={vehicle.slug} current="trip" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
 
       {error && <FormError message={error} className="mb-4" />}
 
       <TripDetailsStep
         vehicle={vehicle}
+        feeTable={feeTable}
         value={draft.trip}
         onChange={(patch) => patchDraft({ trip: { ...draft.trip, ...patch } })}
         saving={saving}

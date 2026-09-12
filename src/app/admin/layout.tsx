@@ -8,6 +8,7 @@ const LINKS = [
   { href: "/admin/documents", label: "Document Verification" },
   { href: "/admin/quotes", label: "Partner Quote Requests" },
   { href: "/admin/messages", label: "Contact Enquiries" },
+  { href: "/admin/pricing", label: "One-way Fees" },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

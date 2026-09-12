@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Vehicle } from "@/lib/types";
+import type { VehicleListing } from "@/lib/types";
 import { site } from "@/lib/site";
 import { fieldProps, FormError } from "./shared";
 
@@ -45,7 +45,7 @@ export default function AgreementStep({
   saving,
   onSubmit,
 }: {
-  vehicle: Vehicle;
+  vehicle: VehicleListing;
   applicantName: string | null;
   saving: boolean;
   onSubmit: (data: { signedName: string }) => void;

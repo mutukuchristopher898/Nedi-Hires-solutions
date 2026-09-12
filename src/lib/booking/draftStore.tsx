@@ -2,7 +2,8 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import type { BookingStep, TripDetails, Vehicle } from "@/lib/types";
+import type { BookingStep, TripDetails, VehicleListing } from "@/lib/types";
+import type { OneWayFeeTable } from "@/lib/duration";
 import { combineDateAndTime, computeDropoff, toNairobiDateInputValue, toNairobiTimeInputValue } from "@/lib/duration";
 import { APPLICANT_DRAFT_DEFAULTS, type ApplicantDraftFields } from "@/components/booking/ApplicantDetailsStep";
 
@@ -34,15 +35,17 @@ export interface BookingDraft {
 interface BookingDraftContextValue {
   draft: BookingDraft;
   patchDraft: (patch: Partial<BookingDraft>) => void;
-  vehicle: Vehicle;
+  vehicle: VehicleListing;
   vehicleDbId: string;
+  /** Loaded on the server so the steps can quote a route without an effect. */
+  feeTable: OneWayFeeTable;
 }
 
 const BookingDraftContext = createContext<BookingDraftContextValue | null>(null);
 
 const todayIso = () => new Date().toISOString().slice(0, 10);
 
-function defaultTrip(vehicle: Vehicle): TripDetails {
+function defaultTrip(vehicle: VehicleListing): TripDetails {
   const pickupDate = todayIso();
   const pickupTime = "09:00";
   const durationUnit = "days" as const;
@@ -73,7 +76,7 @@ function storageKey(vehicleId: string) {
 // A fresh draft, including a fresh idempotency key — persisted immediately
 // (a plain function call at lazy-init time, not a useEffect) so the same
 // key survives a refresh rather than being regenerated on every mount.
-function createAndPersistDraft(vehicle: Vehicle): BookingDraft {
+function createAndPersistDraft(vehicle: VehicleListing): BookingDraft {
   const draft: BookingDraft = {
     trip: defaultTrip(vehicle),
     applicant: APPLICANT_DRAFT_DEFAULTS,
@@ -85,11 +88,11 @@ function createAndPersistDraft(vehicle: Vehicle): BookingDraft {
     idempotencyKey: crypto.randomUUID(),
     lockedAfterPayment: false,
   };
-  sessionStorage.setItem(storageKey(vehicle.id), JSON.stringify(draft));
+  sessionStorage.setItem(storageKey(vehicle.slug), JSON.stringify(draft));
   return draft;
 }
 
-function loadInitialDraft(vehicle: Vehicle): BookingDraft {
+function loadInitialDraft(vehicle: VehicleListing): BookingDraft {
   if (typeof window === "undefined") {
     // SSR-safe placeholder — this branch never actually renders interactive
     // UI (the provider's children are all client-only step pages), it just
@@ -107,7 +110,7 @@ function loadInitialDraft(vehicle: Vehicle): BookingDraft {
     };
   }
 
-  const raw = sessionStorage.getItem(storageKey(vehicle.id));
+  const raw = sessionStorage.getItem(storageKey(vehicle.slug));
   if (!raw) return createAndPersistDraft(vehicle);
 
   try {
@@ -122,10 +125,12 @@ function loadInitialDraft(vehicle: Vehicle): BookingDraft {
 export function BookingDraftProvider({
   vehicle,
   vehicleDbId,
+  feeTable,
   children,
 }: {
-  vehicle: Vehicle;
+  vehicle: VehicleListing;
   vehicleDbId: string;
+  feeTable: OneWayFeeTable;
   children: ReactNode;
 }) {
   const [draft, setDraft] = useState<BookingDraft>(() => loadInitialDraft(vehicle));
@@ -133,13 +138,13 @@ export function BookingDraftProvider({
   function patchDraft(patch: Partial<BookingDraft>) {
     setDraft((prev) => {
       const next = { ...prev, ...patch };
-      sessionStorage.setItem(storageKey(vehicle.id), JSON.stringify(next));
+      sessionStorage.setItem(storageKey(vehicle.slug), JSON.stringify(next));
       return next;
     });
   }
 
   return (
-    <BookingDraftContext.Provider value={{ draft, patchDraft, vehicle, vehicleDbId }}>
+    <BookingDraftContext.Provider value={{ draft, patchDraft, vehicle, vehicleDbId, feeTable }}>
       {children}
     </BookingDraftContext.Provider>
   );
@@ -160,9 +165,9 @@ export function useLockGuard() {
 
   useEffect(() => {
     if (draft.lockedAfterPayment) {
-      router.replace(`/booking/${vehicle.id}/verification`);
+      router.replace(`/booking/${vehicle.slug}/verification`);
     }
-  }, [draft.lockedAfterPayment, vehicle.id, router]);
+  }, [draft.lockedAfterPayment, vehicle.slug, router]);
 }
 
 // Covers direct URL entry to a step that requires an already-created
@@ -173,7 +178,7 @@ export function useRequireBookingId() {
 
   useEffect(() => {
     if (!draft.bookingId) {
-      router.replace(`/booking/${vehicle.id}/trip`);
+      router.replace(`/booking/${vehicle.slug}/trip`);
     }
-  }, [draft.bookingId, vehicle.id, router]);
+  }, [draft.bookingId, vehicle.slug, router]);
 }

@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import { getVehicleById } from "@/lib/data";
-import { getVehicleDbIdBySlug } from "@/lib/supabase/queries";
+import { getApprovedVehicleBySlug, getOneWayFeeTable } from "@/lib/supabase/queries";
 import BookingShell from "@/components/booking/BookingShell";
 
 export default async function BookingLayout({
@@ -12,10 +11,15 @@ export default async function BookingLayout({
   children: ReactNode;
 }) {
   const { id } = await params;
-  const vehicle = getVehicleById(id);
-  if (!vehicle) notFound();
 
-  const vehicleDbId = await getVehicleDbIdBySlug(id);
+  // Previously read the static catalogue, which meant a partner-listed vehicle
+  // could be found in search and then 404 the moment someone tried to book it.
+  const [vehicle, feeTable] = await Promise.all([
+    getApprovedVehicleBySlug(id),
+    getOneWayFeeTable(),
+  ]);
+
+  if (!vehicle) notFound();
 
   return (
     <div className="container-shell py-10">
@@ -24,7 +28,7 @@ export default async function BookingLayout({
         Just a few quick steps to secure your reservation.
       </p>
       <div className="mt-8">
-        <BookingShell vehicle={vehicle} vehicleDbId={vehicleDbId}>
+        <BookingShell vehicle={vehicle} vehicleDbId={vehicle.id} feeTable={feeTable}>
           {children}
         </BookingShell>
       </div>

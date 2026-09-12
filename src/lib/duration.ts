@@ -145,8 +145,10 @@ export interface PricingResult {
 }
 
 // Flat whole-stay discount once a threshold is crossed — not a blended/
-// prorated engine. Every rate here is an indicative placeholder (DemoTag'd
-// in the UI), so simplicity is preferred over precision.
+// prorated engine. These two rates are still placeholders awaiting the
+// owner's real figures, which is why the UI still labels them indicative.
+// The one-way fee is no longer here: it is per-route data, editable at
+// /admin/pricing, with booking_one_way_fee() authoritative.
 export function computePricing(pricePerDay: number, days: number): PricingResult {
   const base = pricePerDay * days;
 
@@ -168,12 +170,32 @@ export function formatDurationLabel(unit: DurationUnit, quantity: number): strin
   return `${quantity} ${label}${quantity === 1 ? "" : "s"}`;
 }
 
-// Flat, symmetric, indicative fee per unordered pair of the 4 known depots.
-// No allowed-routes table exists, and all 4 are plausible to service, so
-// every cross-depot pair gets a fee rather than being blocked.
-const ONE_WAY_FEE_KES = 6000;
+/**
+ * Per-route one-way fees, loaded from the database.
+ *
+ * `pairs` is keyed in both directions, so a lookup never depends on this
+ * sorting text the same way Postgres's least()/greatest() would — JavaScript
+ * compares UTF-16 code units and Postgres uses the database collation, and a
+ * disagreement would show the customer a different fee from the one charged.
+ */
+export interface OneWayFeeTable {
+  pairs: Record<string, number>;
+  defaultFee: number;
+}
 
-export function oneWayFee(pickup: string, dropoff: string): number {
-  if (!pickup || !dropoff || pickup === dropoff) return 0;
-  return ONE_WAY_FEE_KES;
+export function oneWayFeeKey(a: string, b: string): string {
+  return `${a.trim()}|${b.trim()}`;
+}
+
+/**
+ * Mirrors booking_one_way_fee() in SQL, which is authoritative — this exists
+ * so the booking form can quote a fee as the customer picks a drop-off point,
+ * before any row is written. An unlisted route falls back to the default,
+ * which is the owner's decision: never under-charge by accident.
+ */
+export function oneWayFee(pickup: string, dropoff: string, table: OneWayFeeTable): number {
+  const from = (pickup ?? "").trim();
+  const to = (dropoff ?? "").trim();
+  if (!from || !to || from === to) return 0;
+  return table.pairs[oneWayFeeKey(from, to)] ?? table.defaultFee;
 }

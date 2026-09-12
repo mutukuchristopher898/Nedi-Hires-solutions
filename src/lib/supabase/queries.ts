@@ -1,4 +1,5 @@
 import { createClient } from "./server";
+import { oneWayFeeKey, type OneWayFeeTable } from "@/lib/duration";
 import type {
   AdminBooking,
   ApprovalStatus,
@@ -94,19 +95,6 @@ export async function getQuoteRequests(): Promise<QuoteRequest[]> {
   }));
 }
 
-// Resolves the real DB row backing a displayed (mock/demo) vehicle, keyed by
-// the stable slug used in URLs, so bookings can reference a real vehicle_id.
-export async function getVehicleDbIdBySlug(slug: string): Promise<string | null> {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("vehicles")
-    .select("id")
-    .eq("slug", slug)
-    .eq("approval_status", "approved")
-    .maybeSingle();
-
-  return (data as { id: string } | null)?.id ?? null;
-}
 
 interface ContactMessageRow {
   id: string;
@@ -529,4 +517,62 @@ export async function getPartnerNetwork(): Promise<string[]> {
 
   const names = new Set((data as { partner_name: string }[]).map((r) => r.partner_name));
   return [...names].sort();
+}
+
+/**
+ * The one-way fee table, for quoting a route in the booking form before
+ * anything is written. booking_one_way_fee() in SQL stays authoritative.
+ */
+export async function getOneWayFeeTable(): Promise<OneWayFeeTable> {
+  const supabase = await createClient();
+
+  const [feesResult, settingsResult] = await Promise.all([
+    supabase.from("one_way_fees").select("location_a, location_b, fee"),
+    supabase.from("pricing_settings").select("default_one_way_fee").maybeSingle(),
+  ]);
+
+  if (feesResult.error) throw new Error(`Failed to load one-way fees: ${feesResult.error.message}`);
+  if (settingsResult.error) throw new Error(`Failed to load pricing settings: ${settingsResult.error.message}`);
+
+  const pairs: Record<string, number> = {};
+  for (const row of (feesResult.data ?? []) as { location_a: string; location_b: string; fee: number }[]) {
+    // Both directions, so the client never has to reproduce Postgres's
+    // collation ordering to find a row.
+    pairs[oneWayFeeKey(row.location_a, row.location_b)] = Number(row.fee);
+    pairs[oneWayFeeKey(row.location_b, row.location_a)] = Number(row.fee);
+  }
+
+  const settings = settingsResult.data as { default_one_way_fee: number } | null;
+
+  return { pairs, defaultFee: Number(settings?.default_one_way_fee ?? 0) };
+}
+
+export interface RouteFee {
+  locationA: string;
+  locationB: string;
+  fee: number;
+}
+
+/** Admin view of the route fee table, plus the fallback for unlisted pairs. */
+export async function getRouteFees(): Promise<{ routes: RouteFee[]; defaultFee: number }> {
+  const supabase = await createClient();
+
+  const [feesResult, settingsResult] = await Promise.all([
+    supabase.from("one_way_fees").select("location_a, location_b, fee").order("location_a"),
+    supabase.from("pricing_settings").select("default_one_way_fee").maybeSingle(),
+  ]);
+
+  if (feesResult.error) throw new Error(`Failed to load route fees: ${feesResult.error.message}`);
+  if (settingsResult.error) throw new Error(`Failed to load pricing settings: ${settingsResult.error.message}`);
+
+  const settings = settingsResult.data as { default_one_way_fee: number } | null;
+
+  return {
+    routes: ((feesResult.data ?? []) as { location_a: string; location_b: string; fee: number }[]).map((r) => ({
+      locationA: r.location_a,
+      locationB: r.location_b,
+      fee: Number(r.fee),
+    })),
+    defaultFee: Number(settings?.default_one_way_fee ?? 0),
+  };
 }

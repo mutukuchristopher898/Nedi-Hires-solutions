@@ -2,7 +2,8 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import type { Vehicle } from "@/lib/types";
+import type { VehicleListing } from "@/lib/types";
+import type { OneWayFeeTable } from "@/lib/duration";
 import { useAuth } from "@/lib/auth";
 import { formatMoney } from "@/lib/data";
 import { combineDateAndTime, computePricing, effectiveDays, formatDurationLabel, oneWayFee } from "@/lib/duration";
@@ -13,10 +14,12 @@ import { Row } from "./shared";
 export default function BookingShell({
   vehicle,
   vehicleDbId,
+  feeTable,
   children,
 }: {
-  vehicle: Vehicle;
+  vehicle: VehicleListing;
   vehicleDbId: string | null;
+  feeTable: OneWayFeeTable;
   children: ReactNode;
 }) {
   const { user, ready } = useAuth();
@@ -24,7 +27,7 @@ export default function BookingShell({
   if (!ready) return null;
 
   if (!user) {
-    const next = `/booking/${vehicle.id}`;
+    const next = `/booking/${vehicle.slug}`;
     return (
       <div className="max-w-md rounded-2xl bg-white p-8 text-center ring-1 ring-line">
         <h2 className="text-lg font-semibold text-midnight">Sign in to book this vehicle</h2>
@@ -63,21 +66,21 @@ export default function BookingShell({
   }
 
   return (
-    <BookingDraftProvider vehicle={vehicle} vehicleDbId={vehicleDbId}>
+    <BookingDraftProvider vehicle={vehicle} vehicleDbId={vehicleDbId} feeTable={feeTable}>
       <BookingShellInner vehicle={vehicle}>{children}</BookingShellInner>
     </BookingDraftProvider>
   );
 }
 
-function BookingShellInner({ vehicle, children }: { vehicle: Vehicle; children: ReactNode }) {
-  const { draft } = useBookingDraft();
+function BookingShellInner({ vehicle, children }: { vehicle: VehicleListing; children: ReactNode }) {
+  const { draft, feeTable } = useBookingDraft();
   const { trip } = draft;
 
   const pickupAt = combineDateAndTime(trip.pickupDate, trip.pickupTime);
   const dropoffAt = combineDateAndTime(trip.dropoffDate, trip.dropoffTime);
   const days = effectiveDays(pickupAt, dropoffAt);
   const pricing = computePricing(vehicle.pricePerDay, days);
-  const fee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint) : 0;
+  const fee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint, feeTable) : 0;
   const total = pricing.total + fee;
   const durationLabel = formatDurationLabel(trip.durationUnit, trip.durationQuantity);
 
@@ -86,7 +89,7 @@ function BookingShellInner({ vehicle, children }: { vehicle: Vehicle; children: 
       <div>{children}</div>
 
       <aside className="h-fit rounded-2xl bg-white p-5 ring-1 ring-line lg:sticky lg:top-24">
-        <VehiclePhoto image={vehicle.image} className="h-32 w-full rounded-xl" />
+        <VehiclePhoto image={vehicle.imageKey} photoPath={vehicle.photoPaths[0]} alt={`${vehicle.make} ${vehicle.model}`} className="h-32 w-full rounded-xl" />
         <h3 className="mt-4 font-semibold text-midnight">
           {vehicle.make} {vehicle.model}
         </h3>

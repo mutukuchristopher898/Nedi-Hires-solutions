@@ -19,7 +19,7 @@ import { FormError } from "@/components/booking/shared";
 
 export default function SettlementPage() {
   const router = useRouter();
-  const { draft, patchDraft, vehicle } = useBookingDraft();
+  const { draft, patchDraft, vehicle, feeTable } = useBookingDraft();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,7 +30,7 @@ export default function SettlementPage() {
   const dropoffAt = combineDateAndTime(trip.dropoffDate, trip.dropoffTime);
   const days = effectiveDays(pickupAt, dropoffAt);
   const pricing = computePricing(vehicle.pricePerDay, days);
-  const estimatedFee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint) : 0;
+  const estimatedFee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint, feeTable) : 0;
 
   // Prefer the database's figures; the local calculation is only a fallback.
   const total = draft.quote?.total ?? pricing.total + estimatedFee;
@@ -63,12 +63,12 @@ export default function SettlementPage() {
     }
 
     patchDraft({ furthestStepReached: "confirmed" });
-    router.push(`/booking/${vehicle.id}/confirmed`);
+    router.push(`/booking/${vehicle.slug}/confirmed`);
   }
 
   return (
     <>
-      <WizardNav vehicleId={vehicle.id} current="settlement" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
+      <WizardNav vehicleId={vehicle.slug} current="settlement" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
 
       {error && <FormError message={error} className="mb-4" />}
 

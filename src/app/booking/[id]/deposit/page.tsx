@@ -19,7 +19,7 @@ import { FormError } from "@/components/booking/shared";
 
 export default function DepositPage() {
   const router = useRouter();
-  const { draft, patchDraft, vehicle } = useBookingDraft();
+  const { draft, patchDraft, vehicle, feeTable } = useBookingDraft();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,7 +31,7 @@ export default function DepositPage() {
   const dropoffAt = combineDateAndTime(trip.dropoffDate, trip.dropoffTime);
   const days = effectiveDays(pickupAt, dropoffAt);
   const pricing = computePricing(vehicle.pricePerDay, days);
-  const estimatedFee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint) : 0;
+  const estimatedFee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint, feeTable) : 0;
   const durationLabel = formatDurationLabel(trip.durationUnit, trip.durationQuantity);
 
   // Prefer the figures the database computed when the booking was created —
@@ -60,12 +60,12 @@ export default function DepositPage() {
     }
 
     patchDraft({ furthestStepReached: "verification", lockedAfterPayment: true });
-    router.push(`/booking/${vehicle.id}/verification`);
+    router.push(`/booking/${vehicle.slug}/verification`);
   }
 
   return (
     <>
-      <WizardNav vehicleId={vehicle.id} current="deposit" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
+      <WizardNav vehicleId={vehicle.slug} current="deposit" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
 
       {error && <FormError message={error} className="mb-4" />}
 

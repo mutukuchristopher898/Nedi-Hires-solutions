@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { TripDetails, Vehicle } from "@/lib/types";
+import type { TripDetails, VehicleListing } from "@/lib/types";
 import { calculateAge, calculateYearsSince, MIN_LICENSE_YEARS, MIN_SELF_DRIVE_AGE } from "@/lib/eligibility";
 import {
   combineDateAndTime,
@@ -18,6 +18,7 @@ import {
 import { formatMoney } from "@/lib/data";
 import DemoTag from "@/components/DemoTag";
 import { Field, fieldProps, FormError, inputClass } from "./shared";
+import type { OneWayFeeTable } from "@/lib/duration";
 
 export const PICKUP_POINTS = [
   "Jomo Kenyatta International Airport (JKIA)",
@@ -73,11 +74,13 @@ const todayIso = () => toNairobiDateInputValue(new Date());
 export default function TripDetailsStep({
   vehicle,
   value: trip,
+  feeTable,
   onChange,
   saving,
   onSubmit,
 }: {
-  vehicle: Vehicle;
+  vehicle: VehicleListing;
+  feeTable: OneWayFeeTable;
   value: TripDetails;
   onChange: (patch: Partial<TripDetails>) => void;
   saving: boolean;
@@ -98,7 +101,7 @@ export default function TripDetailsStep({
   const dropoffAt = combineDateAndTime(trip.dropoffDate, trip.dropoffTime);
   const days = effectiveDays(pickupAt, dropoffAt);
   const pricing = computePricing(vehicle.pricePerDay, days);
-  const fee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint) : 0;
+  const fee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint, feeTable) : 0;
 
   function update<K extends keyof TripDetails>(key: K, value: TripDetails[K]) {
     onChange({ [key]: value } as Partial<TripDetails>);
@@ -403,7 +406,6 @@ export default function TripDetailsStep({
               {fee > 0 && (
                 <p className="mt-2 text-sm text-midnight/70">
                   One-way fee: {formatMoney(fee, vehicle.currency)}
-                  <DemoTag inline label="Indicative Fee" />
                 </p>
               )}
             </div>
