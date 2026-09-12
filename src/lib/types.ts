@@ -168,3 +168,26 @@ export interface DocumentQueueItem {
   submittedOn: string;
   status: ApprovalStatus;
 }
+
+export type BookingStatus =
+  | "deposit_pending"
+  | "verification_pending"
+  | "settlement_pending"
+  | "confirmed"
+  | "cancelled";
+
+export interface AdminBooking {
+  id: string;
+  bookingRef: string;
+  status: BookingStatus;
+  startDate: string;
+  endDate: string;
+  totalAmount: number;
+  currency: string;
+  createdAt: string;
+  customerName: string | null;
+  vehicleLabel: string;
+  licensePlate: string;
+  /** True while this booking still withholds its vehicle from other customers. */
+  holdsVehicle: boolean;
+}

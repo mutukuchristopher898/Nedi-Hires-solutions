@@ -1,6 +1,8 @@
 import { createClient } from "./server";
 import type {
+  AdminBooking,
   ApprovalStatus,
+  BookingStatus,
   ContactMessage,
   PendingDocument,
   QuoteRequest,
@@ -163,5 +165,54 @@ export async function getPendingDocuments(): Promise<PendingDocument[]> {
     fileUrl: row.file_url,
     status: row.status,
     submittedAt: row.submitted_at,
+  }));
+}
+
+interface AdminBookingRow {
+  id: string;
+  booking_ref: string;
+  status: BookingStatus;
+  start_date: string;
+  end_date: string;
+  total_amount: number;
+  currency: string;
+  created_at: string;
+  profiles: { full_name: string | null } | null;
+  vehicles: { make: string; model: string; year: number; license_plate: string } | null;
+}
+
+// Admin-only: "Admins can view all bookings" (20260818120000) is what widens
+// this past the caller's own rows.
+export async function getAdminBookings(): Promise<AdminBooking[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("bookings")
+    .select(
+      "id, booking_ref, status, start_date, end_date, total_amount, currency, created_at, profiles(full_name), vehicles(make, model, year, license_plate)"
+    )
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(`Failed to load bookings: ${error.message}`);
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  return (data as unknown as AdminBookingRow[]).map((row) => ({
+    id: row.id,
+    bookingRef: row.booking_ref,
+    status: row.status,
+    startDate: row.start_date,
+    endDate: row.end_date,
+    totalAmount: row.total_amount,
+    currency: row.currency,
+    createdAt: row.created_at,
+    customerName: row.profiles?.full_name ?? null,
+    vehicleLabel: row.vehicles ? `${row.vehicles.make} ${row.vehicles.model} ${row.vehicles.year}` : "Unknown vehicle",
+    licensePlate: row.vehicles?.license_plate ?? "—",
+    // Mirrors enforce_vehicle_availability (20260911120000): anything not
+    // cancelled, whose dates haven't passed, is still withholding the car.
+    // The 30-minute grace on unconfirmed bookings isn't reflected here — this
+    // flag is for spotting what to release, and a booking inside its grace
+    // window is about to stop holding anyway.
+    holdsVehicle: row.status !== "cancelled" && row.end_date >= today,
   }));
 }
