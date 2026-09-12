@@ -1,4 +1,5 @@
 import StatusBadge from "@/components/StatusBadge";
+import DocumentPreview from "@/components/admin/DocumentPreview";
 import DocumentReviewActions from "@/components/admin/DocumentReviewActions";
 import { getPendingDocuments } from "@/lib/supabase/queries";
 import { requireRole } from "@/lib/supabase/authz";
@@ -40,6 +41,7 @@ export default async function AdminDocumentsPage() {
                   <th className="px-5 py-3">Customer</th>
                   <th className="px-5 py-3">Booking Ref</th>
                   <th className="px-5 py-3">Document</th>
+                  <th className="px-5 py-3">View</th>
                   <th className="px-5 py-3">Submitted</th>
                   <th className="px-5 py-3">Status</th>
                   <th className="px-5 py-3">Actions</th>
@@ -53,6 +55,9 @@ export default async function AdminDocumentsPage() {
                     </td>
                     <td className="px-5 py-3 font-mono text-xs text-midnight/70">{doc.bookingRef ?? "—"}</td>
                     <td className="px-5 py-3 text-midnight/70">{doc.docType}</td>
+                    <td className="px-5 py-3">
+                      <DocumentPreview signedUrl={doc.signedUrl} path={doc.fileUrl} docType={doc.docType} />
+                    </td>
                     <td className="px-5 py-3 text-midnight/70">{formatDate(doc.submittedAt)}</td>
                     <td className="px-5 py-3">
                       <StatusBadge status={doc.status} />

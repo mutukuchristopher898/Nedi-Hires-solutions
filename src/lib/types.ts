@@ -155,7 +155,10 @@ export interface PendingDocument {
   customerName: string | null;
   bookingRef: string | null;
   docType: string;
+  /** Storage path inside the private kyc-documents bucket. */
   fileUrl: string;
+  /** Short-lived signed URL for viewing it, or null if one couldn't be made. */
+  signedUrl: string | null;
   status: ApprovalStatus;
   submittedAt: string;
 }

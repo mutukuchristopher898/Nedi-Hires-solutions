@@ -152,12 +152,30 @@ export async function getPendingDocuments(): Promise<PendingDocument[]> {
 
   if (error) throw new Error(`Failed to load identity documents: ${error.message}`);
 
-  return (data as unknown as IdentityDocumentRow[]).map((row) => ({
+  const rows = data as unknown as IdentityDocumentRow[];
+
+  // kyc-documents is private, so a path is not something a browser can load.
+  // Signed here rather than in the page because only an admin session can
+  // sign these — "kyc_documents_admin_select" is what permits it.
+  //
+  // One hour: long enough to work through a queue, short enough that a URL
+  // copied out of the page stops working the same day.
+  const signed = await Promise.all(
+    rows.map(async (row) => {
+      const { data: signedData } = await supabase.storage
+        .from("kyc-documents")
+        .createSignedUrl(row.file_url, 60 * 60);
+      return signedData?.signedUrl ?? null;
+    })
+  );
+
+  return rows.map((row, i) => ({
     id: row.id,
     customerName: row.profiles?.full_name ?? null,
     bookingRef: row.bookings?.booking_ref ?? null,
     docType: row.doc_type,
     fileUrl: row.file_url,
+    signedUrl: signed[i],
     status: row.status,
     submittedAt: row.submitted_at,
   }));
