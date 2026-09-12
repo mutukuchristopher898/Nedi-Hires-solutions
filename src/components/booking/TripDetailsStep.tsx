@@ -16,7 +16,6 @@ import {
   type DurationUnit,
 } from "@/lib/duration";
 import { formatMoney } from "@/lib/data";
-import DemoTag from "@/components/DemoTag";
 import { Field, fieldProps, FormError, inputClass } from "./shared";
 import type { OneWayFeeTable } from "@/lib/duration";
 
@@ -100,7 +99,7 @@ export default function TripDetailsStep({
   const pickupAt = combineDateAndTime(trip.pickupDate, trip.pickupTime);
   const dropoffAt = combineDateAndTime(trip.dropoffDate, trip.dropoffTime);
   const days = effectiveDays(pickupAt, dropoffAt);
-  const pricing = computePricing(vehicle.pricePerDay, days);
+  const pricing = computePricing(vehicle.pricePerDay, days, vehicle.rates);
   const fee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint, feeTable) : 0;
 
   function update<K extends keyof TripDetails>(key: K, value: TripDetails[K]) {
@@ -367,7 +366,6 @@ export default function TripDetailsStep({
                 {" "}
                 · <span className="font-medium text-emerald-dark">{pricing.rateLabel}</span> — you save{" "}
                 {formatMoney(pricing.savingsAmount, vehicle.currency)}
-                <DemoTag inline label="Indicative Rate" />
               </>
             )}
           </p>

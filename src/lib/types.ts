@@ -231,6 +231,20 @@ export interface PartnerVehicle {
  * only ever lived in the illustrative catalogue, and a partner listing nobody
  * has hired yet cannot honestly have either.
  */
+/**
+ * The long-hire and deposit rates that apply to one vehicle, already resolved:
+ * the vehicle's own override where it has one, the platform default
+ * otherwise. Mirrors the coalesce in enforce_booking_money.
+ */
+export interface PricingRates {
+  weeklyThresholdDays: number;
+  weeklyDiscount: number;
+  monthlyThresholdDays: number;
+  monthlyDiscount: number;
+  reservationDepositRate: number;
+  securityDepositRate: number;
+}
+
 export interface VehicleListing {
   id: string;
   slug: string;
@@ -251,6 +265,7 @@ export interface VehicleListing {
   imageKey: string;
   partnerName: string | null;
   isDemo: boolean;
+  rates: PricingRates;
 }
 
 export interface VehicleFilters {

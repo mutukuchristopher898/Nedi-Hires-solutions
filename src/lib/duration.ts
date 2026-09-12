@@ -14,9 +14,14 @@
 // local time (never touching the runtime's local timezone at all) is both
 // simpler and fully immune to this class of bug, in the browser or on the
 // server, regardless of the visitor's or host's own timezone.
+import type { PricingRates } from "@/lib/types";
+
 export type DurationUnit = "hours" | "days" | "weeks" | "months";
 
 export const MAX_RENTAL_DAYS = 90;
+// Kept only as the shape of the seeded platform defaults — the live values
+// live in pricing_settings and each vehicle may override them. Nothing
+// computing a real price reads these any more.
 export const WEEKLY_THRESHOLD_DAYS = 7;
 export const MONTHLY_THRESHOLD_DAYS = 28;
 export const WEEKLY_DISCOUNT = 0.1;
@@ -39,12 +44,12 @@ export const MONTHLY_DISCOUNT = 0.25;
 export const RESERVATION_DEPOSIT_RATE = 0.3;
 export const SECURITY_DEPOSIT_RATE = 0.15;
 
-export function reservationDeposit(total: number): number {
-  return Math.round(total * RESERVATION_DEPOSIT_RATE);
+export function reservationDeposit(total: number, rates: PricingRates): number {
+  return Math.round(total * rates.reservationDepositRate);
 }
 
-export function securityDeposit(total: number): number {
-  return Math.round(total * SECURITY_DEPOSIT_RATE);
+export function securityDeposit(total: number, rates: PricingRates): number {
+  return Math.round(total * rates.securityDepositRate);
 }
 
 const NAIROBI_OFFSET_MS = 3 * 60 * 60 * 1000; // Africa/Nairobi is a fixed UTC+3, no DST.
@@ -145,19 +150,23 @@ export interface PricingResult {
 }
 
 // Flat whole-stay discount once a threshold is crossed — not a blended/
-// prorated engine. These two rates are still placeholders awaiting the
-// owner's real figures, which is why the UI still labels them indicative.
-// The one-way fee is no longer here: it is per-route data, editable at
-// /admin/pricing, with booking_one_way_fee() authoritative.
-export function computePricing(pricePerDay: number, days: number): PricingResult {
+// prorated engine. The rates are no longer constants: they come from the
+// vehicle's own overrides falling back to the platform defaults, both
+// editable at /admin/pricing. booking_price_total() in SQL is authoritative;
+// this mirrors it so the booking form can quote before anything is written.
+export function computePricing(
+  pricePerDay: number,
+  days: number,
+  rates: PricingRates,
+): PricingResult {
   const base = pricePerDay * days;
 
-  if (days >= MONTHLY_THRESHOLD_DAYS) {
-    const total = Math.round(base * (1 - MONTHLY_DISCOUNT));
+  if (days >= rates.monthlyThresholdDays) {
+    const total = Math.round(base * (1 - rates.monthlyDiscount));
     return { total, rateLabel: "Monthly rate applied", savingsAmount: base - total };
   }
-  if (days >= WEEKLY_THRESHOLD_DAYS) {
-    const total = Math.round(base * (1 - WEEKLY_DISCOUNT));
+  if (days >= rates.weeklyThresholdDays) {
+    const total = Math.round(base * (1 - rates.weeklyDiscount));
     return { total, rateLabel: "Weekly rate applied", savingsAmount: base - total };
   }
   return { total: base, rateLabel: null, savingsAmount: 0 };

@@ -39,7 +39,7 @@ export default function TripPage() {
     const pickupAt = combineDateAndTime(tripData.pickupDate, tripData.pickupTime);
     const dropoffAt = combineDateAndTime(tripData.dropoffDate, tripData.dropoffTime);
     const days = effectiveDays(pickupAt, dropoffAt);
-    const pricing = computePricing(vehicle.pricePerDay, days);
+    const pricing = computePricing(vehicle.pricePerDay, days, vehicle.rates);
     const fee = tripData.returnToDifferentLocation ? oneWayFee(tripData.pickupPoint, tripData.dropoffPoint, feeTable) : 0;
     const total = pricing.total + fee;
 
@@ -51,9 +51,9 @@ export default function TripPage() {
       end_date: tripData.dropoffDate,
       pickup_at: pickupAt.toISOString(),
       dropoff_at: dropoffAt.toISOString(),
-      deposit_amount: reservationDeposit(total),
+      deposit_amount: reservationDeposit(total, vehicle.rates),
       total_amount: total,
-      security_deposit: securityDeposit(total),
+      security_deposit: securityDeposit(total, vehicle.rates),
       currency: vehicle.currency,
       pickup_point: tripData.pickupPoint,
       destination: tripData.destination,

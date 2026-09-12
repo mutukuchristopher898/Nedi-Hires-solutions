@@ -29,16 +29,16 @@ export default function SettlementPage() {
   const pickupAt = combineDateAndTime(trip.pickupDate, trip.pickupTime);
   const dropoffAt = combineDateAndTime(trip.dropoffDate, trip.dropoffTime);
   const days = effectiveDays(pickupAt, dropoffAt);
-  const pricing = computePricing(vehicle.pricePerDay, days);
+  const pricing = computePricing(vehicle.pricePerDay, days, vehicle.rates);
   const estimatedFee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint, feeTable) : 0;
 
   // Prefer the database's figures; the local calculation is only a fallback.
   const total = draft.quote?.total ?? pricing.total + estimatedFee;
-  const security = draft.quote?.securityDeposit ?? securityDeposit(total);
+  const security = draft.quote?.securityDeposit ?? securityDeposit(total, vehicle.rates);
   // No Math.max clamp: with a percentage deposit this cannot go negative, and
   // the clamp is exactly what hid the old flat-KES-5,000 overcharge (a 3,200
   // rental asked 5,000 up front, then floored the difference to zero).
-  const remaining = total - (draft.quote?.deposit ?? reservationDeposit(total));
+  const remaining = total - (draft.quote?.deposit ?? reservationDeposit(total, vehicle.rates));
 
   async function handleCompletePayment() {
     if (!draft.bookingId) return;

@@ -7,6 +7,7 @@ import type {
   FuelType,
   PartnerAccount,
   PartnerVehicle,
+  PricingRates,
   Transmission,
   VehicleFilters,
   VehicleListing,
@@ -364,7 +365,7 @@ export async function getFleetCounts(): Promise<FleetCounts> {
 }
 
 const LISTING_COLUMNS =
-  "id, slug, make, model, year, classification, fuel_type, transmission, capacity, location, price_per_day, currency, description, features, photo_paths, image_key, partner_name, is_demo, partners(business_name)";
+  "id, slug, make, model, year, classification, fuel_type, transmission, capacity, location, price_per_day, currency, description, features, photo_paths, image_key, partner_name, is_demo, weekly_threshold_days, weekly_discount, monthly_threshold_days, monthly_discount, reservation_deposit_rate, security_deposit_rate, partners(business_name)";
 
 interface ListingRow {
   id: string;
@@ -385,10 +386,58 @@ interface ListingRow {
   image_key: string;
   partner_name: string | null;
   is_demo: boolean;
+  weekly_threshold_days: number | null;
+  weekly_discount: number | null;
+  monthly_threshold_days: number | null;
+  monthly_discount: number | null;
+  reservation_deposit_rate: number | null;
+  security_deposit_rate: number | null;
   partners?: { business_name: string } | null;
 }
 
-function toListing(row: ListingRow): VehicleListing {
+interface PricingDefaultsRow {
+  weekly_threshold_days: number;
+  weekly_discount: number;
+  monthly_threshold_days: number;
+  monthly_discount: number;
+  reservation_deposit_rate: number;
+  security_deposit_rate: number;
+}
+
+const PRICING_DEFAULT_COLUMNS =
+  "weekly_threshold_days, weekly_discount, monthly_threshold_days, monthly_discount, reservation_deposit_rate, security_deposit_rate";
+
+/**
+ * The platform defaults. A vehicle stores only what differs from these, so
+ * every listing needs them to resolve its own rates — mirroring the coalesce
+ * in enforce_booking_money, which stays authoritative.
+ */
+async function loadPricingDefaults(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+): Promise<PricingDefaultsRow> {
+  const { data, error } = await supabase
+    .from("pricing_settings")
+    .select(PRICING_DEFAULT_COLUMNS)
+    .maybeSingle();
+
+  if (error) throw new Error(`Failed to load pricing settings: ${error.message}`);
+  if (!data) throw new Error("Pricing settings row is missing");
+
+  return data as PricingDefaultsRow;
+}
+
+function resolveRates(row: ListingRow, defaults: PricingDefaultsRow): PricingRates {
+  return {
+    weeklyThresholdDays: Number(row.weekly_threshold_days ?? defaults.weekly_threshold_days),
+    weeklyDiscount: Number(row.weekly_discount ?? defaults.weekly_discount),
+    monthlyThresholdDays: Number(row.monthly_threshold_days ?? defaults.monthly_threshold_days),
+    monthlyDiscount: Number(row.monthly_discount ?? defaults.monthly_discount),
+    reservationDepositRate: Number(row.reservation_deposit_rate ?? defaults.reservation_deposit_rate),
+    securityDepositRate: Number(row.security_deposit_rate ?? defaults.security_deposit_rate),
+  };
+}
+
+function toListing(row: ListingRow, defaults: PricingDefaultsRow): VehicleListing {
   return {
     id: row.id,
     // Slug is the public URL. Every row has one: hand-written for the seeded
@@ -412,6 +461,7 @@ function toListing(row: ListingRow): VehicleListing {
     // the seeded rows carry, since they have no partner record.
     partnerName: row.partners?.business_name ?? row.partner_name,
     isDemo: row.is_demo,
+    rates: resolveRates(row, defaults),
   };
 }
 
@@ -434,24 +484,30 @@ export async function getApprovedVehicles(filters: VehicleFilters = {}): Promise
   if (filters.fuelType) query = query.eq("fuel_type", filters.fuelType);
   if (filters.transmission) query = query.eq("transmission", filters.transmission);
 
-  const { data, error } = await query.order("price_per_day", { ascending: true });
+  const [{ data, error }, defaults] = await Promise.all([
+    query.order("price_per_day", { ascending: true }),
+    loadPricingDefaults(supabase),
+  ]);
 
   if (error) throw new Error(`Failed to load vehicles: ${error.message}`);
-  return (data as unknown as ListingRow[]).map(toListing);
+  return (data as unknown as ListingRow[]).map((row) => toListing(row, defaults));
 }
 
 /** One approved vehicle by its public slug, or null. */
 export async function getApprovedVehicleBySlug(slug: string): Promise<VehicleListing | null> {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("vehicles")
-    .select(LISTING_COLUMNS)
-    .eq("slug", slug)
-    .eq("approval_status", "approved")
-    .maybeSingle();
+  const [{ data, error }, defaults] = await Promise.all([
+    supabase
+      .from("vehicles")
+      .select(LISTING_COLUMNS)
+      .eq("slug", slug)
+      .eq("approval_status", "approved")
+      .maybeSingle(),
+    loadPricingDefaults(supabase),
+  ]);
 
   if (error) throw new Error(`Failed to load vehicle: ${error.message}`);
-  return data ? toListing(data as unknown as ListingRow) : null;
+  return data ? toListing(data as unknown as ListingRow, defaults) : null;
 }
 
 /** The distinct pickup points that currently have an approved vehicle. */
@@ -575,4 +631,88 @@ export async function getRouteFees(): Promise<{ routes: RouteFee[]; defaultFee: 
     })),
     defaultFee: Number(settings?.default_one_way_fee ?? 0),
   };
+}
+
+export interface PricingDefaults {
+  weeklyThresholdDays: number;
+  weeklyDiscount: number;
+  monthlyThresholdDays: number;
+  monthlyDiscount: number;
+  reservationDepositRate: number;
+  securityDepositRate: number;
+  defaultOneWayFee: number;
+}
+
+export async function getPricingDefaults(): Promise<PricingDefaults> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("pricing_settings")
+    .select(`${PRICING_DEFAULT_COLUMNS}, default_one_way_fee`)
+    .maybeSingle();
+
+  if (error) throw new Error(`Failed to load pricing settings: ${error.message}`);
+  if (!data) throw new Error("Pricing settings row is missing");
+
+  const row = data as PricingDefaultsRow & { default_one_way_fee: number };
+  return {
+    weeklyThresholdDays: Number(row.weekly_threshold_days),
+    weeklyDiscount: Number(row.weekly_discount),
+    monthlyThresholdDays: Number(row.monthly_threshold_days),
+    monthlyDiscount: Number(row.monthly_discount),
+    reservationDepositRate: Number(row.reservation_deposit_rate),
+    securityDepositRate: Number(row.security_deposit_rate),
+    defaultOneWayFee: Number(row.default_one_way_fee),
+  };
+}
+
+export interface VehiclePricingRow {
+  id: string;
+  label: string;
+  licensePlate: string;
+  partnerName: string | null;
+  approvalStatus: ApprovalStatus;
+  pricePerDay: number;
+  currency: string;
+  /** Null means this vehicle inherits the platform default for that rate. */
+  overrides: {
+    weeklyThresholdDays: number | null;
+    weeklyDiscount: number | null;
+    monthlyThresholdDays: number | null;
+    monthlyDiscount: number | null;
+    reservationDepositRate: number | null;
+    securityDepositRate: number | null;
+  };
+}
+
+/** Every vehicle with its pricing overrides, for the admin pricing dashboard. */
+export async function getVehiclePricing(): Promise<VehiclePricingRow[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("vehicles")
+    .select(
+      "id, make, model, year, license_plate, partner_name, approval_status, price_per_day, currency, weekly_threshold_days, weekly_discount, monthly_threshold_days, monthly_discount, reservation_deposit_rate, security_deposit_rate, is_demo"
+    )
+    .eq("is_demo", false)
+    .order("approval_status")
+    .order("make");
+
+  if (error) throw new Error(`Failed to load vehicle pricing: ${error.message}`);
+
+  return (data as unknown as (ListingRow & { license_plate: string; approval_status: ApprovalStatus })[]).map((row) => ({
+    id: row.id,
+    label: `${row.make} ${row.model} ${row.year}`,
+    licensePlate: row.license_plate,
+    partnerName: row.partner_name,
+    approvalStatus: row.approval_status,
+    pricePerDay: Number(row.price_per_day),
+    currency: row.currency,
+    overrides: {
+      weeklyThresholdDays: row.weekly_threshold_days === null ? null : Number(row.weekly_threshold_days),
+      weeklyDiscount: row.weekly_discount === null ? null : Number(row.weekly_discount),
+      monthlyThresholdDays: row.monthly_threshold_days === null ? null : Number(row.monthly_threshold_days),
+      monthlyDiscount: row.monthly_discount === null ? null : Number(row.monthly_discount),
+      reservationDepositRate: row.reservation_deposit_rate === null ? null : Number(row.reservation_deposit_rate),
+      securityDepositRate: row.security_deposit_rate === null ? null : Number(row.security_deposit_rate),
+    },
+  }));
 }

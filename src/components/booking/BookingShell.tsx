@@ -79,7 +79,7 @@ function BookingShellInner({ vehicle, children }: { vehicle: VehicleListing; chi
   const pickupAt = combineDateAndTime(trip.pickupDate, trip.pickupTime);
   const dropoffAt = combineDateAndTime(trip.dropoffDate, trip.dropoffTime);
   const days = effectiveDays(pickupAt, dropoffAt);
-  const pricing = computePricing(vehicle.pricePerDay, days);
+  const pricing = computePricing(vehicle.pricePerDay, days, vehicle.rates);
   const fee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint, feeTable) : 0;
   const total = pricing.total + fee;
   const durationLabel = formatDurationLabel(trip.durationUnit, trip.durationQuantity);

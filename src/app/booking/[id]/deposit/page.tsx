@@ -30,7 +30,7 @@ export default function DepositPage() {
   const pickupAt = combineDateAndTime(trip.pickupDate, trip.pickupTime);
   const dropoffAt = combineDateAndTime(trip.dropoffDate, trip.dropoffTime);
   const days = effectiveDays(pickupAt, dropoffAt);
-  const pricing = computePricing(vehicle.pricePerDay, days);
+  const pricing = computePricing(vehicle.pricePerDay, days, vehicle.rates);
   const estimatedFee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint, feeTable) : 0;
   const durationLabel = formatDurationLabel(trip.durationUnit, trip.durationQuantity);
 
@@ -39,7 +39,7 @@ export default function DepositPage() {
   // only a fallback for a draft that predates the quote being captured.
   const total = draft.quote?.total ?? pricing.total + estimatedFee;
   const fee = draft.quote?.oneWayFee ?? estimatedFee;
-  const deposit = draft.quote?.deposit ?? reservationDeposit(total);
+  const deposit = draft.quote?.deposit ?? reservationDeposit(total, vehicle.rates);
 
   async function handlePayDeposit() {
     if (!draft.bookingId) return;

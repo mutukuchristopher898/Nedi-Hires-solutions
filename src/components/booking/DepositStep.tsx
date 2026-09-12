@@ -1,7 +1,6 @@
 "use client";
 
 import { formatMoney } from "@/lib/data";
-import DemoTag from "@/components/DemoTag";
 import { Row } from "./shared";
 
 export default function DepositStep({
@@ -43,7 +42,6 @@ export default function DepositStep({
             label={
               <>
                 {rateLabel} — you save {money(savingsAmount)}
-                <DemoTag inline label="Indicative Rate" />
               </>
             }
             value=""
