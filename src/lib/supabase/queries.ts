@@ -479,3 +479,54 @@ export async function getVehicleLocations(): Promise<string[]> {
   const seen = new Set((data as { location: string }[]).map((r) => r.location));
   return [...seen].sort();
 }
+
+export interface PublicFleetStats {
+  vehicles: number;
+  operators: number;
+  locations: number;
+}
+
+/**
+ * Figures for the public marketing pages, counted from live inventory.
+ *
+ * Deliberately not "trips completed" or "average rating": there is no reviews
+ * feature, and a trip count is either fabricated or too small to advertise.
+ * These three are honest at any scale and grow on their own.
+ */
+export async function getPublicFleetStats(): Promise<PublicFleetStats> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("vehicles")
+    .select("location, partner_name")
+    .eq("approval_status", "approved");
+
+  if (error) throw new Error(`Failed to load fleet statistics: ${error.message}`);
+
+  const rows = data as { location: string; partner_name: string | null }[];
+  return {
+    vehicles: rows.length,
+    operators: new Set(rows.map((r) => r.partner_name).filter(Boolean)).size,
+    locations: new Set(rows.map((r) => r.location)).size,
+  };
+}
+
+/**
+ * Operators with at least one approved vehicle, by name.
+ *
+ * Read from vehicles.partner_name rather than the partners table, which has no
+ * public select policy and holds contact details and document URLs that must
+ * not be public. See 20260912120000.
+ */
+export async function getPartnerNetwork(): Promise<string[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("vehicles")
+    .select("partner_name")
+    .eq("approval_status", "approved")
+    .not("partner_name", "is", null);
+
+  if (error) throw new Error(`Failed to load the partner network: ${error.message}`);
+
+  const names = new Set((data as { partner_name: string }[]).map((r) => r.partner_name));
+  return [...names].sort();
+}

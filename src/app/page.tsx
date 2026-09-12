@@ -1,10 +1,8 @@
 import Link from "next/link";
 import VehicleCard from "@/components/VehicleCard";
-import Testimonials from "@/components/Testimonials";
 import ServiceIcon from "@/components/ServiceIcon";
-import DemoTag from "@/components/DemoTag";
-import { partnerNetwork, services } from "@/lib/data";
-import { getApprovedVehicles } from "@/lib/supabase/queries";
+import { services } from "@/lib/data";
+import { getApprovedVehicles, getPartnerNetwork } from "@/lib/supabase/queries";
 import { site } from "@/lib/site";
 
 const STEPS = [
@@ -27,7 +25,8 @@ const STEPS = [
 
 export default async function Home() {
   // Live inventory, cheapest first, rather than a slice of the catalogue.
-  const featured = (await getApprovedVehicles()).slice(0, 4);
+  const [listings, network] = await Promise.all([getApprovedVehicles(), getPartnerNetwork()]);
+  const featured = listings.slice(0, 4);
   return (
     <div>
       <section className="relative overflow-hidden bg-midnight">
@@ -141,32 +140,20 @@ export default async function Home() {
         )}
       </section>
 
-      <section className="bg-offwhite py-14">
-        <div className="container-shell">
-          <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-bold text-midnight">What our customers say</h2>
-            <DemoTag />
+      {network.length > 0 && (
+        <section className="border-y border-line bg-white py-10">
+          <div className="container-shell">
+            <p className="text-center text-xs font-semibold uppercase tracking-wide text-midnight/40">
+              Powered by a partner network across Kenya
+            </p>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-medium text-midnight/60">
+              {network.map((name) => (
+                <span key={name}>{name}</span>
+              ))}
+            </div>
           </div>
-          <p className="mt-1 text-sm text-midnight/60">
-            Sample reviews illustrating the kind of feedback we aim to earn from diaspora
-            returnees, corporates, and tour groups.
-          </p>
-          <Testimonials />
-        </div>
-      </section>
-
-      <section className="border-y border-line bg-white py-10">
-        <div className="container-shell">
-          <p className="text-center text-xs font-semibold uppercase tracking-wide text-midnight/40">
-            Powered by a growing partner network across Kenya <DemoTag inline />
-          </p>
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-medium text-midnight/60">
-            {partnerNetwork.map((name) => (
-              <span key={name}>{name}</span>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="container-shell py-16">
         <div className="grid gap-6 rounded-2xl bg-midnight p-8 text-white sm:grid-cols-2 sm:items-center lg:p-12">

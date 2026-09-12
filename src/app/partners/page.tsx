@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { partnerNetwork } from "@/lib/data";
-import DemoTag from "@/components/DemoTag";
+import { getPartnerNetwork } from "@/lib/supabase/queries";
+
 
 export const metadata: Metadata = {
   title: "Become a Partner",
@@ -36,7 +36,8 @@ const CHANNELS = [
   },
 ];
 
-export default function PartnersPage() {
+export default async function PartnersPage() {
+  const network = await getPartnerNetwork();
   return (
     <div>
       <section className="bg-midnight py-16 text-white">
@@ -104,16 +105,14 @@ export default function PartnersPage() {
         </div>
       </section>
 
+      {network.length > 0 && (
       <section className="container-shell py-14">
-        <div className="flex items-center gap-2">
-          <h2 className="text-2xl font-bold text-midnight">Our Current Partner Network</h2>
-          <DemoTag />
-        </div>
+        <h2 className="text-2xl font-bold text-midnight">Our Current Partner Network</h2>
         <p className="mt-1 text-sm text-midnight/60">
           Fleet operators and tour agencies already listing verified vehicles with us.
         </p>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {partnerNetwork.map((name) => (
+          {network.map((name) => (
             <div key={name} className="flex items-center gap-3 rounded-xl bg-white p-4 ring-1 ring-line">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold/10 text-sm font-bold text-gold-dark">
                 {name
@@ -127,6 +126,7 @@ export default function PartnersPage() {
           ))}
         </div>
       </section>
+      )}
     </div>
   );
 }

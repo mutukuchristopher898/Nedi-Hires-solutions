@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LogoLockup } from "@/components/Logo";
-import Testimonials from "@/components/Testimonials";
-import DemoTag from "@/components/DemoTag";
 import { site } from "@/lib/site";
+import { getPublicFleetStats } from "@/lib/supabase/queries";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -11,13 +10,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/about" },
   openGraph: { title: "About Us", description: "Nedi Hires Solutions connects travellers, businesses and everyday drivers with a verified network of self-drive and chauffeur-driven vehicles across Kenya.", url: "/about" },
 };
-
-const STATS = [
-  { label: "Vehicles in Network", value: "50+" },
-  { label: "Trips Completed", value: "1,200+" },
-  { label: "Partner Fleets", value: "6" },
-  { label: "Average Rating", value: "4.8/5" },
-];
 
 const VALUES = [
   {
@@ -34,7 +26,8 @@ const VALUES = [
   },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const stats = await getPublicFleetStats();
   return (
     <div>
       <section className="bg-midnight py-16 text-white">
@@ -76,15 +69,9 @@ export default function AboutPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2 -mb-2 flex justify-end">
-              <DemoTag />
-            </div>
-            {STATS.map((s) => (
-              <div key={s.label} className="rounded-xl bg-white p-5 text-center ring-1 ring-line">
-                <div className="text-2xl font-bold text-gold-dark">{s.value}</div>
-                <div className="mt-1 text-xs text-midnight/60">{s.label}</div>
-              </div>
-            ))}
+            <Stat value={stats.vehicles} label={stats.vehicles === 1 ? "Vehicle available" : "Vehicles available"} />
+            <Stat value={stats.operators} label={stats.operators === 1 ? "Partner operator" : "Partner operators"} />
+            <Stat value={stats.locations} label={stats.locations === 1 ? "Pickup location" : "Pickup locations"} />
           </div>
         </div>
       </section>
@@ -103,14 +90,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="container-shell py-14">
-        <div className="flex items-center gap-2">
-          <h2 className="text-2xl font-bold text-midnight">What our customers say</h2>
-          <DemoTag />
-        </div>
-        <Testimonials />
-      </section>
-
       <section className="container-shell pb-16">
         <div className="flex flex-col items-center gap-4 rounded-2xl bg-midnight p-10 text-center text-white">
           <h2 className="text-2xl font-bold">Ready to book your next trip?</h2>
@@ -124,6 +103,15 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+    </div>
+  );
+}
+
+function Stat({ value, label }: { value: number; label: string }) {
+  return (
+    <div className="rounded-xl bg-white p-5 text-center ring-1 ring-line">
+      <div className="text-2xl font-bold text-gold-dark">{value}</div>
+      <div className="mt-1 text-xs text-midnight/60">{label}</div>
     </div>
   );
 }

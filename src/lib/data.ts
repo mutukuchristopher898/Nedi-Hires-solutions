@@ -5340,45 +5340,7 @@ export const services = [
   { title: "Event Transport", copy: "Bulk and high-capacity transit for weddings, conferences, and group events." },
 ];
 
-export const testimonials = [
-  {
-    name: "Amara Okonkwo",
-    segment: "Diaspora Returnee",
-    quote:
-      "Landed at JKIA at midnight and the Harrier was waiting, verification was quick, and the whole handoff felt effortless.",
-    rating: 5,
-  },
-  {
-    name: "David Kiptoo",
-    segment: "Corporate Client",
-    quote:
-      "We've moved our whole executive fleet booking to Nedi Hires. Invoicing is clean and the chauffeurs are always on time.",
-    rating: 5,
-  },
-  {
-    name: "Sophie Laurent",
-    segment: "Tour Group Leader",
-    quote:
-      "Booked a Land Cruiser with a pop-up roof for our safari group — the vehicle and guide made the trip memorable.",
-    rating: 5,
-  },
-  {
-    name: "Grace Wanjiru",
-    segment: "Everyday Consumer",
-    quote:
-      "Rent a car for the weekend without the hassle. The subscription plan has genuinely replaced owning a second car for us.",
-    rating: 4,
-  },
-];
 
-export const partnerNetwork = [
-  "Nairobi Wheels Ltd",
-  "Rift Valley Rides",
-  "Coastal Safari Fleet",
-  "Prestige Motors Kenya",
-  "Lakeside Tours & Travel",
-  "EastAfrica Group Transit",
-];
 
 export function formatMoney(amount: number, currency: string = "KES") {
   return `${currency} ${Math.round(amount).toLocaleString()}`;
