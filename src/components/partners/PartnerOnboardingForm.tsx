@@ -114,6 +114,15 @@ export default function PartnerOnboardingForm({
     setSavingAccount(false);
 
     if (error) {
+      // A second tab, or a resubmit, hitting the one-account-per-owner index.
+      // The account exists, which is what the person wanted — say so and move
+      // them on rather than showing a constraint violation.
+      if (error.code === "23505") {
+        setAccountFormError(
+          "You already have a partner account. Reload this page to carry on listing a vehicle."
+        );
+        return;
+      }
       setAccountFormError(error.message);
       return;
     }

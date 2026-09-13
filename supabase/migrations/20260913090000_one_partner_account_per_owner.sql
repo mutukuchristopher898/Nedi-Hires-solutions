@@ -1,0 +1,33 @@
+-- One partner account per person.
+--
+-- The application has always assumed this — getMyPartnerAccount() uses
+-- maybeSingle(), and the onboarding form skips the business step when it finds
+-- an existing account — but nothing enforced it. Two rows for one owner would
+-- make maybeSingle() throw, which permanently breaks both
+-- /partners/dashboard and /partners/onboarding with no way back through the
+-- UI: the dashboard is where you would go to see the problem, and it is one of
+-- the pages that fails.
+--
+-- The client disables the submit button while saving, which does nothing about
+-- two browser tabs, and nothing at all about a direct POST.
+--
+-- ─────────────────────────────────────────────────────────────
+-- BEFORE YOU RUN THIS
+--
+-- The index will refuse to build if a duplicate already exists. This should
+-- return zero rows:
+--
+--   select owner_profile_id, count(*)
+--   from partners group by owner_profile_id having count(*) > 1;
+--
+-- If it returns anything, decide which row to keep before applying. Vehicles
+-- point at a specific partner_id, so check what is attached to each first:
+--
+--   select p.id, p.business_name, p.created_at, count(v.id) as vehicles
+--   from partners p left join vehicles v on v.partner_id = p.id
+--   group by p.id, p.business_name, p.created_at
+--   order by p.owner_profile_id, p.created_at;
+-- ─────────────────────────────────────────────────────────────
+
+create unique index if not exists partners_owner_profile_id_key
+  on public.partners (owner_profile_id);
