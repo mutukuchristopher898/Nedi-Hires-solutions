@@ -34,12 +34,12 @@ export default function VerificationPage() {
     }
 
     patchDraft({ furthestStepReached: "settlement" });
-    router.push(`/booking/${vehicle.id}/settlement`);
+    router.push(`/booking/${vehicle.slug}/settlement`);
   }
 
   return (
     <>
-      <WizardNav vehicleId={vehicle.id} current="verification" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
+      <WizardNav vehicleId={vehicle.slug} current="verification" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
 
       {error && <FormError message={error} className="mb-4" />}
 

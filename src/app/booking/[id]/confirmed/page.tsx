@@ -11,7 +11,7 @@ export default function ConfirmedPage() {
 
   return (
     <>
-      <WizardNav vehicleId={vehicle.id} current="confirmed" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
+      <WizardNav vehicleId={vehicle.slug} current="confirmed" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
       <ConfirmedStep bookingRef={draft.bookingRef} trip={draft.trip} />
     </>
   );

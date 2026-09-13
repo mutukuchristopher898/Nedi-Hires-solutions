@@ -113,7 +113,7 @@ export default function ApplicantPage() {
         applicantName,
         furthestStepReached: "selfie",
       });
-      router.push(`/booking/${vehicle.id}/selfie`);
+      router.push(`/booking/${vehicle.slug}/selfie`);
     } catch (err) {
       setSaving(false);
       setError(err instanceof Error ? err.message : "Could not submit your details. Please try again.");
@@ -122,7 +122,7 @@ export default function ApplicantPage() {
 
   return (
     <>
-      <WizardNav vehicleId={vehicle.id} current="applicant" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
+      <WizardNav vehicleId={vehicle.slug} current="applicant" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
 
       {error && <FormError message={error} className="mb-4" />}
 

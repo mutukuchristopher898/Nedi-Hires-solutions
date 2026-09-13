@@ -48,7 +48,7 @@ export default function SelfiePage() {
 
       setSaving(false);
       patchDraft({ furthestStepReached: "agreement" });
-      router.push(`/booking/${vehicle.id}/agreement`);
+      router.push(`/booking/${vehicle.slug}/agreement`);
     } catch (err) {
       setSaving(false);
       setError(err instanceof Error ? err.message : "Could not submit your selfie. Please try again.");
@@ -57,7 +57,7 @@ export default function SelfiePage() {
 
   return (
     <>
-      <WizardNav vehicleId={vehicle.id} current="selfie" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
+      <WizardNav vehicleId={vehicle.slug} current="selfie" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
 
       {error && <FormError message={error} className="mb-4" />}
 

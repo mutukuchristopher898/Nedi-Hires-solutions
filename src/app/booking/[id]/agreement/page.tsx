@@ -40,12 +40,12 @@ export default function AgreementPage() {
     }
 
     patchDraft({ furthestStepReached: "deposit" });
-    router.push(`/booking/${vehicle.id}/deposit`);
+    router.push(`/booking/${vehicle.slug}/deposit`);
   }
 
   return (
     <>
-      <WizardNav vehicleId={vehicle.id} current="agreement" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
+      <WizardNav vehicleId={vehicle.slug} current="agreement" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
 
       {error && <FormError message={error} className="mb-4" />}
 
