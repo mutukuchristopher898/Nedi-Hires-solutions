@@ -8,6 +8,7 @@ import { validatePhoneNumber } from "@/lib/documentValidation/phoneValidation";
 import { validateEmail } from "@/lib/formValidation/email";
 import { validateMessage } from "@/lib/formValidation/freeText";
 import { fieldProps, FormError } from "@/components/forms/shared";
+import { RATE_LIMITED_MESSAGE } from "@/lib/bookingErrors";
 
 export default function ContactForm() {
   const { user } = useAuth();
@@ -73,7 +74,11 @@ export default function ContactForm() {
     setSending(false);
 
     if (error) {
-      setFormError("We couldn't send your message just now. Please try again, or reach us on WhatsApp.");
+      setFormError(
+        error.code === "54000"
+          ? RATE_LIMITED_MESSAGE
+          : "We couldn't send your message just now. Please try again, or reach us on WhatsApp."
+      );
       return;
     }
 

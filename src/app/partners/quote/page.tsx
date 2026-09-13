@@ -8,6 +8,7 @@ import { validateBusinessName } from "@/lib/formValidation/businessName";
 import { validateEmail } from "@/lib/formValidation/email";
 import { validatePhoneNumber } from "@/lib/documentValidation/phoneValidation";
 import { fieldProps, FormError } from "@/components/forms/shared";
+import { RATE_LIMITED_MESSAGE } from "@/lib/bookingErrors";
 
 export default function PartnerQuotePage() {
   const { user, profile, ready } = useAuth();
@@ -57,7 +58,7 @@ export default function PartnerQuotePage() {
     setSubmitting(false);
 
     if (insertError) {
-      setError(insertError.message);
+      setError(insertError.code === "54000" ? RATE_LIMITED_MESSAGE : insertError.message);
       return;
     }
 
