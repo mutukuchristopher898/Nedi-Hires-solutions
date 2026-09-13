@@ -144,8 +144,12 @@ export async function getPendingDocuments(): Promise<PendingDocument[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("identity_documents")
+    // profiles has to be disambiguated: identity_documents references it twice,
+    // as customer_id and reviewed_by. Left unqualified, PostgREST refuses to
+    // embed at all and this query throws — taking the admin overview and the
+    // verification queue down with it.
     .select(
-      "id, doc_type, file_url, status, submitted_at, bookings(booking_ref), profiles(full_name)"
+      "id, doc_type, file_url, status, submitted_at, bookings(booking_ref), profiles!identity_documents_customer_id_fkey(full_name)"
     )
     .order("submitted_at", { ascending: false })
     .limit(200);
@@ -167,9 +171,12 @@ export async function getPendingDocuments(): Promise<PendingDocument[]> {
   const signedByPath = new Map<string, string>();
 
   if (rows.length > 0) {
+    // Deliberately tolerant: a failure to sign should cost the previews, not
+    // the page. The queue is still reviewable without thumbnails.
     const { data: signedData } = await supabase.storage
       .from("kyc-documents")
-      .createSignedUrls(rows.map((row) => row.file_url), 60 * 60);
+      .createSignedUrls(rows.map((row) => row.file_url), 60 * 60)
+      .catch(() => ({ data: null }));
 
     for (const entry of signedData ?? []) {
       // Each entry carries its own error: one unreadable object must not cost
@@ -793,4 +800,17 @@ export async function getAdminAccounts(): Promise<AdminAccount[]> {
     bookingCount: row.bookings?.[0]?.count ?? 0,
     partnerName: row.partners?.[0]?.business_name ?? null,
   }));
+}
+
+
+/** Just the number, for the admin overview — it never needed the documents. */
+export async function getPendingDocumentCount(): Promise<number> {
+  const supabase = await createClient();
+  const { count, error } = await supabase
+    .from("identity_documents")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "pending");
+
+  if (error) throw new Error(`Failed to count identity documents: ${error.message}`);
+  return count ?? 0;
 }

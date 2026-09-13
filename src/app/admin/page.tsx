@@ -1,13 +1,12 @@
 import Link from "next/link";
-import { getContactMessages, getFleetCounts, getPendingDocuments } from "@/lib/supabase/queries";
+import { getContactMessages, getFleetCounts, getPendingDocumentCount } from "@/lib/supabase/queries";
 
 export default async function AdminOverviewPage() {
-  const [documents, messages, fleet] = await Promise.all([
-    getPendingDocuments(),
+  const [pendingDocs, messages, fleet] = await Promise.all([
+    getPendingDocumentCount(),
     getContactMessages(),
     getFleetCounts(),
   ]);
-  const pendingDocs = documents.filter((d) => d.status === "pending").length;
   const newMessages = messages.filter((m) => m.status === "new").length;
 
   return (
