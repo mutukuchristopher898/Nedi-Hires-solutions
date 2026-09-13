@@ -812,10 +812,13 @@ export interface AdminAccount {
   fullName: string;
   email: string | null;
   phone: string | null;
-  role: "customer" | "partner" | "admin";
+  role: "customer" | "partner" | "staff" | "admin";
   createdAt: string;
   bookingCount: number;
   partnerName: string | null;
+  suspendedAt: string | null;
+  suspensionReason: string | null;
+  anonymisedAt: string | null;
 }
 
 /**
@@ -830,7 +833,7 @@ export async function getAdminAccounts(): Promise<AdminAccount[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, full_name, email, phone, role, created_at, bookings(count), partners(business_name)")
+    .select("id, full_name, email, phone, role, created_at, suspended_at, suspension_reason, anonymised_at, bookings(count), partners(business_name)")
     .order("created_at", { ascending: false });
 
   if (error) throw new Error(`Failed to load accounts: ${error.message}`);
@@ -842,6 +845,9 @@ export async function getAdminAccounts(): Promise<AdminAccount[]> {
     phone: string | null;
     role: AdminAccount["role"];
     created_at: string;
+    suspended_at: string | null;
+    suspension_reason: string | null;
+    anonymised_at: string | null;
     bookings: { count: number }[];
     partners: { business_name: string }[];
   }[]).map((row) => ({
@@ -853,6 +859,9 @@ export async function getAdminAccounts(): Promise<AdminAccount[]> {
     createdAt: row.created_at,
     bookingCount: row.bookings?.[0]?.count ?? 0,
     partnerName: row.partners?.[0]?.business_name ?? null,
+    suspendedAt: row.suspended_at,
+    suspensionReason: row.suspension_reason,
+    anonymisedAt: row.anonymised_at,
   }));
 }
 
@@ -1124,5 +1133,95 @@ export async function getAdminVehicleById(id: string): Promise<AdminVehicle | nu
     rejectionReason: row.rejection_reason,
     imageKey: row.image_key,
     isDemo: row.is_demo,
+  };
+}
+
+export interface AccountDetail extends AdminAccount {
+  bookings: AdminBooking[];
+  documents: PendingDocument[];
+  enquiryCount: number;
+}
+
+/** Everything about one account in one place, which is what a support call needs. */
+export async function getAccountDetail(id: string): Promise<AccountDetail | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, full_name, email, phone, role, created_at, suspended_at, suspension_reason, anonymised_at, partners(business_name)")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) throw new Error(`Failed to load the account: ${error.message}`);
+  if (!data) return null;
+
+  const row = data as unknown as {
+    id: string; full_name: string; email: string | null; phone: string | null;
+    role: AdminAccount["role"]; created_at: string;
+    suspended_at: string | null; suspension_reason: string | null; anonymised_at: string | null;
+    partners: { business_name: string }[];
+  };
+
+  const [bookingsResult, documentsResult, enquiriesResult] = await Promise.all([
+    supabase
+      .from("bookings")
+      .select("id, booking_ref, status, start_date, end_date, total_amount, currency, created_at, profiles(full_name), vehicles(make, model, year, license_plate)")
+      .eq("customer_id", id)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("identity_documents")
+      .select("id, doc_type, file_url, status, submitted_at, bookings(booking_ref), profiles!identity_documents_customer_id_fkey(full_name)")
+      .eq("customer_id", id)
+      .order("submitted_at", { ascending: false }),
+    supabase
+      .from("contact_messages")
+      .select("id", { count: "exact", head: true })
+      .eq("sender_profile_id", id),
+  ]);
+
+  if (bookingsResult.error) throw new Error(`Failed to load bookings: ${bookingsResult.error.message}`);
+  if (documentsResult.error) throw new Error(`Failed to load documents: ${documentsResult.error.message}`);
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  return {
+    id: row.id,
+    fullName: row.full_name,
+    email: row.email,
+    phone: row.phone,
+    role: row.role,
+    createdAt: row.created_at,
+    partnerName: row.partners?.[0]?.business_name ?? null,
+    suspendedAt: row.suspended_at,
+    suspensionReason: row.suspension_reason,
+    anonymisedAt: row.anonymised_at,
+    bookingCount: (bookingsResult.data ?? []).length,
+    enquiryCount: enquiriesResult.count ?? 0,
+    bookings: (bookingsResult.data as unknown as AdminBookingRow[]).map((b) => ({
+      id: b.id,
+      bookingRef: b.booking_ref,
+      status: b.status,
+      startDate: b.start_date,
+      endDate: b.end_date,
+      totalAmount: b.total_amount,
+      currency: b.currency,
+      createdAt: b.created_at,
+      customerName: b.profiles?.full_name ?? null,
+      vehicleLabel: b.vehicles ? `${b.vehicles.make} ${b.vehicles.model} ${b.vehicles.year}` : "Unknown vehicle",
+      licensePlate: b.vehicles?.license_plate ?? "—",
+      holdsVehicle: b.status !== "cancelled" && b.end_date >= today,
+    })),
+    documents: (documentsResult.data as unknown as IdentityDocumentRow[]).map((d) => ({
+      id: d.id,
+      customerName: d.profiles?.full_name ?? null,
+      bookingRef: d.bookings?.booking_ref ?? null,
+      docType: d.doc_type,
+      fileUrl: d.file_url,
+      // Signed separately on the page that needs previews; the account view
+      // lists what exists rather than rendering every document.
+      signedUrl: null,
+      status: d.status,
+      submittedAt: d.submitted_at,
+    })),
   };
 }

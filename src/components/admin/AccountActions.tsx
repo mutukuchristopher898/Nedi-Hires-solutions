@@ -93,6 +93,7 @@ export default function AccountActions({
         >
           <option value="customer">Customer</option>
           <option value="partner">Partner</option>
+          <option value="staff">Staff</option>
           <option value="admin">Admin</option>
         </select>
 

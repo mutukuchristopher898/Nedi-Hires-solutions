@@ -1,8 +1,10 @@
+import Link from "next/link";
 import AccountActions from "@/components/admin/AccountActions";
 import { requireRole } from "@/lib/supabase/authz";
 import { getAdminAccounts } from "@/lib/supabase/queries";
 
 const ROLE_STYLES: Record<string, string> = {
+  staff: "bg-charcoal-soft/10 text-charcoal-soft ring-1 ring-charcoal-soft/30",
   admin: "bg-gold/10 text-gold-dark ring-1 ring-gold/30",
   partner: "bg-emerald/10 text-emerald-dark ring-1 ring-emerald/30",
   customer: "bg-midnight/5 text-midnight/60 ring-1 ring-midnight/10",
@@ -39,13 +41,24 @@ export default async function AdminAccountsPage() {
               <article key={a.id} className="flex flex-wrap items-start justify-between gap-3 rounded-2xl bg-white p-4 ring-1 ring-line">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="font-semibold text-midnight">{a.fullName}</h2>
+                    <Link href={`/admin/accounts/${a.id}`} className="font-semibold text-midnight hover:text-gold-dark">
+                      {a.fullName}
+                    </Link>
                     <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${ROLE_STYLES[a.role]}`}>
                       {a.role}
                     </span>
                     {a.partnerName && (
                       <span className="text-xs text-midnight/50">{a.partnerName}</span>
                     )}
+                    {a.anonymisedAt ? (
+                      <span className="rounded-full bg-midnight/5 px-2.5 py-1 text-xs font-medium text-midnight/50 ring-1 ring-midnight/10">
+                        erased
+                      </span>
+                    ) : a.suspendedAt ? (
+                      <span className="rounded-full bg-amber/10 px-2.5 py-1 text-xs font-medium text-amber ring-1 ring-amber/30">
+                        suspended
+                      </span>
+                    ) : null}
                   </div>
                   <p className="mt-0.5 text-sm text-midnight/60">
                     {a.email ?? <span className="text-midnight/40">no email on file</span>}
