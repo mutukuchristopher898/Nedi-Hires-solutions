@@ -15,10 +15,26 @@ export default function SignInPage() {
   );
 }
 
+const LINK_ERRORS: Record<string, string> = {
+  link_invalid:
+    "That link didn't carry a sign-in code. Request a new password reset below, and open the link in this same browser.",
+  link_expired:
+    "That link has expired or was already used. Password reset links work once and time out quickly — request a new one below.",
+  link_incomplete:
+    "That link didn't complete the sign-in. Request a new password reset below, and open it in the same browser you requested it from.",
+};
+
 function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") || "/account";
+
+  // The auth callback redirects here with a reason when an emailed link
+  // doesn't work. Without showing it, a failed reset looked identical to a
+  // blank sign-in page — which is why "the link is broken" was impossible to
+  // diagnose from the outside.
+  const linkError = LINK_ERRORS[searchParams.get("error") ?? ""] ?? null;
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -61,8 +77,8 @@ function SignInForm() {
       </p>
 
       <form noValidate className="mt-6 space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line" onSubmit={handleSubmit}>
-        {error && (
-          <FormError message={error} details={fieldErrors} />
+        {(error || linkError) && (
+          <FormError message={error ?? linkError!} details={fieldErrors} />
         )}
 
         <label className="block">

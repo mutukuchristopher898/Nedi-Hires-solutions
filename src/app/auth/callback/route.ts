@@ -15,8 +15,18 @@ export async function GET(request: Request) {
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/account";
 
+  // Only relative paths, so a crafted ?next= cannot bounce someone off-site
+  // with a freshly minted session.
+  const destination = next.startsWith("/") ? next : "/account";
+
   if (!code) {
-    return NextResponse.redirect(`${origin}/account/sign-in?error=link_invalid`);
+    // Supabase can also return the session in the URL fragment
+    // (#access_token=...), which browsers never send to a server — so this
+    // route genuinely cannot see it. Hand off to a client page instead: a
+    // redirect preserves the fragment, and the browser client can read it.
+    return NextResponse.redirect(
+      `${origin}/auth/finish?next=${encodeURIComponent(destination)}`
+    );
   }
 
   const supabase = await createClient();
@@ -28,8 +38,5 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/account/sign-in?error=link_expired`);
   }
 
-  // Only relative paths, so a crafted ?next= cannot bounce someone off-site
-  // with a freshly minted session.
-  const destination = next.startsWith("/") ? next : "/account";
   return NextResponse.redirect(`${origin}${destination}`);
 }
