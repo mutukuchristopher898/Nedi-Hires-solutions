@@ -190,7 +190,7 @@ export default function PartnerOnboardingForm({
       // be approved, so nothing is inserted until the uploads have landed.
       const photoPaths: string[] = [];
       for (const photo of photos) {
-        photoPaths.push(await uploadVehiclePhoto({ userId, file: photo }));
+        photoPaths.push(await uploadVehiclePhoto({ file: photo }));
       }
 
       const supabase = createClient();

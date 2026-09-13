@@ -1,7 +1,5 @@
-import { createClient } from "./client";
 import {
   MAX_VEHICLE_PHOTO_LABEL,
-  VEHICLE_PHOTO_EXTENSION_BY_TYPE,
   isAllowedVehiclePhoto,
   isVehiclePhotoWithinLimit,
 } from "@/lib/uploads";
@@ -16,12 +14,12 @@ const BUCKET = "vehicle-photos";
 // bucket is public, so the stored path resolves to a permanent public URL —
 // see publicVehiclePhotoUrl below.
 export async function uploadVehiclePhoto({
-  userId,
   file,
 }: {
-  userId: string;
   file: File;
 }): Promise<string> {
+  // Client-side checks are for a fast, clear error — the route re-checks all
+  // of this, and the route is what actually decides.
   if (!isAllowedVehiclePhoto(file)) {
     throw new Error("Photos must be JPG, PNG or WebP.");
   }
@@ -29,19 +27,21 @@ export async function uploadVehiclePhoto({
     throw new Error(`Each photo must be ${MAX_VEHICLE_PHOTO_LABEL} or smaller.`);
   }
 
-  const supabase = createClient();
+  // Routed through the server rather than posted straight to storage, so the
+  // image can be re-encoded: that is the only place EXIF — and the GPS
+  // coordinates in it — can actually be stripped before a public bucket
+  // serves the file. See src/app/api/vehicle-photo/route.ts.
+  const body = new FormData();
+  body.append("file", file);
 
-  // From the validated type, never from file.name — see uploadKycFile.
-  const extension = VEHICLE_PHOTO_EXTENSION_BY_TYPE[file.type];
-  const unique = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-  const path = `${userId}/${unique}.${extension}`;
+  const response = await fetch("/api/vehicle-photo", { method: "POST", body });
+  const result = (await response.json().catch(() => ({}))) as { path?: string; error?: string };
 
-  const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
-    contentType: file.type,
-  });
+  if (!response.ok || !result.path) {
+    throw new Error(result.error ?? "Upload failed. Check your connection and try again.");
+  }
 
-  if (error) throw error;
-  return path;
+  return result.path;
 }
 
 /**
