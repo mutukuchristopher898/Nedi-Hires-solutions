@@ -1,5 +1,6 @@
 import { createClient } from "./server";
 import { oneWayFeeKey, type OneWayFeeTable } from "@/lib/duration";
+import { OPTION_LIST_FALLBACKS, type OptionList } from "@/lib/optionLists";
 import {
   ABSOLUTE_RESULT_CAP,
   DEFAULT_PAGE_SIZE,
@@ -1224,4 +1225,54 @@ export async function getAccountDetail(id: string): Promise<AccountDetail | null
       submittedAt: d.submitted_at,
     })),
   };
+}
+
+export interface AdminOption {
+  list: OptionList;
+  value: string;
+  sortOrder: number;
+  active: boolean;
+}
+
+/**
+ * Active values for one list, in order.
+ *
+ * Falls back to the built-in list rather than throwing. These populate forms
+ * on public pages, and a missing table or a transient failure should degrade
+ * to the previous behaviour rather than take a page down.
+ */
+export async function getOptions(list: OptionList): Promise<string[]> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("admin_options")
+      .select("value, sort_order")
+      .eq("list", list)
+      .eq("active", true)
+      .order("sort_order");
+
+    if (error || !data || data.length === 0) return OPTION_LIST_FALLBACKS[list];
+    return (data as { value: string }[]).map((row) => row.value);
+  } catch {
+    return OPTION_LIST_FALLBACKS[list];
+  }
+}
+
+/** Every option including retired ones, for the Settings screen. */
+export async function getAllOptions(): Promise<AdminOption[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("admin_options")
+    .select("list, value, sort_order, active")
+    .order("list")
+    .order("sort_order");
+
+  if (error) throw new Error(`Failed to load option lists: ${error.message}`);
+
+  return (data as { list: OptionList; value: string; sort_order: number; active: boolean }[]).map((row) => ({
+    list: row.list,
+    value: row.value,
+    sortOrder: row.sort_order,
+    active: row.active,
+  }));
 }

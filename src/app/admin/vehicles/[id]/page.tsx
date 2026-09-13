@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import VehicleForm from "@/components/admin/VehicleForm";
 import AuditChanges from "@/components/admin/AuditChanges";
 import { requireRole } from "@/lib/supabase/authz";
-import { getAdminVehicleById, getPartnerOptions, getAuditLog } from "@/lib/supabase/queries";
+import { getAdminVehicleById, getPartnerOptions, getAuditLog, getOptions } from "@/lib/supabase/queries";
 
 function formatWhen(iso: string) {
   return new Date(iso).toLocaleString("en-KE", {
@@ -15,7 +15,12 @@ export default async function EditVehiclePage({ params }: { params: Promise<{ id
   await requireRole(["staff", "admin"], "/admin/vehicles");
   const { id } = await params;
 
-  const [vehicle, partners] = await Promise.all([getAdminVehicleById(id), getPartnerOptions()]);
+  const [vehicle, partners, featureOptions, locationOptions] = await Promise.all([
+    getAdminVehicleById(id),
+    getPartnerOptions(),
+    getOptions("vehicle_feature"),
+    getOptions("pickup_location"),
+  ]);
   if (!vehicle) notFound();
 
   // Recent activity for this record, which is the question an operator
@@ -46,7 +51,7 @@ export default async function EditVehiclePage({ params }: { params: Promise<{ id
         </p>
       )}
 
-      <VehicleForm vehicle={vehicle} partners={partners} />
+      <VehicleForm vehicle={vehicle} partners={partners} featureOptions={featureOptions} locationOptions={locationOptions} />
 
       <section className="mt-8">
         <h2 className="text-lg font-semibold text-midnight">Recent activity</h2>

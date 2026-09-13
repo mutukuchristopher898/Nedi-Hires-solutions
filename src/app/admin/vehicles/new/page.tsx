@@ -1,11 +1,15 @@
 import Link from "next/link";
 import VehicleForm from "@/components/admin/VehicleForm";
 import { requireRole } from "@/lib/supabase/authz";
-import { getPartnerOptions } from "@/lib/supabase/queries";
+import { getPartnerOptions, getOptions } from "@/lib/supabase/queries";
 
 export default async function NewVehiclePage() {
   await requireRole(["staff", "admin"], "/admin/vehicles/new");
-  const partners = await getPartnerOptions();
+  const [partners, featureOptions, locationOptions] = await Promise.all([
+    getPartnerOptions(),
+    getOptions("vehicle_feature"),
+    getOptions("pickup_location"),
+  ]);
 
   return (
     <div>
@@ -17,7 +21,7 @@ export default async function NewVehiclePage() {
         Created as pending, so it still goes through approval before customers see it. Attribute
         it to a partner if you are listing on their behalf.
       </p>
-      <VehicleForm partners={partners} />
+      <VehicleForm partners={partners} featureOptions={featureOptions} locationOptions={locationOptions} />
     </div>
   );
 }

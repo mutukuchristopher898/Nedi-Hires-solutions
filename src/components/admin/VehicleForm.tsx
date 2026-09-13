@@ -16,25 +16,18 @@ const INPUT = "w-full rounded-md border border-line px-3 py-2 text-sm focus:bord
 const FUEL_TYPES = ["Petrol", "Diesel", "Hybrid", "Electric"];
 const TRANSMISSIONS = ["Automatic", "Manual"];
 
-const FEATURE_OPTIONS = [
-  "Bluetooth", "USB Charging", "Reverse Camera", "Air Conditioning",
-  "Fuel Efficient", "Spacious Boot", "GPS Navigation", "Child Seat Available",
-];
-
-const COMMON_LOCATIONS = [
-  "Nairobi CBD",
-  "Jomo Kenyatta International Airport (JKIA)",
-  "Mombasa Moi International Airport",
-  "Kisumu",
-];
-
 export default function VehicleForm({
   vehicle,
   partners,
+  featureOptions,
+  locationOptions,
 }: {
   /** Absent when creating. */
   vehicle?: AdminVehicle;
   partners: PartnerOption[];
+  /** Both editable at /admin/settings. */
+  featureOptions: string[];
+  locationOptions: string[];
 }) {
   const router = useRouter();
   const isEdit = Boolean(vehicle);
@@ -252,7 +245,7 @@ export default function VehicleForm({
             onChange={(e) => { setLocation(e.target.value); setSaved(false); }} placeholder="e.g. Nairobi CBD"
             {...fieldProps(fieldErrors.location ? "reject" : undefined, INPUT)} />
           <datalist id="admin-vehicle-locations">
-            {COMMON_LOCATIONS.map((l) => <option key={l} value={l} />)}
+            {locationOptions.map((l) => <option key={l} value={l} />)}
           </datalist>
         </Field>
         <Field label="Daily rate (KES)">
@@ -272,7 +265,7 @@ export default function VehicleForm({
       <fieldset>
         <legend className="text-xs font-medium text-midnight/60">Features</legend>
         <div className="mt-2 flex flex-wrap gap-2">
-          {FEATURE_OPTIONS.map((f) => (
+          {featureOptions.map((f) => (
             <label key={f} className={`cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium ring-1 transition ${
               features.includes(f) ? "bg-gold text-midnight ring-gold" : "bg-white text-midnight/60 ring-line hover:bg-midnight/5"
             }`}>

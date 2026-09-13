@@ -10,6 +10,7 @@ const LINKS = [
   { href: "/admin/messages", label: "Contact Enquiries" },
   { href: "/admin/accounts", label: "Accounts" },
   { href: "/admin/audit", label: "Activity Log" },
+  { href: "/admin/settings", label: "Settings" },
   { href: "/admin/pricing", label: "Pricing & Fees" },
   { href: "/admin/pricing/vehicles", label: "Per-vehicle Pricing" },
 ];

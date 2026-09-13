@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import PartnerOnboardingForm from "@/components/partners/PartnerOnboardingForm";
 import { requireAuth } from "@/lib/supabase/authz";
-import { getMyPartnerAccount } from "@/lib/supabase/queries";
+import { getMyPartnerAccount, getOptions } from "@/lib/supabase/queries";
 
 export const metadata: Metadata = {
   title: "List Your Vehicle",
@@ -16,7 +16,18 @@ export default async function PartnerOnboardingPage() {
   const { userId } = await requireAuth("/partners/onboarding");
 
   // Someone returning to list a second vehicle skips the business step.
-  const partner = await getMyPartnerAccount();
+  const [partner, featureOptions, locationOptions] = await Promise.all([
+    getMyPartnerAccount(),
+    getOptions("vehicle_feature"),
+    getOptions("pickup_location"),
+  ]);
 
-  return <PartnerOnboardingForm userId={userId} existingPartner={partner} />;
+  return (
+    <PartnerOnboardingForm
+      userId={userId}
+      existingPartner={partner}
+      featureOptions={featureOptions}
+      locationOptions={locationOptions}
+    />
+  );
 }

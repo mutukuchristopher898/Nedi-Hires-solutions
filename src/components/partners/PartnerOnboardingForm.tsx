@@ -24,32 +24,17 @@ const SELECT_CLASS =
   "w-full rounded-md border border-line px-3 py-2 text-sm focus:border-gold focus:outline-none";
 const INPUT_CLASS = SELECT_CLASS;
 
-// The pickup points the existing fleet already uses. Free text, because a
-// partner may operate somewhere we haven't listed.
-const COMMON_LOCATIONS = [
-  "Nairobi CBD",
-  "Jomo Kenyatta International Airport (JKIA)",
-  "Mombasa Moi International Airport",
-  "Kisumu",
-];
-
-const FEATURE_OPTIONS = [
-  "Bluetooth",
-  "USB Charging",
-  "Reverse Camera",
-  "Air Conditioning",
-  "Fuel Efficient",
-  "Spacious Boot",
-  "GPS Navigation",
-  "Child Seat Available",
-];
-
 export default function PartnerOnboardingForm({
   userId,
   existingPartner,
+  featureOptions,
+  locationOptions,
 }: {
   userId: string;
   existingPartner: PartnerAccount | null;
+  /** Both editable at /admin/settings, so adding a branch needs no deploy. */
+  featureOptions: string[];
+  locationOptions: string[];
 }) {
   const router = useRouter();
   const [partner, setPartner] = useState<PartnerAccount | null>(existingPartner);
@@ -380,7 +365,7 @@ export default function PartnerOnboardingForm({
                 {...fieldProps(unitFieldErrors.location ? "reject" : undefined, INPUT_CLASS)}
               />
               <datalist id="partner-locations">
-                {COMMON_LOCATIONS.map((l) => (
+                {locationOptions.map((l) => (
                   <option key={l} value={l} />
                 ))}
               </datalist>
@@ -411,7 +396,7 @@ export default function PartnerOnboardingForm({
           <fieldset>
             <legend className="text-xs font-medium text-midnight/60">Features</legend>
             <div className="mt-2 flex flex-wrap gap-2">
-              {FEATURE_OPTIONS.map((f) => (
+              {featureOptions.map((f) => (
                 <label
                   key={f}
                   className={`cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium ring-1 transition ${

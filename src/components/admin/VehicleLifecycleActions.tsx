@@ -5,16 +5,6 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { VehicleLifecycle } from "@/lib/supabase/queries";
 
-// Preset reasons, with free text alongside. Configurable from a Settings
-// screen later — until that exists, these are the ones that come up.
-const REJECTION_REASONS = [
-  "Photos are unclear or don't show the vehicle",
-  "Registration number doesn't match the documents",
-  "Price is outside what we can list",
-  "Vehicle doesn't meet our condition standard",
-  "Missing or expired documentation",
-];
-
 type Busy = "approve" | "reject" | "hide" | "unhide" | "archive" | null;
 
 export default function VehicleLifecycleActions({
@@ -23,11 +13,14 @@ export default function VehicleLifecycleActions({
   lifecycle,
   hasPhoto,
   canManage,
+  rejectionReasons,
 }: {
   id: string;
   label: string;
   lifecycle: VehicleLifecycle;
   hasPhoto: boolean;
+  /** Editable at /admin/settings; passed in so this stays a dumb component. */
+  rejectionReasons: string[];
   /** Archiving is admin-only; staff can do everything else here. */
   canManage: boolean;
 }) {
@@ -35,7 +28,7 @@ export default function VehicleLifecycleActions({
   const [busy, setBusy] = useState<Busy>(null);
   const [error, setError] = useState<string | null>(null);
   const [mode, setMode] = useState<"idle" | "rejecting" | "archiving">("idle");
-  const [reasonPreset, setReasonPreset] = useState(REJECTION_REASONS[0]);
+  const [reasonPreset, setReasonPreset] = useState(rejectionReasons[0] ?? "");
   const [reasonNote, setReasonNote] = useState("");
 
   async function patch(action: Busy, values: Record<string, unknown>) {
@@ -81,7 +74,7 @@ export default function VehicleLifecycleActions({
           aria-label="Rejection reason"
           className="mt-2 w-full rounded-md border border-line px-2 py-1.5 text-xs focus:border-gold focus:outline-none"
         >
-          {REJECTION_REASONS.map((r) => (
+          {rejectionReasons.map((r) => (
             <option key={r}>{r}</option>
           ))}
         </select>

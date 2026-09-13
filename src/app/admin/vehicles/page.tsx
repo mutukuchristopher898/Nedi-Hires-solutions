@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import VehicleLifecycleActions from "@/components/admin/VehicleLifecycleActions";
 import { requireRole } from "@/lib/supabase/authz";
-import { getAdminVehicles, getVehiclePartnerNames, getVehicleLocations } from "@/lib/supabase/queries";
+import { getAdminVehicles, getVehiclePartnerNames, getVehicleLocations, getOptions } from "@/lib/supabase/queries";
 import { publicVehiclePhotoUrl } from "@/lib/supabase/vehiclePhotos";
 import { formatMoney, classifications } from "@/lib/data";
 import type { VehicleLifecycle } from "@/lib/supabase/queries";
@@ -42,7 +42,7 @@ export default async function AdminVehiclesPage({ searchParams }: { searchParams
   const page = Number.isInteger(parsedPage) && parsedPage > 0 ? Math.min(parsedPage, 200) : 1;
   const search = (raw.q ?? "").slice(0, 80).trim() || undefined;
 
-  const [{ vehicles, total }, partners, locations] = await Promise.all([
+  const [{ vehicles, total }, partners, locations, rejectionReasons] = await Promise.all([
     getAdminVehicles({
       lifecycle,
       partnerName: raw.partner,
@@ -53,6 +53,7 @@ export default async function AdminVehiclesPage({ searchParams }: { searchParams
     }),
     getVehiclePartnerNames(),
     getVehicleLocations(),
+    getOptions("vehicle_rejection_reason"),
   ]);
 
   const lastPage = Math.max(Math.ceil(total / 25), 1);
@@ -187,6 +188,7 @@ export default async function AdminVehiclesPage({ searchParams }: { searchParams
                   lifecycle={v.lifecycle}
                   hasPhoto={v.photoPaths.length > 0}
                   canManage={role === "admin"}
+                  rejectionReasons={rejectionReasons}
                 />
               </article>
             ))}
