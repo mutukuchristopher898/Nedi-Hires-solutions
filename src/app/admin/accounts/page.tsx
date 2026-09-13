@@ -22,7 +22,15 @@ export default async function AdminAccountsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-midnight">Accounts</h1>
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <h1 className="text-2xl font-bold text-midnight">Accounts</h1>
+        <a
+          href="/api/admin/export?entity=accounts"
+          className="rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold text-midnight transition hover:bg-midnight/5"
+        >
+          Export CSV
+        </a>
+      </div>
       <p className="mt-1 text-sm text-midnight/60">
         Everyone who has signed up. Sending a reset link emails that person a link to set their
         own new password — you never see or choose it.

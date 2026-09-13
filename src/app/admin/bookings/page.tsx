@@ -29,7 +29,15 @@ export default async function AdminBookingsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-midnight">Bookings</h1>
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <h1 className="text-2xl font-bold text-midnight">Bookings</h1>
+        <a
+          href="/api/admin/export?entity=bookings"
+          className="rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold text-midnight transition hover:bg-midnight/5"
+        >
+          Export CSV
+        </a>
+      </div>
       <p className="mt-1 text-sm text-midnight/60">
         Every booking on the platform. Cancelling one releases its vehicle back to other
         customers — it is the only way to free a car that is being held.

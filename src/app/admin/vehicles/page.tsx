@@ -74,12 +74,25 @@ export default async function AdminVehiclesPage({ searchParams }: { searchParams
     <div>
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h1 className="text-2xl font-bold text-midnight">Vehicles</h1>
-        <Link
-          href="/admin/vehicles/new"
-          className="rounded-md bg-gold px-4 py-2 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
-        >
-          Add a vehicle
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          {/* Exports the filtered set, not the visible page. */}
+          <a
+            href={`/api/admin/export?entity=vehicles&${new URLSearchParams(
+              Object.fromEntries(
+                Object.entries(raw).filter(([k, v]) => v && k !== "page") as [string, string][]
+              )
+            ).toString()}`}
+            className="rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold text-midnight transition hover:bg-midnight/5"
+          >
+            Export CSV
+          </a>
+          <Link
+            href="/admin/vehicles/new"
+            className="rounded-md bg-gold px-4 py-2 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
+          >
+            Add a vehicle
+          </Link>
+        </div>
       </div>
       <p className="mt-1 text-sm text-midnight/60">
         Every vehicle on the platform. Hiding removes one from search immediately and is

@@ -55,7 +55,15 @@ export default async function AdminAuditPage({
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-midnight">Activity Log</h1>
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <h1 className="text-2xl font-bold text-midnight">Activity Log</h1>
+        <a
+          href={`/api/admin/export?entity=audit${entityType ? `&entityType=${entityType}` : ""}`}
+          className="rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold text-midnight transition hover:bg-midnight/5"
+        >
+          Export CSV
+        </a>
+      </div>
       <p className="mt-1 text-sm text-midnight/60">
         Every change made by staff or an admin, with what moved and who moved it. Written by the
         database itself — entries cannot be edited or removed from here, deliberately.
