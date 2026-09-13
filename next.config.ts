@@ -29,7 +29,9 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob: ${supabaseHost ? `https://${supabaseHost}` : ""}`.trim(),
   "font-src 'self' data:",
-  `connect-src 'self' ${supabaseOrigins}`.trim(),
+  // api.pwnedpasswords.com is the breached-password check. It only ever
+  // receives a 5-character hash prefix, never a password.
+  `connect-src 'self' https://api.pwnedpasswords.com ${supabaseOrigins}`.trim(),
   // No plugins, no framing, and forms may only post back to us.
   "object-src 'none'",
   "frame-ancestors 'none'",

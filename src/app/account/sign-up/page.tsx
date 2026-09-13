@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { evaluatePasswordStrength } from "@/lib/passwordStrength";
+import { isPasswordBreached } from "@/lib/breachedPassword";
 import { validateEmail } from "@/lib/formValidation/email";
 import { validateNamePart } from "@/lib/documentValidation/nameValidation";
 import { validatePhoneNumber } from "@/lib/documentValidation/phoneValidation";
@@ -58,6 +59,18 @@ function SignUpForm() {
     }
 
     setSubmitting(true);
+
+    // After the cheap checks, because it costs a network round-trip. Composition
+    // rules say nothing about whether a password is already public: Password123!
+    // satisfies every one of them and appears in breaches hundreds of thousands
+    // of times.
+    const { breached } = await isPasswordBreached(password);
+    if (breached) {
+      setSubmitting(false);
+      setFieldErrors((prev) => ({ ...prev, password: true }));
+      setError("This password has appeared in a data breach. Choose a different one.");
+      return;
+    }
 
     const supabase = createClient();
     const { data, error: signUpError } = await supabase.auth.signUp({

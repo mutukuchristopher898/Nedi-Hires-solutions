@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { evaluatePasswordStrength } from "@/lib/passwordStrength";
+import { isPasswordBreached } from "@/lib/breachedPassword";
 import { fieldProps, FormError } from "@/components/forms/shared";
 
 export default function ResetPasswordForm() {
@@ -35,6 +36,16 @@ export default function ResetPasswordForm() {
     }
 
     setSaving(true);
+
+    // Same reasoning as sign-up: someone resetting a password is exactly the
+    // person likely to reach for one they use elsewhere.
+    const { breached } = await isPasswordBreached(password);
+    if (breached) {
+      setSaving(false);
+      setFieldErrors((prev) => ({ ...prev, password: true }));
+      setError("This password has appeared in a data breach. Choose a different one.");
+      return;
+    }
 
     const supabase = createClient();
     const { error: updateError } = await supabase.auth.updateUser({ password });
