@@ -27,15 +27,13 @@ export default function ApplicantPage() {
     const bookingId = draft.bookingId;
 
     try {
-      const idPath = await uploadKycFile({ userId: user.id, bookingId, docSlug: "id", file: data.idFile });
-      const passportPhotoPath = await uploadKycFile({
-        userId: user.id,
-        bookingId,
+      const idPath = await uploadKycFile({ bookingId, docSlug: "id", file: data.idFile });
+      const passportPhotoPath = await uploadKycFile({ bookingId,
         docSlug: "passport-photo",
         file: data.passportPhotoFile,
       });
       const licensePath = data.licenseFile
-        ? await uploadKycFile({ userId: user.id, bookingId, docSlug: "license", file: data.licenseFile })
+        ? await uploadKycFile({ bookingId, docSlug: "license", file: data.licenseFile })
         : null;
 
       const submitResponse = await fetch("/api/submit-applicant", {

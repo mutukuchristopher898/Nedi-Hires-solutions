@@ -28,7 +28,7 @@ export default function SelfiePage() {
     const bookingId = draft.bookingId;
 
     try {
-      const selfiePath = await uploadKycFile({ userId: user.id, bookingId, docSlug: "selfie", file });
+      const selfiePath = await uploadKycFile({ bookingId, docSlug: "selfie", file });
 
       const supabase = createClient();
       const { error: docError } = await supabase.from("identity_documents").insert({

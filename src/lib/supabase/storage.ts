@@ -1,35 +1,31 @@
-import { createClient } from "./client";
 import {
   MAX_UPLOAD_LABEL,
-  UPLOAD_EXTENSION_BY_TYPE,
   isAllowedUpload,
   isWithinSizeLimit,
 } from "@/lib/uploads";
 
-const BUCKET = "kyc-documents";
-
-// Uploads a KYC file (ID/passport, driver's license, passport photo) into a
-// path scoped to the uploading user, matching the storage.objects RLS
-// policies (per-user folder prefix, admin-select-all). Returns the storage
-// path to store on the corresponding identity_documents row.
+// Uploads a KYC file (ID/passport, driver's license, passport photo) via the
+// server, which re-encodes images to strip EXIF — a photograph of an ID taken
+// on a phone carries the GPS coordinates of wherever it was taken, typically
+// the home of the person who has just also handed over their ID number.
 //
-// The path shape `<userId>/<bookingId>/<slug>-<ts>.<ext>` is load-bearing in
-// two places beyond the RLS prefix check: the verification routes assert the
-// path they are handed sits under the caller's own id and this booking. Don't
-// reshape it without updating those.
+// Posting straight to storage from the browser cannot strip anything, so the
+// round-trip is the point rather than an inconvenience.
+//
+// Returns the storage path to record on the identity_documents row. The shape
+// `<userId>/<bookingId>/<slug>-<ts>.<ext>` is decided server-side and asserted
+// again by the verification routes.
 export async function uploadKycFile({
-  userId,
   bookingId,
   docSlug,
   file,
 }: {
-  userId: string;
   bookingId: string;
   docSlug: string;
   file: File;
 }): Promise<string> {
-  // The bucket enforces both of these too. Checking here turns a rejected
-  // upload into a clear message instead of a failed round-trip.
+  // Client-side checks are for a fast, clear error. The route re-checks all of
+  // it against the actual bytes, and the route is what decides.
   if (!isAllowedUpload(file)) {
     throw new Error("Only JPG, PNG, WebP or PDF files can be uploaded.");
   }
@@ -37,18 +33,17 @@ export async function uploadKycFile({
     throw new Error(`Each file must be ${MAX_UPLOAD_LABEL} or smaller.`);
   }
 
-  const supabase = createClient();
+  const body = new FormData();
+  body.append("file", file);
+  body.append("bookingId", bookingId);
+  body.append("docSlug", docSlug);
 
-  // Derived from the type we just validated, never from file.name — a device
-  // can hand over any filename it likes, and this string ends up as the
-  // stored object's extension.
-  const extension = UPLOAD_EXTENSION_BY_TYPE[file.type];
-  const path = `${userId}/${bookingId}/${docSlug}-${Date.now()}.${extension}`;
+  const response = await fetch("/api/kyc-document", { method: "POST", body });
+  const result = (await response.json().catch(() => ({}))) as { path?: string; error?: string };
 
-  const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
-    contentType: file.type,
-  });
+  if (!response.ok || !result.path) {
+    throw new Error(result.error ?? "Upload failed. Check your connection and try again.");
+  }
 
-  if (error) throw error;
-  return path;
+  return result.path;
 }
