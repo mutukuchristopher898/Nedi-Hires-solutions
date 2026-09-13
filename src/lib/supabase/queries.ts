@@ -1,5 +1,10 @@
 import { createClient } from "./server";
 import { oneWayFeeKey, type OneWayFeeTable } from "@/lib/duration";
+import {
+  ABSOLUTE_RESULT_CAP,
+  DEFAULT_PAGE_SIZE,
+  type SortOption,
+} from "@/lib/schemas/search";
 import type {
   AdminBooking,
   ApprovalStatus,
@@ -505,28 +510,60 @@ function toListing(row: ListingRow, defaults: PricingDefaultsRow): VehicleListin
  * Approved vehicles, for search. Relies on "Approved vehicles are publicly
  * viewable", so this works for signed-out visitors.
  */
-export async function getApprovedVehicles(filters: VehicleFilters = {}): Promise<VehicleListing[]> {
+const SORT_COLUMNS: Record<SortOption, { column: string; ascending: boolean }> = {
+  newest: { column: "created_at", ascending: false },
+  price_asc: { column: "price_per_day", ascending: true },
+  price_desc: { column: "price_per_day", ascending: false },
+  year_desc: { column: "year", ascending: false },
+};
+
+export interface VehiclePage {
+  vehicles: VehicleListing[];
+  /** Total matching the filters, for pagination — not just this page. */
+  total: number;
+}
+
+export async function getApprovedVehicles(filters: VehicleFilters = {}): Promise<VehiclePage> {
   const supabase = await createClient();
 
-  let query = supabase
-    .from("vehicles")
-    .select(LISTING_COLUMNS)
-    .eq("approval_status", "approved");
+  const buildQuery = (select: string, options?: { count: "exact"; head: true }) => {
+    let query = supabase.from("vehicles").select(select, options).eq("approval_status", "approved");
 
-  // Filtering in the database rather than in JS: the fleet is meant to grow
-  // past the point where fetching all of it per search is reasonable.
-  if (filters.location) query = query.eq("location", filters.location);
-  if (filters.classification) query = query.eq("classification", filters.classification);
-  if (filters.fuelType) query = query.eq("fuel_type", filters.fuelType);
-  if (filters.transmission) query = query.eq("transmission", filters.transmission);
+    // Filtering in the database rather than in JS: the fleet is meant to grow
+    // past the point where fetching all of it per search is reasonable.
+    if (filters.location) query = query.eq("location", filters.location);
+    if (filters.classification) query = query.eq("classification", filters.classification);
+    if (filters.fuelType) query = query.eq("fuel_type", filters.fuelType);
+    if (filters.transmission) query = query.eq("transmission", filters.transmission);
 
-  const [{ data, error }, defaults] = await Promise.all([
-    query.order("price_per_day", { ascending: true }),
+    return query;
+  };
+
+  // Clamped here as well as in the schema. The schema keeps a URL honest; this
+  // is what holds if some future caller passes a number straight in.
+  const pageSize = Math.min(Math.max(filters.limit ?? DEFAULT_PAGE_SIZE, 1), ABSOLUTE_RESULT_CAP);
+  const page = Math.max(filters.page ?? 1, 1);
+  const from = (page - 1) * pageSize;
+
+  const sort = SORT_COLUMNS[filters.sort ?? "newest"];
+
+  const [listResult, countResult, defaults] = await Promise.all([
+    buildQuery(LISTING_COLUMNS)
+      .order(sort.column, { ascending: sort.ascending })
+      // A stable tiebreak, so a vehicle cannot appear on two pages or none.
+      .order("id", { ascending: true })
+      .range(from, from + pageSize - 1),
+    buildQuery("id", { count: "exact", head: true }),
     loadPricingDefaults(supabase),
   ]);
 
-  if (error) throw new Error(`Failed to load vehicles: ${error.message}`);
-  return (data as unknown as ListingRow[]).map((row) => toListing(row, defaults));
+  if (listResult.error) throw new Error(`Failed to load vehicles: ${listResult.error.message}`);
+  if (countResult.error) throw new Error(`Failed to count vehicles: ${countResult.error.message}`);
+
+  return {
+    vehicles: (listResult.data as unknown as ListingRow[]).map((row) => toListing(row, defaults)),
+    total: countResult.count ?? 0,
+  };
 }
 
 /** One approved vehicle by its public slug, or null. */

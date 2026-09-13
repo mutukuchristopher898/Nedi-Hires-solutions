@@ -276,4 +276,7 @@ export interface VehicleFilters {
   classification?: VehicleClassification;
   fuelType?: FuelType;
   transmission?: Transmission;
+  page?: number;
+  limit?: number;
+  sort?: "newest" | "price_asc" | "price_desc" | "year_desc";
 }

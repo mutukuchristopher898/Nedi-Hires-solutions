@@ -25,8 +25,11 @@ const STEPS = [
 
 export default async function Home() {
   // Live inventory, cheapest first, rather than a slice of the catalogue.
-  const [listings, network] = await Promise.all([getApprovedVehicles(), getPartnerNetwork()]);
-  const featured = listings.slice(0, 4);
+  const [listings, network] = await Promise.all([
+    getApprovedVehicles({ limit: 12, sort: "newest" }),
+    getPartnerNetwork(),
+  ]);
+  const featured = listings.vehicles.slice(0, 4);
   return (
     <div>
       <section className="relative overflow-hidden bg-midnight">
