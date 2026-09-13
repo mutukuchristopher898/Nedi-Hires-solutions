@@ -1,7 +1,17 @@
 import { redirect } from "next/navigation";
 import { createClient } from "./server";
 
-type Role = "customer" | "partner" | "admin";
+type Role = "customer" | "partner" | "staff" | "admin";
+
+/**
+ * Day-to-day admin work: approvals, replies, document review, hiding vehicles.
+ * Mirrors is_staff() in the database, which is what actually enforces it —
+ * this decides what to render, RLS decides what is permitted.
+ */
+export const STAFF_ROLES: Role[] = ["staff", "admin"];
+
+/** Accounts, platform pricing, deletions. */
+export const ADMIN_ONLY: Role[] = ["admin"];
 
 // Server-side route guard: redirects to sign-in if no session, or to a safe
 // fallback if the signed-in user's role isn't in `allowedRoles`. Call from a

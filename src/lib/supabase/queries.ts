@@ -851,3 +851,78 @@ export async function getPendingDocumentCount(): Promise<number> {
   if (error) throw new Error(`Failed to count identity documents: ${error.message}`);
   return count ?? 0;
 }
+
+export interface AuditEntry {
+  id: string;
+  actorEmail: string | null;
+  actorRole: string | null;
+  action: "insert" | "update" | "delete";
+  entityType: string;
+  entityId: string | null;
+  changes: Record<string, { from: unknown; to: unknown }>;
+  createdAt: string;
+}
+
+export interface AuditFilters {
+  entityType?: string;
+  entityId?: string;
+  actorEmail?: string;
+  page?: number;
+  limit?: number;
+}
+
+const AUDIT_PAGE_SIZE = 50;
+
+/**
+ * The admin audit trail. Readable by staff, written only by trigger — nobody
+ * can edit or remove their own entries through the API, which is the point.
+ */
+export async function getAuditLog(
+  filters: AuditFilters = {}
+): Promise<{ entries: AuditEntry[]; total: number }> {
+  const supabase = await createClient();
+
+  const build = (select: string, options?: { count: "exact"; head: true }) => {
+    let query = supabase.from("admin_audit_log").select(select, options);
+    if (filters.entityType) query = query.eq("entity_type", filters.entityType);
+    if (filters.entityId) query = query.eq("entity_id", filters.entityId);
+    if (filters.actorEmail) query = query.eq("actor_email", filters.actorEmail);
+    return query;
+  };
+
+  const pageSize = Math.min(Math.max(filters.limit ?? AUDIT_PAGE_SIZE, 1), 200);
+  const from = (Math.max(filters.page ?? 1, 1) - 1) * pageSize;
+
+  const [list, count] = await Promise.all([
+    build("id, actor_email, actor_role, action, entity_type, entity_id, changes, created_at")
+      .order("created_at", { ascending: false })
+      .range(from, from + pageSize - 1),
+    build("id", { count: "exact", head: true }),
+  ]);
+
+  if (list.error) throw new Error(`Failed to load the audit log: ${list.error.message}`);
+  if (count.error) throw new Error(`Failed to count audit entries: ${count.error.message}`);
+
+  return {
+    entries: (list.data as unknown as {
+      id: string;
+      actor_email: string | null;
+      actor_role: string | null;
+      action: AuditEntry["action"];
+      entity_type: string;
+      entity_id: string | null;
+      changes: AuditEntry["changes"] | null;
+      created_at: string;
+    }[]).map((row) => ({
+      id: row.id,
+      actorEmail: row.actor_email,
+      actorRole: row.actor_role,
+      action: row.action,
+      entityType: row.entity_type,
+      entityId: row.entity_id,
+      changes: row.changes ?? {},
+      createdAt: row.created_at,
+    })),
+    total: count.count ?? 0,
+  };
+}

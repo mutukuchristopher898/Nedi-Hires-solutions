@@ -9,12 +9,15 @@ const LINKS = [
   { href: "/admin/quotes", label: "Partner Quote Requests" },
   { href: "/admin/messages", label: "Contact Enquiries" },
   { href: "/admin/accounts", label: "Accounts" },
+  { href: "/admin/audit", label: "Activity Log" },
   { href: "/admin/pricing", label: "Pricing & Fees" },
   { href: "/admin/pricing/vehicles", label: "Per-vehicle Pricing" },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  await requireRole(["admin"], "/admin");
+  // Staff get the admin area too. What they may do inside it is governed by
+  // is_staff()/is_admin() in the database, not by this guard.
+  await requireRole(["staff", "admin"], "/admin");
 
   return (
     <div className="bg-offwhite">
