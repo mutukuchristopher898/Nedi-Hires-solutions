@@ -374,8 +374,7 @@ export async function getFleetCounts(): Promise<FleetCounts> {
     let query = supabase
       .from("vehicles")
       .select("id", { count: "exact", head: true })
-      .eq("is_demo", isDemo)
-      .is("archived_at", null);
+      .eq("is_demo", isDemo);
 
     if (approvalStatus) query = query.eq("approval_status", approvalStatus);
 
@@ -528,15 +527,7 @@ export async function getApprovedVehicles(filters: VehicleFilters = {}): Promise
   const supabase = await createClient();
 
   const buildQuery = (select: string, options?: { count: "exact"; head: true }) => {
-    let query = supabase
-      .from("vehicles")
-      .select(select, options)
-      .eq("approval_status", "approved")
-      // Explicit, not just RLS: staff can select hidden and archived rows,
-      // so without this an admin browsing the customer site would see stock
-      // that is deliberately off it.
-      .is("hidden_at", null)
-      .is("archived_at", null);
+    let query = supabase.from("vehicles").select(select, options).eq("approval_status", "approved");
 
     // Filtering in the database rather than in JS: the fleet is meant to grow
     // past the point where fetching all of it per search is reasonable.
@@ -584,8 +575,6 @@ export async function getApprovedVehicleBySlug(slug: string): Promise<VehicleLis
       .select(LISTING_COLUMNS)
       .eq("slug", slug)
       .eq("approval_status", "approved")
-      .is("hidden_at", null)
-      .is("archived_at", null)
       .maybeSingle(),
     loadPricingDefaults(supabase),
   ]);
@@ -600,9 +589,7 @@ export async function getVehicleLocations(): Promise<string[]> {
   const { data, error } = await supabase
     .from("vehicles")
     .select("location")
-    .eq("approval_status", "approved")
-    .is("hidden_at", null)
-    .is("archived_at", null);
+    .eq("approval_status", "approved");
 
   if (error) throw new Error(`Failed to load locations: ${error.message}`);
 
@@ -628,9 +615,7 @@ export async function getPublicFleetStats(): Promise<PublicFleetStats> {
   const { data, error } = await supabase
     .from("vehicles")
     .select("location, partner_name")
-    .eq("approval_status", "approved")
-    .is("hidden_at", null)
-    .is("archived_at", null);
+    .eq("approval_status", "approved");
 
   if (error) throw new Error(`Failed to load fleet statistics: ${error.message}`);
 
@@ -655,8 +640,6 @@ export async function getPartnerNetwork(): Promise<string[]> {
     .from("vehicles")
     .select("partner_name")
     .eq("approval_status", "approved")
-    .is("hidden_at", null)
-    .is("archived_at", null)
     .not("partner_name", "is", null);
 
   if (error) throw new Error(`Failed to load the partner network: ${error.message}`);
@@ -941,188 +924,5 @@ export async function getAuditLog(
       createdAt: row.created_at,
     })),
     total: count.count ?? 0,
-  };
-}
-
-export type VehicleLifecycle = "pending" | "live" | "hidden" | "rejected" | "archived";
-
-export interface AdminVehicle extends PartnerVehicle {
-  lifecycle: VehicleLifecycle;
-  hiddenAt: string | null;
-  archivedAt: string | null;
-  rejectionReason: string | null;
-  imageKey: string;
-  isDemo: boolean;
-}
-
-export interface AdminVehicleFilters {
-  lifecycle?: VehicleLifecycle;
-  partnerName?: string;
-  location?: string;
-  classification?: string;
-  /** Registration or model. */
-  search?: string;
-  page?: number;
-  limit?: number;
-}
-
-const ADMIN_VEHICLE_PAGE_SIZE = 25;
-
-/** One column derived from three, because an operator thinks in states, not flags. */
-function lifecycleOf(row: { approval_status: string; hidden_at: string | null; archived_at: string | null }): VehicleLifecycle {
-  if (row.archived_at) return "archived";
-  if (row.approval_status === "rejected") return "rejected";
-  if (row.approval_status === "pending") return "pending";
-  if (row.hidden_at) return "hidden";
-  return "live";
-}
-
-export async function getAdminVehicles(
-  filters: AdminVehicleFilters = {}
-): Promise<{ vehicles: AdminVehicle[]; total: number }> {
-  const supabase = await createClient();
-
-  const build = (select: string, options?: { count: "exact"; head: true }) => {
-    let query = supabase.from("vehicles").select(select, options);
-
-    // Derived states map back onto the three underlying columns.
-    switch (filters.lifecycle) {
-      case "archived":
-        query = query.not("archived_at", "is", null);
-        break;
-      case "rejected":
-        query = query.is("archived_at", null).eq("approval_status", "rejected");
-        break;
-      case "pending":
-        query = query.is("archived_at", null).eq("approval_status", "pending");
-        break;
-      case "hidden":
-        query = query.is("archived_at", null).eq("approval_status", "approved").not("hidden_at", "is", null);
-        break;
-      case "live":
-        query = query.is("archived_at", null).eq("approval_status", "approved").is("hidden_at", null);
-        break;
-      default:
-        // Archived stock is out of the way unless asked for by name.
-        query = query.is("archived_at", null);
-    }
-
-    if (filters.partnerName) query = query.eq("partner_name", filters.partnerName);
-    if (filters.location) query = query.eq("location", filters.location);
-    if (filters.classification) query = query.eq("classification", filters.classification);
-
-    if (filters.search) {
-      // Escaped: a comma or parenthesis in the term would otherwise be read as
-      // PostgREST filter syntax rather than as text.
-      const term = filters.search.replace(/[,()*]/g, " ").trim();
-      if (term) query = query.or(`license_plate.ilike.%${term}%,model.ilike.%${term}%,make.ilike.%${term}%`);
-    }
-
-    return query;
-  };
-
-  const pageSize = Math.min(Math.max(filters.limit ?? ADMIN_VEHICLE_PAGE_SIZE, 1), 100);
-  const from = (Math.max(filters.page ?? 1, 1) - 1) * pageSize;
-
-  const columns = `${VEHICLE_COLUMNS}, hidden_at, archived_at, rejection_reason, image_key, is_demo, partner_name, partners(business_name)`;
-
-  const [list, count] = await Promise.all([
-    build(columns).order("created_at", { ascending: false }).order("id", { ascending: true })
-      .range(from, from + pageSize - 1),
-    build("id", { count: "exact", head: true }),
-  ]);
-
-  if (list.error) throw new Error(`Failed to load vehicles: ${list.error.message}`);
-  if (count.error) throw new Error(`Failed to count vehicles: ${count.error.message}`);
-
-  type Row = VehicleRow & {
-    hidden_at: string | null;
-    archived_at: string | null;
-    rejection_reason: string | null;
-    image_key: string;
-    is_demo: boolean;
-    partner_name: string | null;
-  };
-
-  return {
-    vehicles: (list.data as unknown as Row[]).map((row) => ({
-      ...toPartnerVehicle(row),
-      partnerName: row.partners?.business_name ?? row.partner_name,
-      lifecycle: lifecycleOf(row),
-      hiddenAt: row.hidden_at,
-      archivedAt: row.archived_at,
-      rejectionReason: row.rejection_reason,
-      imageKey: row.image_key,
-      isDemo: row.is_demo,
-    })),
-    total: count.count ?? 0,
-  };
-}
-
-/** Distinct partner names with at least one vehicle, for the filter dropdown. */
-export async function getVehiclePartnerNames(): Promise<string[]> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("vehicles")
-    .select("partner_name")
-    .not("partner_name", "is", null)
-    .is("archived_at", null);
-
-  if (error) throw new Error(`Failed to load partners: ${error.message}`);
-  return [...new Set((data as { partner_name: string }[]).map((r) => r.partner_name))].sort();
-}
-
-export interface PartnerOption {
-  id: string;
-  businessName: string;
-  status: ApprovalStatus;
-}
-
-/** Partner accounts an admin can attribute a vehicle to. */
-export async function getPartnerOptions(): Promise<PartnerOption[]> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("partners")
-    .select("id, business_name, status")
-    .order("business_name");
-
-  if (error) throw new Error(`Failed to load partners: ${error.message}`);
-  return (data as { id: string; business_name: string; status: ApprovalStatus }[]).map((r) => ({
-    id: r.id,
-    businessName: r.business_name,
-    status: r.status,
-  }));
-}
-
-/** One vehicle for the admin edit screen, at any lifecycle state. */
-export async function getAdminVehicleById(id: string): Promise<AdminVehicle | null> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("vehicles")
-    .select(`${VEHICLE_COLUMNS}, hidden_at, archived_at, rejection_reason, image_key, is_demo, partner_name, partners(business_name)`)
-    .eq("id", id)
-    .maybeSingle();
-
-  if (error) throw new Error(`Failed to load vehicle: ${error.message}`);
-  if (!data) return null;
-
-  const row = data as unknown as VehicleRow & {
-    hidden_at: string | null;
-    archived_at: string | null;
-    rejection_reason: string | null;
-    image_key: string;
-    is_demo: boolean;
-    partner_name: string | null;
-  };
-
-  return {
-    ...toPartnerVehicle(row),
-    partnerName: row.partners?.business_name ?? row.partner_name,
-    lifecycle: lifecycleOf(row),
-    hiddenAt: row.hidden_at,
-    archivedAt: row.archived_at,
-    rejectionReason: row.rejection_reason,
-    imageKey: row.image_key,
-    isDemo: row.is_demo,
   };
 }

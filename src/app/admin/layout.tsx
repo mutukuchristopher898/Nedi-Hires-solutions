@@ -4,7 +4,7 @@ import { requireRole } from "@/lib/supabase/authz";
 const LINKS = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/bookings", label: "Bookings" },
-  { href: "/admin/vehicles", label: "Vehicles" },
+  { href: "/admin/approvals", label: "Unit Approval Queue" },
   { href: "/admin/documents", label: "Document Verification" },
   { href: "/admin/quotes", label: "Partner Quote Requests" },
   { href: "/admin/messages", label: "Contact Enquiries" },
