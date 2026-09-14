@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { formatMoney } from "@/lib/data";
+import { computePricing, reservationDeposit, securityDeposit } from "@/lib/duration";
+import type { PricingRates } from "@/lib/types";
 import type { PricingDefaults, VehiclePricingRow } from "@/lib/supabase/queries";
 
 // The six overridable rates, in the order they appear on a row. Percentages
@@ -33,6 +35,30 @@ function toStored(key: RateKey, display: string): number {
   const isPercent = RATE_FIELDS.find((f) => f.key === key)!.unit === "%";
   const n = Number(display);
   return isPercent ? n / 100 : n;
+}
+
+/**
+ * What these numbers actually cost a customer, at the three durations that
+ * exercise every branch: below the weekly threshold, above it, and above the
+ * monthly one.
+ *
+ * Uses the same computePricing and deposit helpers the booking flow does,
+ * rather than reimplementing the arithmetic — a preview that computed prices
+ * its own way could agree with itself and still disagree with the checkout,
+ * which would make it worse than no preview at all.
+ */
+function previewRows(pricePerDay: number, rates: PricingRates, currency: string) {
+  return [1, 7, 30].map((days) => {
+    const pricing = computePricing(pricePerDay, days, rates);
+    const total = pricing.total;
+    return {
+      days,
+      label: pricing.rateLabel,
+      total: formatMoney(total, currency),
+      deposit: formatMoney(reservationDeposit(total, rates), currency),
+      security: formatMoney(securityDeposit(total, rates), currency),
+    };
+  });
 }
 
 export default function VehiclePricingEditor({
@@ -130,15 +156,48 @@ function VehicleRow({ vehicle, defaults }: { vehicle: VehiclePricingRow; default
 
     setSaving(true);
     const supabase = createClient();
-    const { error: updateError } = await supabase.from("vehicles").update(patch).eq("id", vehicle.id);
+    const { data, error: updateError } = await supabase
+      .from("vehicles")
+      .update(patch)
+      .eq("id", vehicle.id)
+      .select("id");
     setSaving(false);
 
     if (updateError) {
       setError(updateError.message);
       return;
     }
+    if (!data || data.length === 0) {
+      setError("That didn't save — you may not have permission.");
+      return;
+    }
     setSaved(true);
     router.refresh();
+  }
+
+  /** Effective rates from the current inputs, mirroring the SQL coalesce. */
+  function effectiveRates(): PricingRates {
+    const resolve = (key: RateKey) => {
+      const raw = values[key].trim();
+      if (raw === "") return defaultFor(key, defaults);
+      const n = Number(raw);
+      if (!Number.isFinite(n) || n < 0) return defaultFor(key, defaults);
+      return toStored(key, raw);
+    };
+
+    return {
+      weeklyThresholdDays: resolve("weeklyThresholdDays"),
+      weeklyDiscount: resolve("weeklyDiscount"),
+      monthlyThresholdDays: resolve("monthlyThresholdDays"),
+      monthlyDiscount: resolve("monthlyDiscount"),
+      reservationDepositRate: resolve("reservationDepositRate"),
+      securityDepositRate: resolve("securityDepositRate"),
+    };
+  }
+
+  function resetField(key: RateKey) {
+    setValues((prev) => ({ ...prev, [key]: "" }));
+    setSaved(false);
   }
 
   function resetAllToDefault() {
@@ -172,7 +231,23 @@ function VehicleRow({ vehicle, defaults }: { vehicle: VehiclePricingRow; default
       <div className="mt-3 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {RATE_FIELDS.map((field) => (
           <label key={field.key} className="block">
-            <span className="text-[11px] font-medium text-midnight/60">{field.label}</span>
+            <span className="flex items-center justify-between gap-1">
+              <span className="text-[11px] font-medium text-midnight/60">{field.label}</span>
+              {values[field.key].trim() === "" ? (
+                <span className="text-[10px] text-midnight/35" title="Inheriting the platform default">
+                  default
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => resetField(field.key)}
+                  title="Reset this field to the platform default"
+                  className="text-[10px] font-medium text-gold-dark underline hover:text-gold"
+                >
+                  reset
+                </button>
+              )}
+            </span>
             <div className="mt-1 flex items-center gap-1">
               <input
                 inputMode="decimal"
@@ -194,6 +269,41 @@ function VehicleRow({ vehicle, defaults }: { vehicle: VehiclePricingRow; default
       <p className="mt-2 text-xs text-midnight/40">
         Blank inherits the platform default (shown greyed in each box). Zero means none.
       </p>
+
+      {/* Live, so a mistyped rate is visible as a wrong price before it is
+          saved rather than after a customer has been quoted it. */}
+      <div className="mt-3 rounded-lg bg-offwhite p-3">
+        <p className="text-[11px] font-medium text-midnight/60">
+          What a customer pays with these numbers
+        </p>
+        <div className="mt-2 overflow-x-auto">
+          <table className="w-full min-w-96 text-xs">
+            <thead className="text-left text-midnight/50">
+              <tr>
+                <th className="pb-1 font-medium">Hire</th>
+                <th className="pb-1 font-medium">Total</th>
+                <th className="pb-1 font-medium">Deposit now</th>
+                <th className="pb-1 font-medium">Security deposit</th>
+              </tr>
+            </thead>
+            <tbody className="text-midnight">
+              {previewRows(vehicle.pricePerDay, effectiveRates(), vehicle.currency).map((row) => (
+                <tr key={row.days} className="border-t border-line/60">
+                  <td className="py-1 pr-2">
+                    {row.days} day{row.days === 1 ? "" : "s"}
+                    {row.label && (
+                      <span className="ml-1 text-[10px] text-emerald-dark">{row.label}</span>
+                    )}
+                  </td>
+                  <td className="py-1 pr-2 font-medium">{row.total}</td>
+                  <td className="py-1 pr-2">{row.deposit}</td>
+                  <td className="py-1">{row.security}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <div className="mt-3 flex items-center gap-3">
         <button
