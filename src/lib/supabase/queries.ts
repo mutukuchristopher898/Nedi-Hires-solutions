@@ -1068,35 +1068,94 @@ export async function getPartnerOptions(): Promise<PartnerOption[]> {
 }
 
 /** One vehicle for the admin edit screen, at any lifecycle state. */
-export async function getAdminVehicleById(id: string): Promise<AdminVehicle | null> {
+/**
+ * Everything the review screen needs about one vehicle, including who is
+ * offering it and whether it can still be deleted.
+ *
+ * The partner's own record is pulled in whole rather than just its name:
+ * approving a vehicle is a decision about the business behind it as much as
+ * the car, and an operator should not have to open a second screen to see
+ * whether that business was ever approved itself.
+ */
+export interface AdminVehicleDetail extends AdminVehicle {
+  partner: {
+    id: string;
+    businessName: string;
+    businessEmail: string | null;
+    status: string;
+    taxCredentialUrl: string | null;
+    idDocumentUrl: string | null;
+    ownerProfileId: string;
+  } | null;
+  /** Bookings referencing this vehicle. Non-zero means it cannot be deleted. */
+  bookingCount: number;
+}
+
+export async function getAdminVehicleById(id: string): Promise<AdminVehicleDetail | null> {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("vehicles")
-    .select(`${VEHICLE_COLUMNS}, hidden_at, archived_at, rejection_reason, image_key, is_demo, partner_name, partners(business_name)`)
-    .eq("id", id)
-    .maybeSingle();
 
-  if (error) throw new Error(`Failed to load vehicle: ${error.message}`);
-  if (!data) return null;
+  // The booking count is a separate head request rather than an embed: it is
+  // wanted as a number, and embedding would drag every booking row back to
+  // count them here.
+  const [vehicleResult, bookingResult] = await Promise.all([
+    supabase
+      .from("vehicles")
+      .select(
+        `${VEHICLE_COLUMNS}, hidden_at, archived_at, rejection_reason, image_key, is_demo, partner_name, ` +
+          `partners(id, business_name, business_email, status, tax_credential_url, id_document_url, owner_profile_id)`
+      )
+      .eq("id", id)
+      .maybeSingle(),
+    supabase.from("bookings").select("id", { count: "exact", head: true }).eq("vehicle_id", id),
+  ]);
 
-  const row = data as unknown as VehicleRow & {
+  if (vehicleResult.error) throw new Error(`Failed to load vehicle: ${vehicleResult.error.message}`);
+  if (!vehicleResult.data) return null;
+
+  const row = vehicleResult.data as unknown as VehicleRow & {
     hidden_at: string | null;
     archived_at: string | null;
     rejection_reason: string | null;
     image_key: string;
     is_demo: boolean;
     partner_name: string | null;
+    partners?: {
+      id: string;
+      business_name: string;
+      business_email: string | null;
+      status: string;
+      tax_credential_url: string | null;
+      id_document_url: string | null;
+      owner_profile_id: string;
+    } | null;
   };
 
+  const partner = row.partners ?? null;
+
   return {
-    ...toPartnerVehicle(row),
-    partnerName: row.partners?.business_name ?? row.partner_name,
+    ...toPartnerVehicle(row as VehicleRow),
+    partnerName: partner?.business_name ?? row.partner_name,
     lifecycle: lifecycleOf(row),
     hiddenAt: row.hidden_at,
     archivedAt: row.archived_at,
     rejectionReason: row.rejection_reason,
     imageKey: row.image_key,
     isDemo: row.is_demo,
+    partner: partner
+      ? {
+          id: partner.id,
+          businessName: partner.business_name,
+          businessEmail: partner.business_email,
+          status: partner.status,
+          taxCredentialUrl: partner.tax_credential_url,
+          idDocumentUrl: partner.id_document_url,
+          ownerProfileId: partner.owner_profile_id,
+        }
+      : null,
+    // A count request with head:true returns the number and no rows. Null
+    // would mean the count failed, and treating that as zero would offer a
+    // delete button for a vehicle that may well have bookings.
+    bookingCount: bookingResult.count ?? -1,
   };
 }
 
