@@ -10,7 +10,6 @@ import {
   combineDateAndTime,
   computePricing,
   effectiveDays,
-  oneWayFee,
   reservationDeposit,
   securityDeposit,
 } from "@/lib/duration";
@@ -27,7 +26,7 @@ const QUOTE_COLUMNS = "id, booking_ref, rate_per_day, total_amount, deposit_amou
 export default function TripPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const { draft, patchDraft, vehicle, vehicleDbId, feeTable } = useBookingDraft();
+  const { draft, patchDraft, vehicle, vehicleDbId } = useBookingDraft();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,8 +39,7 @@ export default function TripPage() {
     const dropoffAt = combineDateAndTime(tripData.dropoffDate, tripData.dropoffTime);
     const days = effectiveDays(pickupAt, dropoffAt);
     const pricing = computePricing(vehicle.pricePerDay, days, vehicle.rates);
-    const fee = tripData.returnToDifferentLocation ? oneWayFee(tripData.pickupPoint, tripData.dropoffPoint, feeTable) : 0;
-    const total = pricing.total + fee;
+    const total = pricing.total;
 
     const supabase = createClient();
     const insertPayload = {
@@ -59,8 +57,7 @@ export default function TripPage() {
       destination: tripData.destination,
       purpose: tripData.purpose,
       drive_type: tripData.driveType,
-      dropoff_point: tripData.returnToDifferentLocation ? tripData.dropoffPoint : tripData.pickupPoint,
-      one_way_fee: fee,
+      dropoff_point: tripData.pickupPoint,
       duration_unit: tripData.durationUnit,
       duration_quantity: tripData.durationQuantity,
       idempotency_key: draft.idempotencyKey,
@@ -139,7 +136,6 @@ export default function TripPage() {
 
       <TripDetailsStep
         vehicle={vehicle}
-        feeTable={feeTable}
         value={draft.trip}
         onChange={(patch) => patchDraft({ trip: { ...draft.trip, ...patch } })}
         saving={saving}

@@ -8,7 +8,6 @@ import {
   combineDateAndTime,
   computePricing,
   effectiveDays,
-  oneWayFee,
   reservationDeposit,
   securityDeposit,
 } from "@/lib/duration";
@@ -19,7 +18,7 @@ import { FormError } from "@/components/booking/shared";
 
 export default function SettlementPage() {
   const router = useRouter();
-  const { draft, patchDraft, vehicle, feeTable } = useBookingDraft();
+  const { draft, patchDraft, vehicle } = useBookingDraft();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,10 +29,9 @@ export default function SettlementPage() {
   const dropoffAt = combineDateAndTime(trip.dropoffDate, trip.dropoffTime);
   const days = effectiveDays(pickupAt, dropoffAt);
   const pricing = computePricing(vehicle.pricePerDay, days, vehicle.rates);
-  const estimatedFee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint, feeTable) : 0;
 
   // Prefer the database's figures; the local calculation is only a fallback.
-  const total = draft.quote?.total ?? pricing.total + estimatedFee;
+  const total = draft.quote?.total ?? pricing.total;
   const security = draft.quote?.securityDeposit ?? securityDeposit(total, vehicle.rates);
   // No Math.max clamp: with a percentage deposit this cannot go negative, and
   // the clamp is exactly what hid the old flat-KES-5,000 overcharge (a 3,200

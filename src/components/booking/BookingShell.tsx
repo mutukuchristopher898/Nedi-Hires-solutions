@@ -3,10 +3,9 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import type { VehicleListing } from "@/lib/types";
-import type { OneWayFeeTable } from "@/lib/duration";
 import { useAuth } from "@/lib/auth";
 import { formatMoney } from "@/lib/data";
-import { combineDateAndTime, computePricing, effectiveDays, formatDurationLabel, oneWayFee } from "@/lib/duration";
+import { combineDateAndTime, computePricing, effectiveDays, formatDurationLabel } from "@/lib/duration";
 import { BookingDraftProvider, useBookingDraft } from "@/lib/booking/draftStore";
 import VehiclePhoto from "@/components/VehiclePhoto";
 import { Row } from "./shared";
@@ -14,12 +13,10 @@ import { Row } from "./shared";
 export default function BookingShell({
   vehicle,
   vehicleDbId,
-  feeTable,
   children,
 }: {
   vehicle: VehicleListing;
   vehicleDbId: string | null;
-  feeTable: OneWayFeeTable;
   children: ReactNode;
 }) {
   const { user, ready } = useAuth();
@@ -66,22 +63,21 @@ export default function BookingShell({
   }
 
   return (
-    <BookingDraftProvider vehicle={vehicle} vehicleDbId={vehicleDbId} feeTable={feeTable}>
+    <BookingDraftProvider vehicle={vehicle} vehicleDbId={vehicleDbId}>
       <BookingShellInner vehicle={vehicle}>{children}</BookingShellInner>
     </BookingDraftProvider>
   );
 }
 
 function BookingShellInner({ vehicle, children }: { vehicle: VehicleListing; children: ReactNode }) {
-  const { draft, feeTable } = useBookingDraft();
+  const { draft } = useBookingDraft();
   const { trip } = draft;
 
   const pickupAt = combineDateAndTime(trip.pickupDate, trip.pickupTime);
   const dropoffAt = combineDateAndTime(trip.dropoffDate, trip.dropoffTime);
   const days = effectiveDays(pickupAt, dropoffAt);
   const pricing = computePricing(vehicle.pricePerDay, days, vehicle.rates);
-  const fee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint, feeTable) : 0;
-  const total = pricing.total + fee;
+  const total = pricing.total;
   const durationLabel = formatDurationLabel(trip.durationUnit, trip.durationQuantity);
 
   return (
@@ -97,7 +93,6 @@ function BookingShellInner({ vehicle, children }: { vehicle: VehicleListing; chi
         <div className="mt-4 border-t border-line pt-4 text-sm">
           <Row label="Rate" value={`${formatMoney(vehicle.pricePerDay, vehicle.currency)}/day`} />
           <Row label="Duration" value={durationLabel} />
-          {fee > 0 && <Row label="One-way fee" value={formatMoney(fee, vehicle.currency)} />}
           <Row label="Est. total" value={formatMoney(total, vehicle.currency)} bold />
         </div>
       </aside>

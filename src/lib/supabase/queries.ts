@@ -1,5 +1,4 @@
 import { createClient } from "./server";
-import { oneWayFeeKey, type OneWayFeeTable } from "@/lib/duration";
 import { OPTION_LIST_FALLBACKS, type OptionList } from "@/lib/optionLists";
 import {
   ABSOLUTE_RESULT_CAP,
@@ -690,64 +689,6 @@ export async function getPartnerNetwork(): Promise<string[]> {
   return [...names].sort();
 }
 
-/**
- * The one-way fee table, for quoting a route in the booking form before
- * anything is written. booking_one_way_fee() in SQL stays authoritative.
- */
-export async function getOneWayFeeTable(): Promise<OneWayFeeTable> {
-  const supabase = await createClient();
-
-  const [feesResult, settingsResult] = await Promise.all([
-    supabase.from("one_way_fees").select("location_a, location_b, fee"),
-    supabase.from("pricing_settings").select("default_one_way_fee").maybeSingle(),
-  ]);
-
-  if (feesResult.error) throw new Error(`Failed to load one-way fees: ${feesResult.error.message}`);
-  if (settingsResult.error) throw new Error(`Failed to load pricing settings: ${settingsResult.error.message}`);
-
-  const pairs: Record<string, number> = {};
-  for (const row of (feesResult.data ?? []) as { location_a: string; location_b: string; fee: number }[]) {
-    // Both directions, so the client never has to reproduce Postgres's
-    // collation ordering to find a row.
-    pairs[oneWayFeeKey(row.location_a, row.location_b)] = Number(row.fee);
-    pairs[oneWayFeeKey(row.location_b, row.location_a)] = Number(row.fee);
-  }
-
-  const settings = settingsResult.data as { default_one_way_fee: number } | null;
-
-  return { pairs, defaultFee: Number(settings?.default_one_way_fee ?? 0) };
-}
-
-export interface RouteFee {
-  locationA: string;
-  locationB: string;
-  fee: number;
-}
-
-/** Admin view of the route fee table, plus the fallback for unlisted pairs. */
-export async function getRouteFees(): Promise<{ routes: RouteFee[]; defaultFee: number }> {
-  const supabase = await createClient();
-
-  const [feesResult, settingsResult] = await Promise.all([
-    supabase.from("one_way_fees").select("location_a, location_b, fee").order("location_a"),
-    supabase.from("pricing_settings").select("default_one_way_fee").maybeSingle(),
-  ]);
-
-  if (feesResult.error) throw new Error(`Failed to load route fees: ${feesResult.error.message}`);
-  if (settingsResult.error) throw new Error(`Failed to load pricing settings: ${settingsResult.error.message}`);
-
-  const settings = settingsResult.data as { default_one_way_fee: number } | null;
-
-  return {
-    routes: ((feesResult.data ?? []) as { location_a: string; location_b: string; fee: number }[]).map((r) => ({
-      locationA: r.location_a,
-      locationB: r.location_b,
-      fee: Number(r.fee),
-    })),
-    defaultFee: Number(settings?.default_one_way_fee ?? 0),
-  };
-}
-
 export interface PricingDefaults {
   weeklyThresholdDays: number;
   weeklyDiscount: number;
@@ -755,20 +696,19 @@ export interface PricingDefaults {
   monthlyDiscount: number;
   reservationDepositRate: number;
   securityDepositRate: number;
-  defaultOneWayFee: number;
 }
 
 export async function getPricingDefaults(): Promise<PricingDefaults> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("pricing_settings")
-    .select(`${PRICING_DEFAULT_COLUMNS}, default_one_way_fee`)
+    .select(PRICING_DEFAULT_COLUMNS)
     .maybeSingle();
 
   if (error) throw new Error(`Failed to load pricing settings: ${error.message}`);
   if (!data) throw new Error("Pricing settings row is missing");
 
-  const row = data as PricingDefaultsRow & { default_one_way_fee: number };
+  const row = data as PricingDefaultsRow;
   return {
     weeklyThresholdDays: Number(row.weekly_threshold_days),
     weeklyDiscount: Number(row.weekly_discount),
@@ -776,7 +716,6 @@ export async function getPricingDefaults(): Promise<PricingDefaults> {
     monthlyDiscount: Number(row.monthly_discount),
     reservationDepositRate: Number(row.reservation_deposit_rate),
     securityDepositRate: Number(row.security_deposit_rate),
-    defaultOneWayFee: Number(row.default_one_way_fee),
   };
 }
 

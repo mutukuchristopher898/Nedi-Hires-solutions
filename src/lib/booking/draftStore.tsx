@@ -3,7 +3,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import type { BookingStep, TripDetails, VehicleListing } from "@/lib/types";
-import type { OneWayFeeTable } from "@/lib/duration";
 import { combineDateAndTime, computeDropoff, toNairobiDateInputValue, toNairobiTimeInputValue } from "@/lib/duration";
 import { APPLICANT_DRAFT_DEFAULTS, type ApplicantDraftFields } from "@/components/booking/ApplicantDetailsStep";
 
@@ -37,8 +36,6 @@ interface BookingDraftContextValue {
   patchDraft: (patch: Partial<BookingDraft>) => void;
   vehicle: VehicleListing;
   vehicleDbId: string;
-  /** Loaded on the server so the steps can quote a route without an effect. */
-  feeTable: OneWayFeeTable;
 }
 
 const BookingDraftContext = createContext<BookingDraftContextValue | null>(null);
@@ -125,12 +122,10 @@ function loadInitialDraft(vehicle: VehicleListing): BookingDraft {
 export function BookingDraftProvider({
   vehicle,
   vehicleDbId,
-  feeTable,
   children,
 }: {
   vehicle: VehicleListing;
   vehicleDbId: string;
-  feeTable: OneWayFeeTable;
   children: ReactNode;
 }) {
   const [draft, setDraft] = useState<BookingDraft>(() => loadInitialDraft(vehicle));
@@ -144,7 +139,7 @@ export function BookingDraftProvider({
   }
 
   return (
-    <BookingDraftContext.Provider value={{ draft, patchDraft, vehicle, vehicleDbId, feeTable }}>
+    <BookingDraftContext.Provider value={{ draft, patchDraft, vehicle, vehicleDbId }}>
       {children}
     </BookingDraftContext.Provider>
   );

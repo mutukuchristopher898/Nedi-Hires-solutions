@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import type { TripDetails, VehicleListing } from "@/lib/types";
 import { calculateAge, calculateYearsSince, MIN_LICENSE_YEARS, MIN_SELF_DRIVE_AGE } from "@/lib/eligibility";
@@ -10,14 +11,12 @@ import {
   effectiveDays,
   formatDurationLabel,
   MAX_RENTAL_DAYS,
-  oneWayFee,
   toNairobiDateInputValue,
   toNairobiTimeInputValue,
   type DurationUnit,
 } from "@/lib/duration";
 import { formatMoney } from "@/lib/data";
 import { Field, fieldProps, FormError, inputClass } from "./shared";
-import type { OneWayFeeTable } from "@/lib/duration";
 
 export const PICKUP_POINTS = [
   "Jomo Kenyatta International Airport (JKIA)",
@@ -73,13 +72,11 @@ const todayIso = () => toNairobiDateInputValue(new Date());
 export default function TripDetailsStep({
   vehicle,
   value: trip,
-  feeTable,
   onChange,
   saving,
   onSubmit,
 }: {
   vehicle: VehicleListing;
-  feeTable: OneWayFeeTable;
   value: TripDetails;
   onChange: (patch: Partial<TripDetails>) => void;
   saving: boolean;
@@ -91,7 +88,6 @@ export default function TripDetailsStep({
     pickupPoint?: boolean;
     destination?: boolean;
     dropoff?: boolean;
-    dropoffPoint?: boolean;
     dateOfBirth?: boolean;
     licenseIssueDate?: boolean;
   }>({});
@@ -100,7 +96,6 @@ export default function TripDetailsStep({
   const dropoffAt = combineDateAndTime(trip.dropoffDate, trip.dropoffTime);
   const days = effectiveDays(pickupAt, dropoffAt);
   const pricing = computePricing(vehicle.pricePerDay, days, vehicle.rates);
-  const fee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint, feeTable) : 0;
 
   function update<K extends keyof TripDetails>(key: K, value: TripDetails[K]) {
     onChange({ [key]: value } as Partial<TripDetails>);
@@ -155,7 +150,6 @@ export default function TripDetailsStep({
     const pickupInPast = !missingPickupDate && trip.pickupDate < today;
     const dropoffInvalid = dropoffAt.getTime() <= pickupAt.getTime();
     const tooLong = days > MAX_RENTAL_DAYS;
-    const missingDropoffPoint = trip.returnToDifferentLocation && !trip.dropoffPoint.trim();
 
     if (
       missingPickupDate ||
@@ -163,15 +157,13 @@ export default function TripDetailsStep({
       missingPickupPoint ||
       missingDestination ||
       dropoffInvalid ||
-      tooLong ||
-      missingDropoffPoint
+      tooLong
     ) {
       setFieldErrors({
         pickupDate: missingPickupDate || pickupInPast,
         pickupPoint: missingPickupPoint,
         destination: missingDestination,
         dropoff: dropoffInvalid || tooLong,
-        dropoffPoint: missingDropoffPoint,
       });
       setFormError(
         pickupInPast
@@ -209,7 +201,8 @@ export default function TripDetailsStep({
     }
 
     setFieldErrors({});
-    onSubmit({ ...trip, dropoffPoint: trip.returnToDifferentLocation ? trip.dropoffPoint : trip.pickupPoint });
+    // Drop-off always mirrors pickup now; a different one is a quote.
+    onSubmit({ ...trip, returnToDifferentLocation: false, dropoffPoint: trip.pickupPoint });
   }
 
   return (
@@ -371,43 +364,22 @@ export default function TripDetailsStep({
           </p>
         </div>
 
+        {/* One-way hire is no longer priced automatically: a different
+            drop-off is arranged as a quote, because the cost of repositioning
+            a vehicle depends on the route and when it can be collected —
+            things a flat fee guessed at. */}
         <div className="rounded-lg bg-offwhite p-4">
-          <label className="flex items-center gap-2 text-sm text-midnight/80">
-            <input
-              type="checkbox"
-              checked={trip.returnToDifferentLocation}
-              onChange={(e) => update("returnToDifferentLocation", e.target.checked)}
-              className="h-4 w-4 rounded border-line"
-            />
-            Return to a different location
-          </label>
-
-          {trip.returnToDifferentLocation && (
-            <div className="mt-3">
-              <Field label="Drop-off point">
-                <select
-                  required
-                  value={trip.dropoffPoint}
-                  onChange={(e) => update("dropoffPoint", e.target.value)}
-                  {...fieldProps(fieldErrors.dropoffPoint ? "reject" : undefined)}
-                >
-                  <option value="" disabled>
-                    Select a drop-off point
-                  </option>
-                  {PICKUP_POINTS.map((p) => (
-                    <option key={p} value={p}>
-                      {p}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              {fee > 0 && (
-                <p className="mt-2 text-sm text-midnight/70">
-                  One-way fee: {formatMoney(fee, vehicle.currency)}
-                </p>
-              )}
-            </div>
-          )}
+          <p className="text-sm font-medium text-midnight">Returning to a different location?</p>
+          <p className="mt-1 text-sm text-midnight/70">
+            One-way hires are priced individually. Tell us the route and we&apos;ll come back with
+            a price — this booking stays a return to {trip.pickupPoint || "your pickup point"}.
+          </p>
+          <Link
+            href="/contact"
+            className="mt-3 inline-block text-sm font-semibold text-gold-dark hover:text-gold"
+          >
+            Request a one-way quote &rarr;
+          </Link>
         </div>
 
         {trip.driveType === "self_drive" && (

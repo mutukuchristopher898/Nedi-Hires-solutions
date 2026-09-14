@@ -9,7 +9,6 @@ import {
   computePricing,
   effectiveDays,
   formatDurationLabel,
-  oneWayFee,
   reservationDeposit,
 } from "@/lib/duration";
 import { useBookingDraft, useLockGuard, useRequireBookingId } from "@/lib/booking/draftStore";
@@ -19,7 +18,7 @@ import { FormError } from "@/components/booking/shared";
 
 export default function DepositPage() {
   const router = useRouter();
-  const { draft, patchDraft, vehicle, feeTable } = useBookingDraft();
+  const { draft, patchDraft, vehicle } = useBookingDraft();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,14 +30,13 @@ export default function DepositPage() {
   const dropoffAt = combineDateAndTime(trip.dropoffDate, trip.dropoffTime);
   const days = effectiveDays(pickupAt, dropoffAt);
   const pricing = computePricing(vehicle.pricePerDay, days, vehicle.rates);
-  const estimatedFee = trip.returnToDifferentLocation ? oneWayFee(trip.pickupPoint, trip.dropoffPoint, feeTable) : 0;
   const durationLabel = formatDurationLabel(trip.durationUnit, trip.durationQuantity);
 
   // Prefer the figures the database computed when the booking was created —
   // enforce_booking_money() is authoritative and the local calculation is
   // only a fallback for a draft that predates the quote being captured.
-  const total = draft.quote?.total ?? pricing.total + estimatedFee;
-  const fee = draft.quote?.oneWayFee ?? estimatedFee;
+  const total = draft.quote?.total ?? pricing.total;
+  const fee = draft.quote?.oneWayFee ?? 0;
   const deposit = draft.quote?.deposit ?? reservationDeposit(total, vehicle.rates);
 
   async function handlePayDeposit() {

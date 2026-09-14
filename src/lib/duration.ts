@@ -179,32 +179,7 @@ export function formatDurationLabel(unit: DurationUnit, quantity: number): strin
   return `${quantity} ${label}${quantity === 1 ? "" : "s"}`;
 }
 
-/**
- * Per-route one-way fees, loaded from the database.
- *
- * `pairs` is keyed in both directions, so a lookup never depends on this
- * sorting text the same way Postgres's least()/greatest() would — JavaScript
- * compares UTF-16 code units and Postgres uses the database collation, and a
- * disagreement would show the customer a different fee from the one charged.
- */
-export interface OneWayFeeTable {
-  pairs: Record<string, number>;
-  defaultFee: number;
-}
-
-export function oneWayFeeKey(a: string, b: string): string {
-  return `${a.trim()}|${b.trim()}`;
-}
-
-/**
- * Mirrors booking_one_way_fee() in SQL, which is authoritative — this exists
- * so the booking form can quote a fee as the customer picks a drop-off point,
- * before any row is written. An unlisted route falls back to the default,
- * which is the owner's decision: never under-charge by accident.
- */
-export function oneWayFee(pickup: string, dropoff: string, table: OneWayFeeTable): number {
-  const from = (pickup ?? "").trim();
-  const to = (dropoff ?? "").trim();
-  if (!from || !to || from === to) return 0;
-  return table.pairs[oneWayFeeKey(from, to)] ?? table.defaultFee;
-}
+// One-way fees were removed: a different drop-off is now arranged as a quote
+// rather than priced by a flat table. The cost of repositioning a vehicle
+// depends on the route and on when it can be collected, which a fixed fee
+// guessed at.
