@@ -24,6 +24,7 @@ export default function Footer() {
         <div>
           <h4 className="text-sm font-semibold text-white">Company</h4>
           <ul className="mt-3 space-y-2 text-sm">
+            <li><Link href="/services">Services</Link></li>
             <li><Link href="/about">About Us</Link></li>
             <li><Link href="/contact">Contact Support</Link></li>
             <li><Link href="/faq">FAQ</Link></li>
@@ -53,7 +54,10 @@ export default function Footer() {
             <Link href="/terms" className="underline hover:text-white">Terms</Link> ·{" "}
             <Link href="/privacy" className="underline hover:text-white">Privacy</Link>
           </span>
-          <span>All prices in KES</span>
+          <span>
+            Wherever you&apos;re headed — <span className="italic text-gold">twende.</span>
+            <span className="ml-3 text-white/40">All prices in KES</span>
+          </span>
         </div>
       </div>
     </footer>

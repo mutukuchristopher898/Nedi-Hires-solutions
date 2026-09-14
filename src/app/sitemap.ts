@@ -11,6 +11,7 @@ import { site } from "@/lib/site";
 const ROUTES: { path: string; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]; priority: number }[] = [
   { path: "/", changeFrequency: "weekly", priority: 1 },
   { path: "/search", changeFrequency: "daily", priority: 0.9 },
+  { path: "/services", changeFrequency: "monthly", priority: 0.9 },
   { path: "/subscriptions", changeFrequency: "monthly", priority: 0.8 },
   { path: "/about", changeFrequency: "monthly", priority: 0.7 },
   { path: "/partners", changeFrequency: "monthly", priority: 0.7 },

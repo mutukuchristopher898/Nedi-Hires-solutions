@@ -134,7 +134,7 @@ export default async function SearchPage({
                 {page > 1
                   ? "There are no vehicles on this page."
                   : hasSearched
-                    ? "No vehicles match those filters. Try widening your search."
+                    ? "Nothing available for those dates in this category. Try shifting your dates by a day, or message us on WhatsApp — we often have partner vehicles that aren't listed yet."
                     : "No vehicles are listed yet."}
               </p>
               {page > 1 ? (

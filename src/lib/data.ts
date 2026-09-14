@@ -5330,15 +5330,8 @@ export const documentQueue: DocumentQueueItem[] = [
   { id: "dq-4", customerName: "Liu Chen", bookingRef: "BK-88405", docType: "International Passport", submittedOn: "2026-08-15", status: "pending" },
 ];
 
-export const services = [
-  { title: "Self-Drive", copy: "Rent the keys and go — full-tank, well-maintained vehicles for independent travel." },
-  { title: "Chauffeur-Driven", copy: "Sit back with a vetted professional driver for airport runs or full-day hire." },
-  { title: "Airport Transfers", copy: "Meet & greet pickups and drop-offs at JKIA, Moi International, and regional airports." },
-  { title: "Corporate Travel", copy: "Vetted executive fleets and structured mobility arrangements for businesses." },
-  { title: "Family Trips", copy: "Spacious vans and SUVs built for family road trips and group outings." },
-  { title: "Tours & Safaris", copy: "Purpose-built 4x4s with pop-up roofs for game drives and coastal excursions." },
-  { title: "Event Transport", copy: "Bulk and high-capacity transit for weddings, conferences, and group events." },
-];
+// The services list moved to src/lib/services.ts, where each one carries the
+// detail the /services page needs. Keeping a second copy here invited drift.
 
 
 

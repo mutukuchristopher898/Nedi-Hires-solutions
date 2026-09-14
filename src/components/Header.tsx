@@ -8,6 +8,7 @@ import { site } from "@/lib/site";
 
 const NAV_LINKS = [
   { href: "/search", label: "Book a Car" },
+  { href: "/services", label: "Services" },
   { href: "/subscriptions", label: "Subscriptions" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import VehicleCard from "@/components/VehicleCard";
 import ServiceIcon from "@/components/ServiceIcon";
-import { services } from "@/lib/data";
+import { SERVICES } from "@/lib/services";
 import { getApprovedVehicles, getPartnerNetwork } from "@/lib/supabase/queries";
 import { site } from "@/lib/site";
 
@@ -47,7 +47,7 @@ export default async function Home() {
           </h1>
           <p className="mt-4 max-w-xl text-base text-white/70 sm:text-lg">
             Self-drive or chauffeur-driven car hire, airport transfers, corporate travel,
-            and tours & safaris — from a verified fleet of internal and partner vehicles.
+            and tours &amp; safaris — every vehicle inspected, every driver vetted.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -55,7 +55,7 @@ export default async function Home() {
               href="/search"
               className="rounded-md bg-gold px-7 py-3.5 text-center text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
             >
-              Book a Ride Now
+              Twende — Book a Ride
             </Link>
             <a
               href={site.whatsappHref}
@@ -77,14 +77,21 @@ export default async function Home() {
               Affordable · Reliable · Comfortable — one platform for every kind of trip.
             </p>
           </div>
+          <Link href="/services" className="text-sm font-semibold text-gold-dark hover:text-gold">
+            See all services →
+          </Link>
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {services.map((s) => (
-            <div key={s.title} className="rounded-xl bg-white p-5 ring-1 ring-line">
+          {SERVICES.map((s) => (
+            <Link
+              key={s.slug}
+              href={`/services#${s.slug}`}
+              className="rounded-xl bg-white p-5 ring-1 ring-line transition hover:ring-gold"
+            >
               <ServiceIcon name={s.title} className="h-9 w-9 text-gold" />
               <h3 className="mt-3 font-semibold text-midnight">{s.title}</h3>
-              <p className="mt-2 text-sm text-midnight/60">{s.copy}</p>
-            </div>
+              <p className="mt-2 text-sm text-midnight/60">{s.summary}</p>
+            </Link>
           ))}
         </div>
       </section>

@@ -32,7 +32,8 @@ export default function DepositStep({
     <section className="rounded-2xl bg-white p-6 ring-1 ring-line">
       <h2 className="text-lg font-semibold text-midnight">5. Reservation & Deposit</h2>
       <p className="mt-1 text-sm text-midnight/60">
-        Pay a reservation deposit to temporarily hold this vehicle.
+        Your deposit holds this vehicle for you. It goes toward your total — it isn&apos;t an
+        extra charge.
       </p>
 
       <div className="mt-5 rounded-lg bg-offwhite p-4 text-sm">

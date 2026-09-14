@@ -9,10 +9,16 @@ export default function ConfirmedStep({ bookingRef, trip }: { bookingRef: string
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald/10 text-2xl text-emerald-dark">
         ✓
       </div>
-      <h2 className="mt-4 text-xl font-semibold text-midnight">Booking Confirmed</h2>
+      <h2 className="mt-4 text-xl font-semibold text-midnight">
+        <span className="italic text-gold-dark">Twende.</span> You&apos;re booked.
+      </h2>
+      {/* No longer claims a confirmation email was sent. None is: there is no
+          sending domain yet, so the promise was simply untrue. The booking
+          reference and the account page are what the customer actually has. */}
       <p className="mt-1 text-sm text-midnight/60">
-        Reference <span className="font-mono font-medium text-midnight">{bookingRef}</span>.
-        A confirmation email with your receipt and pickup instructions has been sent.
+        Reference <span className="font-mono font-medium text-midnight">{bookingRef}</span>. Keep
+        it — it&apos;s how we find your booking. Pickup details are on your bookings page, and our
+        WhatsApp number is in the footer for anything that comes up.
       </p>
       <p className="mt-3 text-sm text-midnight/60">
         {trip.driveType === "self_drive" ? "Self-drive" : "Chauffeur-driven"} ·{" "}
