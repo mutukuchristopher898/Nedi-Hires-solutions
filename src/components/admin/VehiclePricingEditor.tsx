@@ -125,6 +125,10 @@ function VehicleRow({ vehicle, defaults }: { vehicle: VehiclePricingRow; default
     }
     return initial;
   });
+  // The daily rate lives here too. It is the number an operator means by
+  // "the price", and having it only on the vehicle edit form made the page
+  // called Pricing the one place you could not change it.
+  const [dailyRate, setDailyRate] = useState(String(vehicle.pricePerDay));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -133,7 +137,13 @@ function VehicleRow({ vehicle, defaults }: { vehicle: VehiclePricingRow; default
     setError(null);
     setSaved(false);
 
-    const patch: Record<string, number | null> = {};
+    const rate = Number(dailyRate);
+    if (!Number.isFinite(rate) || rate <= 0) {
+      setError("The daily rate must be more than zero.");
+      return;
+    }
+
+    const patch: Record<string, number | null> = { price_per_day: rate };
     for (const field of RATE_FIELDS) {
       const raw = values[field.key].trim();
       // Blank means "inherit the platform default", which is a null column —
@@ -200,6 +210,8 @@ function VehicleRow({ vehicle, defaults }: { vehicle: VehiclePricingRow; default
     setSaved(false);
   }
 
+  // Only the six inheritable rates. The daily rate has no platform default to
+  // fall back to — it is this vehicle's own price.
   function resetAllToDefault() {
     const cleared = {} as Record<RateKey, string>;
     for (const field of RATE_FIELDS) cleared[field.key] = "";
@@ -227,6 +239,21 @@ function VehicleRow({ vehicle, defaults }: { vehicle: VehiclePricingRow; default
           Use platform defaults
         </button>
       </div>
+
+      <label className="mt-3 block max-w-xs">
+        <span className="text-[11px] font-medium text-midnight/60">Daily rate (KES)</span>
+        <input
+          inputMode="decimal"
+          value={dailyRate}
+          onChange={(e) => { setDailyRate(e.target.value); setSaved(false); }}
+          aria-label={`Daily rate for ${vehicle.label}`}
+          className="mt-1 w-full rounded-md border border-line px-2 py-1.5 text-sm focus:border-gold focus:outline-none"
+        />
+        <span className="mt-1 block text-[11px] text-midnight/40">
+          Set by the partner when listing. Changing it here affects new bookings only — one
+          already placed keeps the rate it was quoted.
+        </span>
+      </label>
 
       <div className="mt-3 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {RATE_FIELDS.map((field) => (
@@ -287,7 +314,7 @@ function VehicleRow({ vehicle, defaults }: { vehicle: VehiclePricingRow; default
               </tr>
             </thead>
             <tbody className="text-midnight">
-              {previewRows(vehicle.pricePerDay, effectiveRates(), vehicle.currency).map((row) => (
+              {previewRows(Number(dailyRate) || 0, effectiveRates(), vehicle.currency).map((row) => (
                 <tr key={row.days} className="border-t border-line/60">
                   <td className="py-1 pr-2">
                     {row.days} day{row.days === 1 ? "" : "s"}
