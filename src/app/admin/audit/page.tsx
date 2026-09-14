@@ -11,6 +11,9 @@ const ENTITY_FILTERS = [
   "contact_messages",
   "quote_requests",
   "pricing_settings",
+  // The one_way_fees table is gone, but the log entries for it are not:
+  // this filter is how you still see who changed a route fee while they
+  // were in use.
   "one_way_fees",
 ] as const;
 
