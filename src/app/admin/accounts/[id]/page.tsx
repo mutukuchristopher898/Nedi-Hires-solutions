@@ -3,10 +3,17 @@ import { notFound } from "next/navigation";
 import AccountActions from "@/components/admin/AccountActions";
 import AccountLifecycleActions from "@/components/admin/AccountLifecycleActions";
 import AuditChanges from "@/components/admin/AuditChanges";
-import StatusBadge from "@/components/StatusBadge";
 import { requireRole } from "@/lib/supabase/authz";
 import { getAccountDetail, getAuditLog } from "@/lib/supabase/queries";
 import { formatMoney } from "@/lib/data";
+import type { DocumentStatus } from "@/lib/types";
+
+const DOCUMENT_STATUS_STYLES: Record<DocumentStatus, string> = {
+  pending: "bg-amber/10 text-amber ring-1 ring-amber/30",
+  approved: "bg-emerald/10 text-emerald-dark ring-1 ring-emerald/30",
+  rejected: "bg-red-500/10 text-red-600 ring-1 ring-red-500/30",
+  returned: "bg-charcoal-soft/10 text-charcoal-soft ring-1 ring-charcoal-soft/30",
+};
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-KE", { day: "numeric", month: "short", year: "numeric" });
@@ -127,7 +134,9 @@ export default async function AccountDetailPage({ params }: { params: Promise<{ 
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <StatusBadge status={d.status} />
+                  <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${DOCUMENT_STATUS_STYLES[d.status]}`}>
+                    {d.status === "returned" ? "returned" : d.status}
+                  </span>
                   <Link href="/admin/documents" className="text-xs font-semibold text-gold-dark hover:text-gold">
                     Review →
                   </Link>

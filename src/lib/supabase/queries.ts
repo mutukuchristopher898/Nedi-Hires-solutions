@@ -10,6 +10,8 @@ import type {
   AdminBooking,
   ApprovalStatus,
   BookingStatus,
+  DocumentReview,
+  DocumentStatus,
   FuelType,
   PartnerAccount,
   PartnerVehicle,
@@ -137,8 +139,17 @@ interface IdentityDocumentRow {
   id: string;
   doc_type: string;
   file_url: string;
-  status: ApprovalStatus;
+  status: DocumentStatus;
   submitted_at: string;
+  review_reason?: string | null;
+  expires_at?: string | null;
+  document_reviews?: {
+    id: string;
+    reviewer_email: string | null;
+    outcome: DocumentReview["outcome"];
+    reason: string | null;
+    created_at: string;
+  }[];
   bookings: { booking_ref: string } | null;
   profiles: { full_name: string | null } | null;
 }
@@ -155,7 +166,7 @@ export async function getPendingDocuments(): Promise<PendingDocument[]> {
     // embed at all and this query throws — taking the admin overview and the
     // verification queue down with it.
     .select(
-      "id, doc_type, file_url, status, submitted_at, bookings(booking_ref), profiles!identity_documents_customer_id_fkey(full_name)"
+      "id, doc_type, file_url, status, submitted_at, review_reason, expires_at, bookings(booking_ref), profiles!identity_documents_customer_id_fkey(full_name), document_reviews(id, reviewer_email, outcome, reason, created_at)"
     )
     .order("submitted_at", { ascending: false })
     .limit(200);
@@ -202,6 +213,19 @@ export async function getPendingDocuments(): Promise<PendingDocument[]> {
     signedUrl: signedByPath.get(row.file_url) ?? null,
     status: row.status,
     submittedAt: row.submitted_at,
+    reviewReason: row.review_reason ?? null,
+    expiresAt: row.expires_at ?? null,
+    // Newest first: what a reviewer wants is the most recent decision, and
+    // whether this is the second or third time round.
+    history: [...(row.document_reviews ?? [])]
+      .sort((a, b) => b.created_at.localeCompare(a.created_at))
+      .map((r) => ({
+        id: r.id,
+        reviewerEmail: r.reviewer_email,
+        outcome: r.outcome,
+        reason: r.reason,
+        createdAt: r.created_at,
+      })),
   }));
 }
 
@@ -1223,6 +1247,9 @@ export async function getAccountDetail(id: string): Promise<AccountDetail | null
       signedUrl: null,
       status: d.status,
       submittedAt: d.submitted_at,
+      reviewReason: d.review_reason ?? null,
+      expiresAt: d.expires_at ?? null,
+      history: [],
     })),
   };
 }

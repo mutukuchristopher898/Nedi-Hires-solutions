@@ -150,6 +150,16 @@ export interface ContactMessage {
 // A real identity document awaiting review, joined to the booking it belongs
 // to and the customer who submitted it. Distinct from DocumentQueueItem
 // below, which is the shape of the illustrative sample data in data.ts.
+export type DocumentStatus = "pending" | "approved" | "rejected" | "returned";
+
+export interface DocumentReview {
+  id: string;
+  reviewerEmail: string | null;
+  outcome: "approved" | "rejected" | "returned";
+  reason: string | null;
+  createdAt: string;
+}
+
 export interface PendingDocument {
   id: string;
   customerName: string | null;
@@ -159,8 +169,12 @@ export interface PendingDocument {
   fileUrl: string;
   /** Short-lived signed URL for viewing it, or null if one couldn't be made. */
   signedUrl: string | null;
-  status: ApprovalStatus;
+  status: DocumentStatus;
   submittedAt: string;
+  reviewReason: string | null;
+  expiresAt: string | null;
+  /** Previous decisions, newest first — the thread a third reviewer needs. */
+  history: DocumentReview[];
 }
 
 export interface DocumentQueueItem {
