@@ -191,7 +191,7 @@ export default function ApplicantDetailsStep({
       return;
     }
     if (requiresLicense && !licenseFile) {
-      setFormError("Self-drive requires a scan of your driving license.");
+      setFormError("Self drive requires a scan of your driving license.");
       return;
     }
 
@@ -444,7 +444,7 @@ export default function ApplicantDetailsStep({
 
         {showReattachNotice && (
           <p className="rounded-md bg-amber/10 px-3 py-2 text-sm text-amber">
-            Please re-attach your documents below — files can&apos;t be restored when you navigate back.
+            Please re-attach your documents below, files can&apos;t be restored when you navigate back.
           </p>
         )}
 

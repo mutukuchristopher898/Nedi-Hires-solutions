@@ -36,7 +36,7 @@ export default function AccountLifecycleActions({
   if (isSelf) {
     return (
       <p className="text-xs text-midnight/40">
-        This is your own account — you can&apos;t suspend or erase it from here.
+        This is your own account, you can&apos;t suspend or erase it from here.
       </p>
     );
   }
@@ -71,7 +71,7 @@ export default function AccountLifecycleActions({
       return;
     }
     if (!data || data.length === 0) {
-      setError("That didn't apply — you may not have permission.");
+      setError("That didn't apply, you may not have permission.");
       return;
     }
 

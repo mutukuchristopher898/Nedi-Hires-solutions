@@ -44,7 +44,7 @@ export async function POST(request: Request) {
   // PL/pgSQL treats as false.
   if (booking.drive_type === "self_drive" && (!body.dateOfBirth || !body.licenseIssueDate)) {
     return NextResponse.json(
-      { error: "Self-drive bookings require your date of birth and driving licence issue date." },
+      { error: "Self drive bookings require your date of birth and driving licence issue date." },
       { status: 400 }
     );
   }

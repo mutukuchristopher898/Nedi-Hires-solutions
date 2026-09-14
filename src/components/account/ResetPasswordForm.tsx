@@ -26,7 +26,7 @@ export default function ResetPasswordForm() {
 
     if (!strength.meetsMinimum) {
       setError(
-        "Choose a stronger password — at least 8 characters with a mix of upper/lowercase letters, numbers, and symbols."
+        "Choose a stronger password, at least 8 characters with a mix of upper/lowercase letters, numbers, and symbols."
       );
       return;
     }

@@ -33,7 +33,7 @@ export default async function AdminAccountsPage() {
       </div>
       <p className="mt-1 text-sm text-midnight/60">
         Everyone who has signed up. Sending a reset link emails that person a link to set their
-        own new password — you never see or choose it.
+        own new password, you never see or choose it.
       </p>
 
       {accounts.length === 0 ? (

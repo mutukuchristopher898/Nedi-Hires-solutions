@@ -267,7 +267,7 @@ export async function getAdminBookings(): Promise<AdminBooking[]> {
     createdAt: row.created_at,
     customerName: row.profiles?.full_name ?? null,
     vehicleLabel: row.vehicles ? `${row.vehicles.make} ${row.vehicles.model} ${row.vehicles.year}` : "Unknown vehicle",
-    licensePlate: row.vehicles?.license_plate ?? "—",
+    licensePlate: row.vehicles?.license_plate ?? "",
     // Mirrors enforce_vehicle_availability (20260911120000): anything not
     // cancelled, whose dates haven't passed, is still withholding the car.
     // The 30-minute grace on unconfirmed bookings isn't reflected here — this
@@ -1231,7 +1231,7 @@ export async function getAccountDetail(id: string): Promise<AccountDetail | null
       createdAt: b.created_at,
       customerName: b.profiles?.full_name ?? null,
       vehicleLabel: b.vehicles ? `${b.vehicles.make} ${b.vehicles.model} ${b.vehicles.year}` : "Unknown vehicle",
-      licensePlate: b.vehicles?.license_plate ?? "—",
+      licensePlate: b.vehicles?.license_plate ?? "",
       holdsVehicle: b.status !== "cancelled" && b.end_date >= today,
     })),
     documents: (documentsResult.data as unknown as IdentityDocumentRow[]).map((d) => ({

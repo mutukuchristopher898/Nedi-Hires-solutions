@@ -47,7 +47,7 @@ export default function MessageStatusSelect({
         <option value="read">Read</option>
         <option value="replied">Replied</option>
       </select>
-      {failed && <p className="mt-1 text-xs text-red-600">Not saved — try again.</p>}
+      {failed && <p className="mt-1 text-xs text-red-600">Not saved. Try again.</p>}
     </div>
   );
 }

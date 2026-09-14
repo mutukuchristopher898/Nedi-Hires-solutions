@@ -65,14 +65,14 @@ export default async function AccountDetailPage({ params }: { params: Promise<{ 
         <>
         <p className="mt-4 rounded-md bg-amber/10 px-4 py-3 text-sm text-amber">
           Suspended on {formatWhen(account.suspendedAt)}
-          {account.suspensionReason ? ` — ${account.suspensionReason}` : ""}. Every write is
+          {account.suspensionReason ? ` ${account.suspensionReason}` : ""}. Every write is
           refused: no bookings, enquiries, quote requests, vehicle listings, business
           registrations, document submissions or file uploads. Reading still works, so they can
           see a hire they already have.
         </p>
         <p className="mt-2 rounded-md bg-midnight/5 px-4 py-3 text-xs text-midnight/60">
           They can still sign in. Sign-in goes from the browser to Supabase Auth directly and
-          never touches this application, so suspension cannot intercept it — what it does is
+          never touches this application, so suspension cannot intercept it, what it does is
           make the account inert once they are in.
         </p>
         </>

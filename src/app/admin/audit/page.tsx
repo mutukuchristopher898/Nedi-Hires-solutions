@@ -69,7 +69,7 @@ export default async function AdminAuditPage({
       </div>
       <p className="mt-1 text-sm text-midnight/60">
         Every change made by staff or an admin, with what moved and who moved it. Written by the
-        database itself — entries cannot be edited or removed from here, deliberately.
+        database itself, entries cannot be edited or removed from here, deliberately.
       </p>
 
       <div className="mt-4 flex flex-wrap gap-1.5">

@@ -62,7 +62,7 @@ export default function DocumentReviewActions({
       return;
     }
     if (!data || data.length === 0) {
-      setError("That didn't apply — you may not have permission.");
+      setError("That didn't apply, you may not have permission.");
       return;
     }
 
@@ -73,7 +73,7 @@ export default function DocumentReviewActions({
 
   if (mode !== "idle") {
     const copy = OUTCOME_COPY[mode];
-    const reason = [preset, note.trim()].filter(Boolean).join(" — ");
+    const reason = [preset, note.trim()].filter(Boolean).join(" ");
 
     return (
       <div className="rounded-md bg-amber/5 p-3 ring-1 ring-amber/20">
@@ -103,7 +103,7 @@ export default function DocumentReviewActions({
         {!emailConfigured && (
           <p className="mt-2 rounded bg-midnight/5 px-2 py-1 text-[11px] text-midnight/60">
             This reason is saved and the customer can see it on their account, but no email is
-            sent yet — that needs a sending domain.
+            sent yet, that needs a sending domain.
           </p>
         )}
 

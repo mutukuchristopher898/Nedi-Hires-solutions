@@ -43,7 +43,7 @@ export default function AuthFinish() {
   return (
     <div className="container-shell max-w-md py-20 text-center">
       <p className="text-sm text-midnight/60">
-        {stuck ? "That link couldn't be completed — taking you to sign in…" : "Signing you in…"}
+        {stuck ? "That link couldn't be completed, taking you to sign in…" : "Signing you in…"}
       </p>
     </div>
   );

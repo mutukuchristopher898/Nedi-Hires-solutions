@@ -41,7 +41,7 @@ export default function TermsPage() {
       <p className="text-xs font-medium uppercase tracking-wide text-gold-dark">Legal</p>
       <h1 className="mt-2 text-3xl font-bold text-midnight">Terms of Service</h1>
       <p className="mt-3 rounded-lg bg-amber/10 p-3 text-sm text-amber">
-        Placeholder draft for prototype purposes only — review with legal counsel before
+        Placeholder draft for prototype purposes only, review with legal counsel before
         publishing a live version.
       </p>
 

@@ -8,7 +8,7 @@ import {
   getOptions,
 } from "@/lib/supabase/queries";
 import VehicleDocumentsPanel from "@/components/partners/VehicleDocumentsPanel";
-import { formatMoney } from "@/lib/data";
+import { formatMoney, formatClassification } from "@/lib/data";
 import { publicVehiclePhotoUrl } from "@/lib/supabase/vehiclePhotos";
 import type { ApprovalStatus } from "@/lib/types";
 
@@ -98,7 +98,7 @@ export default async function PartnerDashboardPage() {
 
       {partner.status === "pending" && (
         <p className="mt-6 rounded-md bg-amber/10 px-4 py-3 text-sm text-amber">
-          Your business is still being reviewed. You can list vehicles now — they go live once
+          Your business is still being reviewed. You can list vehicles now, they go live once
           both your account and the vehicle are approved.
         </p>
       )}
@@ -151,7 +151,7 @@ export default async function PartnerDashboardPage() {
                   </span>
                 </div>
                 <p className="mt-1 text-sm text-midnight/60">
-                  {v.licensePlate} · {v.classification} · {v.transmission} · {v.location}
+                  {v.licensePlate} · {formatClassification(v.classification)} · {v.transmission} · {v.location}
                 </p>
                 <p className="mt-1 text-sm font-medium text-midnight">
                   {formatMoney(v.pricePerDay, v.currency)} / day

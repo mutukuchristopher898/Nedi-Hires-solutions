@@ -17,11 +17,11 @@ export default function ConfirmedStep({ bookingRef, trip }: { bookingRef: string
           reference and the account page are what the customer actually has. */}
       <p className="mt-1 text-sm text-midnight/60">
         Reference <span className="font-mono font-medium text-midnight">{bookingRef}</span>. Keep
-        it — it&apos;s how we find your booking. Pickup details are on your bookings page, and our
+        it, it&apos;s how we find your booking. Pickup details are on your bookings page, and our
         WhatsApp number is in the footer for anything that comes up.
       </p>
       <p className="mt-3 text-sm text-midnight/60">
-        {trip.driveType === "self_drive" ? "Self-drive" : "Chauffeur-driven"} ·{" "}
+        {trip.driveType === "self_drive" ? "Self drive" : "Chauffeur driven"} ·{" "}
         {trip.purpose === "personal" ? "Personal" : "Commercial"} · Pickup at {trip.pickupPoint} ·
         Heading to {trip.destination}
         {trip.returnToDifferentLocation && <> · Returning to {trip.dropoffPoint}</>}

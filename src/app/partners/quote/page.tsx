@@ -73,7 +73,7 @@ export default function PartnerQuotePage() {
         </div>
         <h1 className="mt-4 text-xl font-semibold text-midnight">Quote Request Submitted</h1>
         <p className="mt-2 text-sm text-midnight/60">
-          Thanks — our team will review your fleet size and reach out with a custom quote
+          Thanks, our team will review your fleet size and reach out with a custom quote
           shortly.
         </p>
         <Link
@@ -90,7 +90,7 @@ export default function PartnerQuotePage() {
     <div className="container-shell max-w-lg py-14">
       <h1 className="text-2xl font-bold text-midnight">Request a Custom Quote</h1>
       <p className="mt-1 text-sm text-midnight/60">
-        For partners listing more vehicles than our standard tier covers — tell us about your
+        For partners listing more vehicles than our standard tier covers, tell us about your
         fleet and we&apos;ll follow up with pricing.
       </p>
 

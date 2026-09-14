@@ -5,7 +5,7 @@ import { SERVICES } from "@/lib/services";
 import { site } from "@/lib/site";
 
 const DESCRIPTION =
-  "Self-drive and chauffeur-driven car hire, airport transfers, corporate travel, family trips, tours and safaris, and event transport — one vetted fleet across Kenya.";
+  "Self drive and chauffeur driven car hire, airport transfers, corporate travel, family trips, tours and safaris, and event transport. One vetted fleet across Kenya.";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -27,8 +27,8 @@ export default function ServicesPage() {
             <strong className="font-semibold text-white">
               Affordable · Reliable · Comfortable.
             </strong>{" "}
-            Whether it&apos;s a 20-minute airport run or two weeks across the Mara, you&apos;re
-            booking from the same vetted fleet — with the same standards behind it.
+            Whether it&apos;s a 20 minute airport run or two weeks across the Mara, you&apos;re
+            booking from the same vetted fleet, with the same standards behind it.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -36,7 +36,7 @@ export default function ServicesPage() {
               href="/search"
               className="rounded-md bg-gold px-7 py-3.5 text-center text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
             >
-              Twende — Book a Ride
+              Twende, Book a Ride
             </Link>
             <a
               href={site.whatsappHref}
@@ -128,7 +128,7 @@ export default function ServicesPage() {
               href="/search"
               className="rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
             >
-              Twende — Book a Ride
+              Twende, Book a Ride
             </Link>
             <a
               href={site.whatsappHref}

@@ -29,7 +29,7 @@ export default function ContactForm() {
         </div>
         <h2 className="mt-4 text-lg font-semibold text-midnight">Message Sent</h2>
         <p className="mt-1 text-sm text-midnight/60">
-          Thanks for reaching out — our team typically replies within a few hours.
+          Thanks for reaching out, our team typically replies within a few hours.
         </p>
       </div>
     );

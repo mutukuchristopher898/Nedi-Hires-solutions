@@ -98,7 +98,7 @@ export default function SubscriptionPlansExplorer({ plans }: { plans: Subscripti
               </div>
               <h3 className="mt-3 text-lg font-semibold">{plan.name}</h3>
               <div className="mt-3 flex items-baseline gap-1">
-                <span className="text-3xl font-bold">{price !== undefined ? formatMoney(price, plan.currency) : "—"}</span>
+                <span className="text-3xl font-bold">{price !== undefined ? formatMoney(price, plan.currency) : "N/A"}</span>
                 <span className={`text-sm ${plan.highlight ? "text-white/60" : "text-midnight/60"}`}>
                   {CYCLE_SUFFIX[planCycle]}
                 </span>

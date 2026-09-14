@@ -178,7 +178,7 @@ function VehicleRow({ vehicle, defaults }: { vehicle: VehiclePricingRow; default
       return;
     }
     if (!data || data.length === 0) {
-      setError("That didn't save — you may not have permission.");
+      setError("That didn't save, you may not have permission.");
       return;
     }
     setSaved(true);
@@ -250,7 +250,7 @@ function VehicleRow({ vehicle, defaults }: { vehicle: VehiclePricingRow; default
           className="mt-1 w-full rounded-md border border-line px-2 py-1.5 text-sm focus:border-gold focus:outline-none"
         />
         <span className="mt-1 block text-[11px] text-midnight/40">
-          Set by the partner when listing. Changing it here affects new bookings only — one
+          Set by the partner when listing. Changing it here affects new bookings only, one
           already placed keeps the rate it was quoted.
         </span>
       </label>

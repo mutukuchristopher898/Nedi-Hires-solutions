@@ -22,7 +22,7 @@ export default function VehicleCard({ vehicle }: { vehicle: VehicleListing }) {
             {vehicle.classification}
           </span>
           {/* This slot held a star rating. There is no ratings column and no
-              reviews feature — the number came from the illustrative
+              reviews feature, the number came from the illustrative
               catalogue, and a listing nobody has hired cannot have one. The
               year is real and is what someone comparing cars actually wants. */}
           <span className="text-xs font-medium text-midnight/70">{vehicle.year}</span>

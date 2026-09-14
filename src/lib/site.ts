@@ -5,7 +5,7 @@ export const site = {
   url: "https://nedi-hires-solutions.vercel.app",
   tagline: "Drive. Explore. Experience.",
   description:
-    "Reliable transport and memorable travel experiences — car hire, self-drive, chauffeur-driven, airport transfers, tours & safaris across Kenya.",
+    "Reliable transport and memorable travel experiences, car hire, self drive, chauffeur driven, airport transfers, tours & safaris across Kenya.",
   phoneDisplay: "+254 794 772 271",
   phoneTel: "+254794772271",
   whatsappHref: "https://wa.me/254794772271",

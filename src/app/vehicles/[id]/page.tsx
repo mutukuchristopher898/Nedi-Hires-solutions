@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import VehiclePhoto from "@/components/VehiclePhoto";
-import { formatMoney } from "@/lib/data";
+import { formatMoney, formatClassification } from "@/lib/data";
 import { getApprovedVehicleBySlug } from "@/lib/supabase/queries";
 
 // Not listed in sitemap.ts while the fleet is still illustrative, but these
@@ -20,7 +20,7 @@ export async function generateMetadata({
   }
 
   const title = `${vehicle.make} ${vehicle.model} ${vehicle.year}`;
-  const description = `Hire a ${vehicle.year} ${vehicle.make} ${vehicle.model} in ${vehicle.location} — ${vehicle.classification}, ${vehicle.transmission}, ${vehicle.fuelType}, seats ${vehicle.capacity}. Self-drive or chauffeur-driven.`;
+  const description = `Hire a ${vehicle.year} ${vehicle.make} ${vehicle.model} in ${vehicle.location} ${formatClassification(vehicle.classification)}, ${vehicle.transmission}, ${vehicle.fuelType}, seats ${vehicle.capacity}. Self drive or chauffeur driven.`;
 
   return {
     title,
@@ -72,7 +72,7 @@ export default async function VehicleDetailPage({
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <span className="rounded-full bg-midnight/5 px-3 py-1 text-xs font-medium text-midnight/70">
-              {vehicle.classification}
+              {formatClassification(vehicle.classification)}
             </span>
             {vehicle.partnerName && (
               <span className="rounded-full bg-gold/10 px-3 py-1 text-xs font-medium text-gold-dark">
@@ -114,7 +114,7 @@ export default async function VehicleDetailPage({
             <span className="text-sm text-midnight/60">/ day</span>
           </div>
           <p className="mt-1 text-sm text-midnight/60">
-            {vehicle.classification} · {vehicle.capacity} seats · {vehicle.transmission}
+            {formatClassification(vehicle.classification)} · {vehicle.capacity} seats · {vehicle.transmission}
           </p>
 
           <Link

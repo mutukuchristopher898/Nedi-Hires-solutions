@@ -8,7 +8,7 @@ import VehicleDocumentReview from "@/components/admin/VehicleDocumentReview";
 import AuditChanges from "@/components/admin/AuditChanges";
 import { requireRole } from "@/lib/supabase/authz";
 import { publicVehiclePhotoUrl } from "@/lib/supabase/vehiclePhotos";
-import { formatMoney } from "@/lib/data";
+import { formatMoney, formatClassification } from "@/lib/data";
 import {
   getAdminVehicleById,
   getPartnerOptions,
@@ -163,7 +163,7 @@ export default async function EditVehiclePage({ params }: { params: Promise<{ id
         <section>
           <h2 className="text-lg font-semibold text-midnight">Specification</h2>
           <dl className="mt-3 divide-y divide-line rounded-2xl bg-white ring-1 ring-line">
-            <Detail label="Class" value={vehicle.classification} />
+            <Detail label="Class" value={formatClassification(vehicle.classification)} />
             <Detail label="Transmission" value={vehicle.transmission} />
             <Detail label="Fuel" value={vehicle.fuelType} />
             <Detail label="Seats" value={String(vehicle.capacity)} />
@@ -224,7 +224,7 @@ export default async function EditVehiclePage({ params }: { params: Promise<{ id
                   itself is the mistake this warning exists to stop. */}
               {vehicle.partner.status !== "approved" && (
                 <p className="mt-3 rounded-md bg-amber/10 px-3 py-2 text-xs text-amber">
-                  This business has not been approved as a partner. Deal with the business first —
+                  This business has not been approved as a partner. Deal with the business first 
                   approving its vehicles puts a car on the site from an operator you have not
                   vetted.
                 </p>
@@ -255,7 +255,7 @@ export default async function EditVehiclePage({ params }: { params: Promise<{ id
             </div>
           ) : (
             <p className="mt-3 rounded-2xl bg-white p-4 text-sm text-midnight/60 ring-1 ring-line">
-              No partner — this vehicle was added directly from the admin screens rather than
+              No partner, this vehicle was added directly from the admin screens rather than
               submitted by a business.
             </p>
           )}

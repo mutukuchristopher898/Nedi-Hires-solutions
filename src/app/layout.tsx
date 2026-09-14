@@ -24,9 +24,9 @@ export const metadata: Metadata = {
   // social-image fields.
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — ${site.tagline}`,
+    default: `${site.name} ${site.tagline}`,
     // Pages set only their own title; this appends the brand.
-    template: `%s — ${site.name}`,
+    template: `%s ${site.name}`,
   },
   description: site.description,
   applicationName: site.name,
@@ -34,14 +34,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: site.name,
-    title: `${site.name} — ${site.tagline}`,
+    title: `${site.name} ${site.tagline}`,
     description: site.description,
     locale: "en_KE",
     url: "/",
   },
   twitter: {
     card: "summary",
-    title: `${site.name} — ${site.tagline}`,
+    title: `${site.name} ${site.tagline}`,
     description: site.description,
   },
 };

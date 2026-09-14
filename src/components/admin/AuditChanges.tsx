@@ -18,7 +18,7 @@ const RATE_FIELDS = new Set([
 ]);
 
 function formatValue(field: string, value: unknown): string {
-  if (value === null || value === undefined) return "—";
+  if (value === null || value === undefined) return "";
   if (REDACTED_FIELDS.has(field)) return "(hidden)";
 
   if (RATE_FIELDS.has(field) && typeof value === "number") {

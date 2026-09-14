@@ -52,7 +52,7 @@ export default function VehicleLifecycleActions({
       return false;
     }
     if (!data || data.length === 0) {
-      setError("That didn't apply — you may not have permission.");
+      setError("That didn't apply, you may not have permission.");
       return false;
     }
 
@@ -62,7 +62,7 @@ export default function VehicleLifecycleActions({
   }
 
   if (mode === "rejecting") {
-    const reason = [reasonPreset, reasonNote.trim()].filter(Boolean).join(" — ");
+    const reason = [reasonPreset, reasonNote.trim()].filter(Boolean).join(" ");
     return (
       <div className="min-w-64 rounded-md bg-red-500/5 p-3 ring-1 ring-red-500/20">
         <p className="text-xs font-medium text-midnight">Why is {label} being rejected?</p>
@@ -212,7 +212,7 @@ export default function VehicleLifecycleActions({
 
       {!hasPhoto && lifecycle === "pending" && (
         <p className="mt-1 max-w-48 text-right text-xs text-amber">
-          No photograph — can&apos;t be approved.
+          No photograph, can&apos;t be approved.
         </p>
       )}
       {error && <p role="alert" className="mt-1 max-w-56 text-right text-xs text-red-600">{error}</p>}

@@ -27,10 +27,10 @@ export default async function AdminPricingPage() {
 
         <PricingDefaultsEditor defaults={defaults} />
 
-        {/* One-way fees used to be a table of routes here. They were removed:
+        {/* One way fees used to be a table of routes here. They were removed:
             repositioning a vehicle costs what it costs on the day, depending on
-            the route and on when the car can be collected, and a flat per-route
-            figure only ever guessed at that. A different drop-off is now an
+            the route and on when the car can be collected, and a flat per route
+            figure only ever guessed at that. A different drop off is now an
             enquiry, priced by hand. */}
         <div className="rounded-2xl bg-offwhite p-5">
           <h2 className="text-lg font-semibold text-midnight">One-way hires</h2>

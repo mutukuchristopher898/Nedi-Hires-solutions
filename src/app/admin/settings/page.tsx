@@ -15,7 +15,7 @@ export default async function AdminSettingsPage() {
       <h1 className="text-2xl font-bold text-midnight">Settings</h1>
       <p className="mt-1 text-sm text-midnight/60">
         The lists that appear in forms across the site. Adding a pickup location or a rejection
-        reason here takes effect immediately — it no longer needs a code change.
+        reason here takes effect immediately, it no longer needs a code change.
       </p>
       <p className="mt-2 text-sm text-midnight/60">
         Retiring an option stops it being offered but leaves records that already use it alone.

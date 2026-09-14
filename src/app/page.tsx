@@ -5,23 +5,6 @@ import { SERVICES } from "@/lib/services";
 import { getApprovedVehicles, getPartnerNetwork } from "@/lib/supabase/queries";
 import { site } from "@/lib/site";
 
-const STEPS = [
-  {
-    step: "01",
-    title: "Reservation & Deposit",
-    copy: "Choose your dates and pay a reservation deposit online to hold your vehicle.",
-  },
-  {
-    step: "02",
-    title: "Identity Verification",
-    copy: "Upload a passport, driver's license, or national ID for admin/partner review.",
-  },
-  {
-    step: "03",
-    title: "Final Settlement",
-    copy: "Once verified, settle the remaining balance online or at vehicle handoff.",
-  },
-];
 
 export default async function Home() {
   // Live inventory, cheapest first, rather than a slice of the catalogue.
@@ -43,11 +26,11 @@ export default async function Home() {
             {site.tagline}
           </p>
           <h1 className="max-w-2xl text-4xl font-bold leading-tight text-white sm:text-5xl">
-            Reliable transport, memorable travel — anywhere in Kenya.
+            Reliable transport, memorable travel, anywhere in Kenya.
           </h1>
           <p className="mt-4 max-w-xl text-base text-white/70 sm:text-lg">
-            Self-drive or chauffeur-driven car hire, airport transfers, corporate travel,
-            and tours &amp; safaris — every vehicle inspected, every driver vetted.
+            Self drive or chauffeur driven car hire, airport transfers, corporate travel,
+            and tours &amp; safaris. Every vehicle inspected, every driver vetted.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -55,7 +38,7 @@ export default async function Home() {
               href="/search"
               className="rounded-md bg-gold px-7 py-3.5 text-center text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
             >
-              Twende — Book a Ride
+              Twende, Book a Ride
             </Link>
             <a
               href={site.whatsappHref}
@@ -74,7 +57,7 @@ export default async function Home() {
           <div>
             <h2 className="text-2xl font-bold text-midnight">Our Services</h2>
             <p className="mt-1 text-sm text-midnight/60">
-              Affordable · Reliable · Comfortable — one platform for every kind of trip.
+              Affordable · Reliable · Comfortable, one platform for every kind of trip.
             </p>
           </div>
           <Link href="/services" className="text-sm font-semibold text-gold-dark hover:text-gold">
@@ -96,25 +79,6 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="bg-charcoal py-14 text-white">
-        <div className="container-shell">
-          <h2 className="text-2xl font-bold">A security-first booking pipeline</h2>
-          <p className="mt-1 max-w-xl text-sm text-white/60">
-            A two-tiered payment and verification workflow protects both renters and
-            vehicle owners at every step.
-          </p>
-          <div className="mt-8 grid gap-6 sm:grid-cols-3">
-            {STEPS.map((s) => (
-              <div key={s.step} className="rounded-xl bg-white/5 p-5 ring-1 ring-white/10">
-                <span className="text-sm font-semibold text-gold">{s.step}</span>
-                <h3 className="mt-2 font-semibold">{s.title}</h3>
-                <p className="mt-2 text-sm text-white/60">{s.copy}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="container-shell py-14">
         <div className="mb-8 flex items-end justify-between">
           <div>
@@ -132,7 +96,7 @@ export default async function Home() {
         {featured.length === 0 ? (
           <div className="rounded-xl bg-white p-10 text-center ring-1 ring-line">
             <p className="text-sm text-midnight/60">
-              No vehicles are listed yet — our partner network is being built.
+              No vehicles are listed yet, our partner network is being built.
             </p>
             <Link
               href="/partners/onboarding"
@@ -170,7 +134,7 @@ export default async function Home() {
           <div>
             <h2 className="text-2xl font-bold">Own a vehicle? Put it to work.</h2>
             <p className="mt-2 text-sm text-white/70">
-              List your unit through our Managed Leasing Program or self-service partner
+              List your unit through our Managed Leasing Program or self service partner
               dashboard. Every submission passes an admin approval queue before it goes live.
             </p>
           </div>

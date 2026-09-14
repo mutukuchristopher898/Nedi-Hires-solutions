@@ -33,7 +33,7 @@ const PIPELINE = [
   {
     step: "01",
     title: "Reservation & Deposit",
-    copy: "Choose your dates and pay a reservation deposit online. The deposit holds your vehicle so it isn't double-booked, and it confirms to the owner that the booking is real.",
+    copy: "Choose your dates and pay a reservation deposit online. The deposit holds your vehicle so it isn't double booked, and it confirms to the owner that the booking is real.",
   },
   {
     step: "02",
@@ -43,7 +43,7 @@ const PIPELINE = [
   {
     step: "03",
     title: "Final Settlement",
-    copy: "Once you're verified, settle the balance online or at handover — whichever suits you. No cash pressure at pickup.",
+    copy: "Once you're verified, settle the balance online or at handover, whichever suits you. No cash pressure at pickup.",
   },
 ];
 
@@ -57,7 +57,7 @@ export default async function AboutPage() {
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-gold">About Us</p>
             <h1 className="mt-2 max-w-xl text-3xl font-bold sm:text-4xl">
-              Getting people where they&apos;re going — safely, and on time
+              Getting people where they&apos;re going, safely and on time
             </h1>
             <p className="mt-4 max-w-lg text-sm text-white/70">
               {site.name} is a Kenyan transport and car hire company. We do the unglamorous part
@@ -78,8 +78,8 @@ export default async function AboutPage() {
           <div>
             <h2 className="text-2xl font-bold text-midnight">What we do</h2>
             <p className="mt-3 text-sm leading-relaxed text-midnight/70">
-              We run a single booking platform across seven services — self-drive hire,
-              chauffeur-driven trips, airport transfers, corporate travel, family trips, tours and
+              We run a single booking platform across seven services: self drive hire,
+              chauffeur driven trips, airport transfers, corporate travel, family trips, tours and
               safaris, and event transport.
             </p>
             {/* Corrected from an earlier version claiming a small internal fleet.
@@ -88,7 +88,7 @@ export default async function AboutPage() {
                 than implying otherwise. */}
             <p className="mt-3 text-sm leading-relaxed text-midnight/70">
               Every vehicle on the platform belongs to a partner operator we have vetted and work
-              with directly — established fleets, tour operators and private hosts. We don&apos;t
+              with directly: established fleets, tour operators and private hosts. We don&apos;t
               keep a fleet of our own, and that is deliberate: it means we can be honest about
               holding every operator to the same standard rather than grading our own homework.
               From your side the arrangement doesn&apos;t change anything. Every vehicle meets the
@@ -109,7 +109,7 @@ export default async function AboutPage() {
             <Stat value={stats.locations} label={stats.locations === 1 ? "Pickup location" : "Pickup locations"} />
             {/* Deliberately no trip counter and no "X+ vehicles" claim: these
                 three are read from the database and are true whenever the page
-                renders. A rounded-up number nobody can check would undo the
+                renders. A rounded up number nobody can check would undo the
                 point of the section. */}
           </div>
         </div>
@@ -131,7 +131,7 @@ export default async function AboutPage() {
 
       <section className="container-shell py-14">
         <h2 className="text-2xl font-bold text-midnight">
-          <span className="italic text-gold-dark">Safiri salama</span> — the part most companies
+          <span className="italic text-gold-dark">Safiri salama</span>: the part most companies
           skip
         </h2>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-midnight/70">
@@ -174,7 +174,7 @@ export default async function AboutPage() {
       <section className="container-shell pb-16">
         <div className="flex flex-col items-center gap-4 rounded-2xl bg-midnight p-10 text-center text-white">
           <h2 className="text-2xl font-bold">
-            Wherever you&apos;re headed — <span className="italic text-gold">twende.</span>
+            Wherever you&apos;re headed, <span className="italic text-gold">twende.</span>
           </h2>
           <p className="max-w-md text-sm text-white/70">
             Tell us where you&apos;re going. We&apos;ll take it from there.
@@ -184,7 +184,7 @@ export default async function AboutPage() {
               href="/search"
               className="rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
             >
-              Twende — Book a Ride
+              Twende. Book a Ride
             </Link>
             <a
               href={site.whatsappHref}

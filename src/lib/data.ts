@@ -24,7 +24,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Toyota Vitz for everyday self-drive and city errands.",
+    description: "A dependable Toyota Vitz for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-passo",
@@ -46,7 +46,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Toyota Passo for everyday self-drive and city errands.",
+    description: "A dependable Toyota Passo for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-aqua",
@@ -68,7 +68,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Coastal Safari Fleet",
     approvalStatus: "approved",
     features: ["Hybrid Engine", "Fuel Efficient"],
-    description: "A dependable Toyota Aqua for everyday self-drive and city errands.",
+    description: "A dependable Toyota Aqua for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-ractis",
@@ -89,7 +89,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Toyota Ractis for everyday self-drive and city errands.",
+    description: "A dependable Toyota Ractis for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-ist",
@@ -111,7 +111,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Lakeside Tours & Travel",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Toyota Ist for everyday self-drive and city errands.",
+    description: "A dependable Toyota Ist for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-auris",
@@ -133,7 +133,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Hybrid Engine", "Fuel Efficient"],
-    description: "A dependable Toyota Auris for everyday self-drive and city errands.",
+    description: "A dependable Toyota Auris for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-allex",
@@ -154,7 +154,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Toyota Allex for everyday self-drive and city errands.",
+    description: "A dependable Toyota Allex for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-runx",
@@ -176,7 +176,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Toyota RunX for everyday self-drive and city errands.",
+    description: "A dependable Toyota RunX for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-duet",
@@ -198,7 +198,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Coastal Safari Fleet",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Toyota Duet for everyday self-drive and city errands.",
+    description: "A dependable Toyota Duet for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-starlet",
@@ -219,7 +219,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Toyota Starlet for everyday self-drive and city errands.",
+    description: "A dependable Toyota Starlet for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-corolla-axio",
@@ -241,7 +241,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Lakeside Tours & Travel",
     approvalStatus: "approved",
     features: ["Hybrid Engine", "Fuel Efficient"],
-    description: "A dependable Toyota Corolla Axio for everyday self-drive and city errands.",
+    description: "A dependable Toyota Corolla Axio for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-premio",
@@ -263,7 +263,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Toyota Premio for everyday self-drive and city errands.",
+    description: "A dependable Toyota Premio for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-allion",
@@ -284,7 +284,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Toyota Allion for everyday self-drive and city errands.",
+    description: "A dependable Toyota Allion for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-belta",
@@ -306,7 +306,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Toyota Belta for everyday self-drive and city errands.",
+    description: "A dependable Toyota Belta for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-crown",
@@ -371,7 +371,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Lakeside Tours & Travel",
     approvalStatus: "approved",
     features: ["Hybrid Engine", "Fuel Efficient"],
-    description: "A dependable Toyota Camry for everyday self-drive and city errands.",
+    description: "A dependable Toyota Camry for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-platz",
@@ -393,7 +393,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Toyota Platz for everyday self-drive and city errands.",
+    description: "A dependable Toyota Platz for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-corolla-fielder",
@@ -414,7 +414,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Hybrid Engine", "Fuel Efficient"],
-    description: "A dependable Toyota Corolla Fielder for everyday self-drive and city errands.",
+    description: "A dependable Toyota Corolla Fielder for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-probox",
@@ -436,7 +436,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Toyota Probox for everyday self-drive and city errands.",
+    description: "A dependable Toyota Probox for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-succeed",
@@ -458,7 +458,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Coastal Safari Fleet",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Toyota Succeed for everyday self-drive and city errands.",
+    description: "A dependable Toyota Succeed for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-caldina",
@@ -479,7 +479,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Toyota Caldina for everyday self-drive and city errands.",
+    description: "A dependable Toyota Caldina for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-avensis-wagon",
@@ -501,7 +501,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Lakeside Tours & Travel",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Toyota Avensis Wagon for everyday self-drive and city errands.",
+    description: "A dependable Toyota Avensis Wagon for everyday self drive and city errands.",
   },
   {
     id: "demo-toyota-rav4",
@@ -956,7 +956,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging"],
-    description: "A modern, fully electric Toyota bZ4X — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Toyota bZ4X, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-nissan-note",
@@ -978,7 +978,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Coastal Safari Fleet",
     approvalStatus: "approved",
     features: ["Hybrid Engine", "Fuel Efficient"],
-    description: "A dependable Nissan Note for everyday self-drive and city errands.",
+    description: "A dependable Nissan Note for everyday self drive and city errands.",
   },
   {
     id: "demo-nissan-march",
@@ -999,7 +999,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Nissan March for everyday self-drive and city errands.",
+    description: "A dependable Nissan March for everyday self drive and city errands.",
   },
   {
     id: "demo-nissan-cube",
@@ -1021,7 +1021,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Lakeside Tours & Travel",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Nissan Cube for everyday self-drive and city errands.",
+    description: "A dependable Nissan Cube for everyday self drive and city errands.",
   },
   {
     id: "demo-nissan-tiida-hatchback",
@@ -1043,7 +1043,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Nissan Tiida (Hatchback) for everyday self-drive and city errands.",
+    description: "A dependable Nissan Tiida (Hatchback) for everyday self drive and city errands.",
   },
   {
     id: "demo-nissan-sylphy",
@@ -1064,7 +1064,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Nissan Sylphy for everyday self-drive and city errands.",
+    description: "A dependable Nissan Sylphy for everyday self drive and city errands.",
   },
   {
     id: "demo-nissan-bluebird-sylphy",
@@ -1086,7 +1086,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Nissan Bluebird Sylphy for everyday self-drive and city errands.",
+    description: "A dependable Nissan Bluebird Sylphy for everyday self drive and city errands.",
   },
   {
     id: "demo-nissan-teana",
@@ -1108,7 +1108,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Coastal Safari Fleet",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Nissan Teana for everyday self-drive and city errands.",
+    description: "A dependable Nissan Teana for everyday self drive and city errands.",
   },
   {
     id: "demo-nissan-tiida-latio",
@@ -1129,7 +1129,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Nissan Tiida Latio for everyday self-drive and city errands.",
+    description: "A dependable Nissan Tiida Latio for everyday self drive and city errands.",
   },
   {
     id: "demo-nissan-sunny",
@@ -1151,7 +1151,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Lakeside Tours & Travel",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Nissan Sunny for everyday self-drive and city errands.",
+    description: "A dependable Nissan Sunny for everyday self drive and city errands.",
   },
   {
     id: "demo-nissan-almera",
@@ -1173,7 +1173,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Nissan Almera for everyday self-drive and city errands.",
+    description: "A dependable Nissan Almera for everyday self drive and city errands.",
   },
   {
     id: "demo-nissan-x-trail",
@@ -1476,7 +1476,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging"],
-    description: "A modern, fully electric Nissan Leaf — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Nissan Leaf, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-mazda-demio-mazda-2",
@@ -1498,7 +1498,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Coastal Safari Fleet",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Mazda Demio (Mazda 2) for everyday self-drive and city errands.",
+    description: "A dependable Mazda Demio (Mazda 2) for everyday self drive and city errands.",
   },
   {
     id: "demo-mazda-axela-mazda-3",
@@ -1519,7 +1519,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Mazda Axela (Mazda 3) for everyday self-drive and city errands.",
+    description: "A dependable Mazda Axela (Mazda 3) for everyday self drive and city errands.",
   },
   {
     id: "demo-mazda-atenza-mazda-6",
@@ -1541,7 +1541,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Lakeside Tours & Travel",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Mazda Atenza (Mazda 6) for everyday self-drive and city errands.",
+    description: "A dependable Mazda Atenza (Mazda 6) for everyday self drive and city errands.",
   },
   {
     id: "demo-mazda-verisa",
@@ -1563,7 +1563,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Mazda Verisa for everyday self-drive and city errands.",
+    description: "A dependable Mazda Verisa for everyday self drive and city errands.",
   },
   {
     id: "demo-mazda-cx-3",
@@ -1801,7 +1801,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Lakeside Tours & Travel",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Subaru Impreza for everyday self-drive and city errands.",
+    description: "A dependable Subaru Impreza for everyday self drive and city errands.",
   },
   {
     id: "demo-subaru-legacy-b4",
@@ -1823,7 +1823,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Subaru Legacy B4 for everyday self-drive and city errands.",
+    description: "A dependable Subaru Legacy B4 for everyday self drive and city errands.",
   },
   {
     id: "demo-subaru-wrx-sti",
@@ -1844,7 +1844,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Subaru WRX STI for everyday self-drive and city errands.",
+    description: "A dependable Subaru WRX STI for everyday self drive and city errands.",
   },
   {
     id: "demo-subaru-legacy-touring-wagon",
@@ -1866,7 +1866,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Subaru Legacy Touring Wagon for everyday self-drive and city errands.",
+    description: "A dependable Subaru Legacy Touring Wagon for everyday self drive and city errands.",
   },
   {
     id: "demo-subaru-outback",
@@ -1888,7 +1888,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Coastal Safari Fleet",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Subaru Outback for everyday self-drive and city errands.",
+    description: "A dependable Subaru Outback for everyday self drive and city errands.",
   },
   {
     id: "demo-subaru-levorg",
@@ -1909,7 +1909,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Subaru Levorg for everyday self-drive and city errands.",
+    description: "A dependable Subaru Levorg for everyday self drive and city errands.",
   },
   {
     id: "demo-subaru-exiga",
@@ -1931,7 +1931,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Lakeside Tours & Travel",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Subaru Exiga for everyday self-drive and city errands.",
+    description: "A dependable Subaru Exiga for everyday self drive and city errands.",
   },
   {
     id: "demo-subaru-forester",
@@ -1996,7 +1996,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Hybrid Engine", "Fuel Efficient"],
-    description: "A dependable Honda Fit (Jazz) for everyday self-drive and city errands.",
+    description: "A dependable Honda Fit (Jazz) for everyday self drive and city errands.",
   },
   {
     id: "demo-honda-civic",
@@ -2018,7 +2018,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Coastal Safari Fleet",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Honda Civic for everyday self-drive and city errands.",
+    description: "A dependable Honda Civic for everyday self drive and city errands.",
   },
   {
     id: "demo-honda-accord",
@@ -2039,7 +2039,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Hybrid Engine", "Fuel Efficient"],
-    description: "A dependable Honda Accord for everyday self-drive and city errands.",
+    description: "A dependable Honda Accord for everyday self drive and city errands.",
   },
   {
     id: "demo-honda-grace",
@@ -2061,7 +2061,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Lakeside Tours & Travel",
     approvalStatus: "approved",
     features: ["Hybrid Engine", "Fuel Efficient"],
-    description: "A dependable Honda Grace for everyday self-drive and city errands.",
+    description: "A dependable Honda Grace for everyday self drive and city errands.",
   },
   {
     id: "demo-honda-insight",
@@ -2083,7 +2083,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Hybrid Engine", "Fuel Efficient"],
-    description: "A dependable Honda Insight for everyday self-drive and city errands.",
+    description: "A dependable Honda Insight for everyday self drive and city errands.",
   },
   {
     id: "demo-honda-cr-z",
@@ -2104,7 +2104,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Hybrid Engine", "Fuel Efficient"],
-    description: "A dependable Honda CR-Z for everyday self-drive and city errands.",
+    description: "A dependable Honda CR-Z for everyday self drive and city errands.",
   },
   {
     id: "demo-honda-cr-v",
@@ -2256,7 +2256,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Suzuki Alto for everyday self-drive and city errands.",
+    description: "A dependable Suzuki Alto for everyday self drive and city errands.",
   },
   {
     id: "demo-suzuki-swift",
@@ -2278,7 +2278,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Coastal Safari Fleet",
     approvalStatus: "approved",
     features: ["Hybrid Engine", "Fuel Efficient"],
-    description: "A dependable Suzuki Swift for everyday self-drive and city errands.",
+    description: "A dependable Suzuki Swift for everyday self drive and city errands.",
   },
   {
     id: "demo-suzuki-wagon-r",
@@ -2299,7 +2299,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Suzuki Wagon R for everyday self-drive and city errands.",
+    description: "A dependable Suzuki Wagon R for everyday self drive and city errands.",
   },
   {
     id: "demo-suzuki-celerio",
@@ -2321,7 +2321,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Lakeside Tours & Travel",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Suzuki Celerio for everyday self-drive and city errands.",
+    description: "A dependable Suzuki Celerio for everyday self drive and city errands.",
   },
   {
     id: "demo-suzuki-s-presso",
@@ -2343,7 +2343,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Suzuki S-Presso for everyday self-drive and city errands.",
+    description: "A dependable Suzuki S-Presso for everyday self drive and city errands.",
   },
   {
     id: "demo-suzuki-baleno",
@@ -2364,7 +2364,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Suzuki Baleno for everyday self-drive and city errands.",
+    description: "A dependable Suzuki Baleno for everyday self drive and city errands.",
   },
   {
     id: "demo-suzuki-jimny",
@@ -2559,7 +2559,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Mitsubishi Mirage for everyday self-drive and city errands.",
+    description: "A dependable Mitsubishi Mirage for everyday self drive and city errands.",
   },
   {
     id: "demo-mitsubishi-lancer",
@@ -2581,7 +2581,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Lakeside Tours & Travel",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Mitsubishi Lancer for everyday self-drive and city errands.",
+    description: "A dependable Mitsubishi Lancer for everyday self drive and city errands.",
   },
   {
     id: "demo-mitsubishi-galant-fortis",
@@ -2603,7 +2603,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Mitsubishi Galant Fortis for everyday self-drive and city errands.",
+    description: "A dependable Mitsubishi Galant Fortis for everyday self drive and city errands.",
   },
   {
     id: "demo-mitsubishi-lancer-cargo",
@@ -2624,7 +2624,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Mitsubishi Lancer Cargo for everyday self-drive and city errands.",
+    description: "A dependable Mitsubishi Lancer Cargo for everyday self drive and city errands.",
   },
   {
     id: "demo-mitsubishi-outlander",
@@ -2863,7 +2863,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging"],
-    description: "A modern, fully electric BYD Atto 3 — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric BYD Atto 3, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-byd-dolphin",
@@ -2884,7 +2884,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging"],
-    description: "A modern, fully electric BYD Dolphin — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric BYD Dolphin, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-byd-seal",
@@ -2906,7 +2906,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging", "Leather Interior"],
-    description: "A modern, fully electric BYD Seal — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric BYD Seal, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-byd-e6",
@@ -2928,7 +2928,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Coastal Safari Fleet",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging"],
-    description: "A modern, fully electric BYD E6 — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric BYD E6, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-hyundai-i10",
@@ -2949,7 +2949,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Hyundai i10 for everyday self-drive and city errands.",
+    description: "A dependable Hyundai i10 for everyday self drive and city errands.",
   },
   {
     id: "demo-hyundai-i20",
@@ -2971,7 +2971,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Lakeside Tours & Travel",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Hyundai i20 for everyday self-drive and city errands.",
+    description: "A dependable Hyundai i20 for everyday self drive and city errands.",
   },
   {
     id: "demo-hyundai-elantra",
@@ -2993,7 +2993,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Hyundai Elantra for everyday self-drive and city errands.",
+    description: "A dependable Hyundai Elantra for everyday self drive and city errands.",
   },
   {
     id: "demo-hyundai-sonata",
@@ -3014,7 +3014,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Hybrid Engine", "Fuel Efficient"],
-    description: "A dependable Hyundai Sonata for everyday self-drive and city errands.",
+    description: "A dependable Hyundai Sonata for everyday self drive and city errands.",
   },
   {
     id: "demo-kia-picanto",
@@ -3036,7 +3036,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Kia Picanto for everyday self-drive and city errands.",
+    description: "A dependable Kia Picanto for everyday self drive and city errands.",
   },
   {
     id: "demo-kia-rio",
@@ -3058,7 +3058,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Coastal Safari Fleet",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Kia Rio for everyday self-drive and city errands.",
+    description: "A dependable Kia Rio for everyday self drive and city errands.",
   },
   {
     id: "demo-kia-cerato",
@@ -3079,7 +3079,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Kia Cerato for everyday self-drive and city errands.",
+    description: "A dependable Kia Cerato for everyday self drive and city errands.",
   },
   {
     id: "demo-kia-optima",
@@ -3101,7 +3101,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Lakeside Tours & Travel",
     approvalStatus: "approved",
     features: ["Hybrid Engine", "Fuel Efficient"],
-    description: "A dependable Kia Optima for everyday self-drive and city errands.",
+    description: "A dependable Kia Optima for everyday self drive and city errands.",
   },
   {
     id: "demo-hyundai-tucson",
@@ -3231,7 +3231,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Lakeside Tours & Travel",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging", "Reverse Camera"],
-    description: "A modern, fully electric Kia Soul — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Kia Soul, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-hyundai-kona-electric",
@@ -3253,7 +3253,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging"],
-    description: "A modern, fully electric Hyundai Kona Electric — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Hyundai Kona Electric, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-hyundai-ioniq-5",
@@ -3274,7 +3274,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging"],
-    description: "A modern, fully electric Hyundai Ioniq 5 — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Hyundai Ioniq 5, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-kia-ev6",
@@ -3296,7 +3296,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging"],
-    description: "A modern, fully electric Kia EV6 — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Kia EV6, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-mercedes-benz-a-class",
@@ -3578,7 +3578,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Coastal Safari Fleet",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging", "Leather Interior"],
-    description: "A modern, fully electric Mercedes-Benz EQA — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Mercedes-Benz EQA, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-mercedes-benz-eqb",
@@ -3599,7 +3599,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging", "Leather Interior"],
-    description: "A modern, fully electric Mercedes-Benz EQB — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Mercedes-Benz EQB, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-mercedes-benz-eqc",
@@ -3621,7 +3621,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Lakeside Tours & Travel",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging", "Leather Interior"],
-    description: "A modern, fully electric Mercedes-Benz EQC — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Mercedes-Benz EQC, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-mercedes-benz-eqs",
@@ -3643,7 +3643,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging", "Leather Interior"],
-    description: "A modern, fully electric Mercedes-Benz EQS — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Mercedes-Benz EQS, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-bmw-3-series",
@@ -3729,7 +3729,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable BMW 1 Series for everyday self-drive and city errands.",
+    description: "A dependable BMW 1 Series for everyday self drive and city errands.",
   },
   {
     id: "demo-bmw-4-series-gran-coupe",
@@ -3903,7 +3903,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging", "Leather Interior"],
-    description: "A modern, fully electric BMW i3 — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric BMW i3, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-bmw-i4",
@@ -3924,7 +3924,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging", "Leather Interior"],
-    description: "A modern, fully electric BMW i4 — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric BMW i4, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-bmw-ix",
@@ -3946,7 +3946,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging", "Leather Interior"],
-    description: "A modern, fully electric BMW iX — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric BMW iX, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-bmw-ix3",
@@ -3968,7 +3968,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Coastal Safari Fleet",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging", "Leather Interior"],
-    description: "A modern, fully electric BMW iX3 — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric BMW iX3, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-volkswagen-polo",
@@ -3989,7 +3989,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Volkswagen Polo for everyday self-drive and city errands.",
+    description: "A dependable Volkswagen Polo for everyday self drive and city errands.",
   },
   {
     id: "demo-volkswagen-golf",
@@ -4011,7 +4011,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Lakeside Tours & Travel",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Volkswagen Golf for everyday self-drive and city errands.",
+    description: "A dependable Volkswagen Golf for everyday self drive and city errands.",
   },
   {
     id: "demo-volkswagen-passat",
@@ -4033,7 +4033,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Volkswagen Passat for everyday self-drive and city errands.",
+    description: "A dependable Volkswagen Passat for everyday self drive and city errands.",
   },
   {
     id: "demo-volkswagen-jetta",
@@ -4054,7 +4054,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Volkswagen Jetta for everyday self-drive and city errands.",
+    description: "A dependable Volkswagen Jetta for everyday self drive and city errands.",
   },
   {
     id: "demo-volkswagen-t-cross",
@@ -4163,7 +4163,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging"],
-    description: "A modern, fully electric Volkswagen ID.4 — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Volkswagen ID.4, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-volkswagen-id-3",
@@ -4184,7 +4184,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging"],
-    description: "A modern, fully electric Volkswagen ID.3 — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Volkswagen ID.3, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-volkswagen-id-6",
@@ -4206,7 +4206,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging"],
-    description: "A modern, fully electric Volkswagen ID.6 — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Volkswagen ID.6, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-land-rover-defender",
@@ -4466,7 +4466,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging"],
-    description: "A modern, fully electric Neta Neta V — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Neta Neta V, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-mg-zs-ev",
@@ -4488,7 +4488,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Coastal Safari Fleet",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging"],
-    description: "A modern, fully electric MG ZS EV — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric MG ZS EV, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-mg-mg4-ev",
@@ -4509,7 +4509,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging"],
-    description: "A modern, fully electric MG MG4 EV — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric MG MG4 EV, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-chery-tiggo-4-pro",
@@ -4661,7 +4661,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Lakeside Tours & Travel",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging"],
-    description: "A modern, fully electric GWM/Haval Ora Funky Cat — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric GWM/Haval Ora Funky Cat, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-dongfeng-rich-6",
@@ -4704,7 +4704,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging"],
-    description: "A modern, fully electric Dongfeng Nammi Box — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Dongfeng Nammi Box, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-wuling-hongguang-mini-ev",
@@ -4726,7 +4726,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging"],
-    description: "A modern, fully electric Wuling Hongguang Mini EV — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Wuling Hongguang Mini EV, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-audi-a4",
@@ -4856,7 +4856,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging", "Leather Interior"],
-    description: "A modern, fully electric Audi e-tron — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Audi e-tron, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-porsche-cayenne",
@@ -4943,7 +4943,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging", "Leather Interior"],
-    description: "A modern, fully electric Porsche Taycan — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Porsche Taycan, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-peugeot-208",
@@ -4964,7 +4964,7 @@ export const vehicles: Vehicle[] = [
     fleetSource: "internal",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Peugeot 208 for everyday self-drive and city errands.",
+    description: "A dependable Peugeot 208 for everyday self drive and city errands.",
   },
   {
     id: "demo-peugeot-308",
@@ -4986,7 +4986,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Rift Valley Rides",
     approvalStatus: "approved",
     features: ["Bluetooth", "USB Charging"],
-    description: "A dependable Peugeot 308 for everyday self-drive and city errands.",
+    description: "A dependable Peugeot 308 for everyday self drive and city errands.",
   },
   {
     id: "demo-peugeot-2008",
@@ -5138,7 +5138,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "Coastal Safari Fleet",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging", "Leather Interior"],
-    description: "A modern, fully electric Volvo EX30 — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Volvo EX30, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-jaguar-xf",
@@ -5203,7 +5203,7 @@ export const vehicles: Vehicle[] = [
     partnerName: "EastAfrica Group Transit",
     approvalStatus: "approved",
     features: ["Fully Electric", "Fast Charging", "Leather Interior"],
-    description: "A modern, fully electric Jaguar I-Pace — quiet, efficient, and easy on running costs.",
+    description: "A modern, fully electric Jaguar I-Pace, quiet, efficient, and easy on running costs.",
   },
   {
     id: "demo-mobius-motors-mobius-ii",
@@ -5334,6 +5334,14 @@ export const documentQueue: DocumentQueueItem[] = [
 // detail the /services page needs. Keeping a second copy here invited drift.
 
 
+
+// "Road-Trip Van" is the value stored in the database and checked by a
+// constraint, and it is what the search URL carries. It is not what we show:
+// the hyphen was the one the copy pass could not simply delete, because
+// renaming the value here would make the class filter match nothing.
+export function formatClassification(value: string) {
+  return value.replace("-", " ");
+}
 
 export function formatMoney(amount: number, currency: string = "KES") {
   return `${currency} ${Math.round(amount).toLocaleString()}`;

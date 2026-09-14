@@ -54,7 +54,7 @@ export default function VehicleDeleteButton({
     return (
       <p className="text-xs text-midnight/50">
         This vehicle has {bookingCount} booking{bookingCount === 1 ? "" : "s"} against it, so it
-        cannot be deleted — those records would stop resolving. Archive it instead: it leaves the
+        cannot be deleted, those records would stop resolving. Archive it instead: it leaves the
         fleet and stops being bookable, and the history survives.
       </p>
     );

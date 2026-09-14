@@ -1,5 +1,5 @@
 const ICONS: Record<string, React.ReactNode> = {
-  "Self-Drive": (
+  "Self Drive": (
     <>
       <path d="M4 15l1.5-5A3 3 0 0 1 8.4 8h7.2a3 3 0 0 1 2.9 2l1.5 5" />
       <rect x="3" y="15" width="18" height="5" rx="1.5" />
@@ -7,7 +7,7 @@ const ICONS: Record<string, React.ReactNode> = {
       <circle cx="16.5" cy="20" r="1" />
     </>
   ),
-  "Chauffeur-Driven": (
+  "Chauffeur Driven": (
     <>
       <circle cx="12" cy="7" r="3" />
       <path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6" />

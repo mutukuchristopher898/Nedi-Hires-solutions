@@ -22,7 +22,7 @@ export function runUniversalStructuralChecks(normalized: string, documentLabel: 
     return { outcome: "reject", message: `Please enter your full ${documentLabel} number.` };
   }
   if (!/\d/.test(normalized)) {
-    return { outcome: "reject", message: `This doesn't look like a real ${documentLabel} number — it must contain at least one digit.` };
+    return { outcome: "reject", message: `This doesn't look like a real ${documentLabel} number, it must contain at least one digit.` };
   }
   if (isAllIdenticalChar(normalized)) {
     return { outcome: "reject", message: `This ${documentLabel} number can't be a single character repeated.` };
@@ -81,7 +81,7 @@ export function validateDocumentNumber(params: {
     } else if (tier === "warn") {
       result = {
         outcome: "warn",
-        message: `This doesn't look like a standard ${rule.country} ${documentLabel} number — please double-check it against your document.`,
+        message: `This doesn't look like a standard ${rule.country} ${documentLabel} number, please double check it against your document.`,
       };
     }
     // generic / state: structural checks already passed above; no further action.

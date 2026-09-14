@@ -73,7 +73,7 @@ export default function AccountActions({
 
     if (!data || data.length === 0) {
       setRole(previous);
-      setError("That change didn't apply — you may not have permission.");
+      setError("That change didn't apply, you may not have permission.");
       return;
     }
     setMessage(`Role changed to ${next}.`);
@@ -109,7 +109,7 @@ export default function AccountActions({
 
       {isSelf && (
         <p className="mt-1 text-xs text-midnight/40">
-          Your own account — role locked so you can&apos;t demote yourself out of here.
+          Your own account, role locked so you can&apos;t demote yourself out of here.
         </p>
       )}
       {message && <p className="mt-1 text-xs text-emerald-dark">{message}</p>}

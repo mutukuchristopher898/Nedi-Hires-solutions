@@ -24,7 +24,7 @@ const SECTIONS = [
   },
   {
     title: "2. Driver Eligibility",
-    body: "For self-drive bookings, the renter confirms they meet the minimum age and driving license experience requirements declared in Trip Details, and that the license information provided is accurate.",
+    body: "For self drive bookings, the renter confirms they meet the minimum age and driving license experience requirements declared in Trip Details, and that the license information provided is accurate.",
   },
   {
     title: "3. Condition & Liability",
@@ -78,7 +78,7 @@ export default function AgreementStep({
     <section className="rounded-2xl bg-white p-6 ring-1 ring-line">
       <h2 className="text-lg font-semibold text-midnight">4. Rental Agreement</h2>
       <p className="mt-2 rounded-lg bg-amber/10 p-3 text-sm text-amber">
-        Placeholder draft for prototype purposes only — review with legal counsel before
+        Placeholder draft for prototype purposes only, review with legal counsel before
         publishing a live version.
       </p>
 

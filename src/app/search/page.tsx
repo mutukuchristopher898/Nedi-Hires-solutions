@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import VehicleCard from "@/components/VehicleCard";
 import SearchWidget from "@/components/SearchWidget";
-import { classifications } from "@/lib/data";
+import { classifications, formatClassification } from "@/lib/data";
 import { getApprovedVehicles } from "@/lib/supabase/queries";
 import {
   DEFAULT_PAGE_SIZE,
@@ -12,9 +12,9 @@ import {
 
 export const metadata: Metadata = {
   title: "Book a Car",
-  description: "Search verified self-drive and chauffeur-driven vehicles across Kenya — filter by location, dates, vehicle type, fuel and transmission.",
+  description: "Search verified self drive and chauffeur driven vehicles across Kenya, filter by location, dates, vehicle type, fuel and transmission.",
   alternates: { canonical: "/search" },
-  openGraph: { title: "Book a Car", description: "Search verified self-drive and chauffeur-driven vehicles across Kenya — filter by location, dates, vehicle type, fuel and transmission.", url: "/search" },
+  openGraph: { title: "Book a Car", description: "Search verified self drive and chauffeur driven vehicles across Kenya, filter by location, dates, vehicle type, fuel and transmission.", url: "/search" },
 };
 
 type SearchParams = {
@@ -91,7 +91,7 @@ export default async function SearchPage({
               {classifications.map((c) => (
                 <FilterLink
                   key={c}
-                  label={c}
+                  label={formatClassification(c)}
                   href={buildHref(params, "classification", c)}
                   active={classification === c}
                 />
@@ -129,12 +129,12 @@ export default async function SearchPage({
           {results.length === 0 ? (
             <div className="rounded-xl bg-white p-10 text-center ring-1 ring-line">
               <p className="text-sm text-midnight/60">
-                {/* Past the last page is not the same as no inventory — saying
+                {/* Past the last page is not the same as no inventory, saying
                     "none listed" there would be plainly false. */}
                 {page > 1
                   ? "There are no vehicles on this page."
                   : hasSearched
-                    ? "Nothing available for those dates in this category. Try shifting your dates by a day, or message us on WhatsApp — we often have partner vehicles that aren't listed yet."
+                    ? "Nothing available for those dates in this category. Try shifting your dates by a day, or message us on WhatsApp, we often have partner vehicles that aren't listed yet."
                     : "No vehicles are listed yet."}
               </p>
               {page > 1 ? (

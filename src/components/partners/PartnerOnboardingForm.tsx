@@ -156,7 +156,7 @@ export default function PartnerOnboardingForm({
     // Enforced again by the database before approval, but asking here means a
     // partner isn't told weeks later that their listing can't go live.
     if (photos.length === 0) {
-      setUnitFormError("Add at least one photograph — a vehicle can't be approved without one.");
+      setUnitFormError("Add at least one photograph, a vehicle can't be approved without one.");
       return;
     }
     if (photos.some((p) => !isAllowedVehiclePhoto(p))) {
@@ -225,7 +225,7 @@ export default function PartnerOnboardingForm({
   return (
     <div className="container-shell max-w-2xl py-12">
       <h1 className="text-2xl font-bold text-midnight">
-        {partner ? `List a vehicle — ${partner.businessName}` : "Partner Onboarding"}
+        {partner ? `List a vehicle ${partner.businessName}` : "Partner Onboarding"}
       </h1>
       <p className="mt-1 text-sm text-midnight/60">
         {partner
@@ -388,7 +388,7 @@ export default function PartnerOnboardingForm({
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g. Well-maintained saloon, serviced monthly, ideal for city driving and airport runs."
+              placeholder="e.g. Well maintained saloon, serviced monthly, ideal for city driving and airport runs."
               className={INPUT_CLASS}
             />
           </Field>
@@ -426,7 +426,7 @@ export default function PartnerOnboardingForm({
               className="block w-full text-sm text-midnight/70"
             />
             <p className="mt-1 text-xs text-midnight/50">
-              At least one is required — a vehicle can&apos;t go live without a photo. JPG, PNG or
+              At least one is required, a vehicle can&apos;t go live without a photo. JPG, PNG or
               WebP, up to {MAX_VEHICLE_PHOTO_LABEL} each. The first is used as the main listing image.
             </p>
             {photos.length > 0 && (
@@ -439,7 +439,7 @@ export default function PartnerOnboardingForm({
           {catalogEntry && (
             <p className="rounded-md bg-offwhite px-3 py-2 text-xs text-midnight/60">
               Typical spec for {catalogEntry.make} {catalogEntry.model}: {catalogEntry.cc} · common
-              colours: {catalogEntry.colors.join(", ")}. General reference — confirm against your
+              colours: {catalogEntry.colors.join(", ")}. General reference, confirm against your
               actual unit.
             </p>
           )}

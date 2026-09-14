@@ -2,7 +2,7 @@ import Link from "next/link";
 import VehicleList from "@/components/admin/VehicleList";
 import { requireRole } from "@/lib/supabase/authz";
 import { getAdminVehicles, getVehiclePartnerNames, getVehicleLocations, getOptions } from "@/lib/supabase/queries";
-import { classifications } from "@/lib/data";
+import { classifications, formatClassification } from "@/lib/data";
 import type { VehicleLifecycle } from "@/lib/supabase/queries";
 
 const LIFECYCLES: VehicleLifecycle[] = ["pending", "live", "hidden", "rejected", "archived"];
@@ -104,7 +104,7 @@ export default async function AdminVehiclesPage({ searchParams }: { searchParams
         <FilterSelect name="status" label="Any status" value={raw.status} options={LIFECYCLES} />
         <FilterSelect name="partner" label="Any partner" value={raw.partner} options={partners} />
         <FilterSelect name="location" label="Any location" value={raw.location} options={locations} />
-        <FilterSelect name="class" label="Any class" value={raw.class} options={[...classifications]} />
+        <FilterSelect name="class" label="Any class" value={raw.class} options={[...classifications]} format={formatClassification} />
         <button
           type="submit"
           className="rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold text-midnight transition hover:bg-midnight/5"
@@ -180,11 +180,14 @@ function FilterSelect({
   label,
   value,
   options,
+  format,
 }: {
   name: string;
   label: string;
   value?: string;
   options: readonly string[];
+  /** Display only. The option's value stays whatever the database stores. */
+  format?: (value: string) => string;
 }) {
   return (
     <select
@@ -196,7 +199,7 @@ function FilterSelect({
       <option value="">{label}</option>
       {options.map((o) => (
         <option key={o} value={o}>
-          {o}
+          {format ? format(o) : o}
         </option>
       ))}
     </select>

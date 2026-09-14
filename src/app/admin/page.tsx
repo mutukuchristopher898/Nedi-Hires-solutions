@@ -35,7 +35,7 @@ export default async function AdminOverviewPage() {
             {vehicleDocs.expired.slice(0, 5).map((d) => (
               <li key={d.id}>
                 <Link href={`/admin/vehicles/${d.vehicleId}`} className="hover:text-gold-dark">
-                  {d.vehicleLabel} ({d.licensePlate}) — {d.docType}
+                  {d.vehicleLabel} ({d.licensePlate}) {d.docType}
                 </Link>
               </li>
             ))}
@@ -83,7 +83,7 @@ export default async function AdminOverviewPage() {
         <div className="rounded-2xl bg-white p-6 ring-1 ring-line">
           <h2 className="font-semibold text-midnight">Identity Verification</h2>
           <p className="mt-1 text-sm text-midnight/60">
-            Validate customer-submitted passports, driver&apos;s licenses, and national IDs. Every
+            Validate customer submitted passports, driver&apos;s licenses, and national IDs. Every
             document here was uploaded by a real customer during checkout.
           </p>
           <Link href="/admin/documents" className="mt-4 inline-block text-sm font-semibold text-gold hover:text-gold-dark">

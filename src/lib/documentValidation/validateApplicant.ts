@@ -77,7 +77,7 @@ export function validateApplicantPayload(input: ApplicantValidationInput): Appli
       !input.confirmNamesIntentionallyIdentical
     ) {
       fieldErrors.surname =
-        "Family name and given name(s) are identical — tick the confirmation box if this is correct, or check for a copy-paste error.";
+        "Family name and given name(s) are identical, tick the confirmation box if this is correct, or check for a copy paste error.";
     }
   }
 
@@ -92,7 +92,7 @@ export function validateApplicantPayload(input: ApplicantValidationInput): Appli
   if (!fieldErrors.surname && !fieldErrors.givenNames) {
     const fullNamePreview = composeFullName(surname, givenNames, middleName);
     if (input.guarantorName.trim().toLowerCase() === fullNamePreview.trim().toLowerCase()) {
-      fieldErrors.guarantorName = "Your guarantor can't be yourself — please provide someone else's details.";
+      fieldErrors.guarantorName = "Your guarantor can't be yourself, please provide someone else's details.";
     }
   }
 
@@ -122,7 +122,7 @@ export function validateApplicantPayload(input: ApplicantValidationInput): Appli
 
   if (input.requiresLicense) {
     if (!input.licenseNumber.trim()) {
-      fieldErrors.licenseNumber = "Driving licence number is required for self-drive.";
+      fieldErrors.licenseNumber = "Driving licence number is required for self drive.";
     } else {
       const licenseResult = validateDocumentNumber({
         rawValue: input.licenseNumber,

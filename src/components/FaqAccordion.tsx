@@ -9,11 +9,11 @@ const FAQS = [
   },
   {
     q: "What documents do I need to verify my identity?",
-    a: "We accept an International Passport, a valid Driver's License, or a National ID. Upload a clear photo during the booking flow — our team or the vehicle partner reviews it before final settlement.",
+    a: "We accept an International Passport, a valid Driver's License, or a National ID. Upload a clear photo during the booking flow, our team or the vehicle partner reviews it before final settlement.",
   },
   {
-    q: "Can I hire a chauffeur instead of self-driving?",
-    a: "Yes. Most of our Luxury and SUV vehicles are available chauffeur-driven — select this when booking or mention it via Contact Support for group and event transport.",
+    q: "Can I hire a chauffeur instead of self driving?",
+    a: "Yes. Most of our Luxury and SUV vehicles are available chauffeur driven. Select this when booking, or mention it via Contact Support for group and event transport.",
   },
   {
     q: "What happens if a partner vehicle is still 'Pending'?",
@@ -21,11 +21,11 @@ const FAQS = [
   },
   {
     q: "Can I cancel or change my booking?",
-    a: "Reach out via Contact Support with your booking reference as soon as possible. Reservation deposits are generally non-refundable within 24 hours of pickup, but we handle changes case by case.",
+    a: "Reach out via Contact Support with your booking reference as soon as possible. Reservation deposits are generally non refundable within 24 hours of pickup, but we handle changes case by case.",
   },
   {
     q: "How do Mobility Subscriptions work?",
-    a: "Subscriptions are all-inclusive monthly plans that grant tiered access to vehicles with a set number of swaps per month — ideal if you need a vehicle regularly without owning one.",
+    a: "Subscriptions are all inclusive monthly plans that grant tiered access to vehicles with a set number of swaps per month, ideal if you need a vehicle regularly without owning one.",
   },
   {
     q: "How do I list my own vehicle?",

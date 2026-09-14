@@ -49,7 +49,7 @@ export default function QuoteStatusSelect({
         <option value="contacted">Contacted</option>
         <option value="closed">Closed</option>
       </select>
-      {failed && <p className="mt-1 text-xs text-red-600">Not saved — try again.</p>}
+      {failed && <p className="mt-1 text-xs text-red-600">Not saved. Try again.</p>}
     </div>
   );
 }

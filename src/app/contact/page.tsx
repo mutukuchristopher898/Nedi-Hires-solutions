@@ -29,7 +29,7 @@ export default function ContactPage() {
             title="Call / WhatsApp"
             value={site.phoneDisplay}
             href={site.whatsappHref}
-            note="Fastest response — usually within minutes during business hours."
+            note="Fastest response, usually within minutes during business hours."
           />
           <ContactCard title="Email" value={site.email} href={`mailto:${site.email}`} note="For quotes, invoices, and partner enquiries." />
           <ContactCard title="Location" value={site.location} note="Vehicle handoff and pickup points across Nairobi and partner cities." />

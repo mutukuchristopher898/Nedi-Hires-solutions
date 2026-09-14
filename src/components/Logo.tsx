@@ -59,7 +59,7 @@ export function LogoLockup({
   return (
     <Image
       src={light ? "/logo-lockup-dark.png" : "/logo-lockup.png"}
-      alt="Nedi Hires Solutions — Drive. Explore. Experience."
+      alt="Nedi Hires Solutions. Drive. Explore. Experience."
       width={width}
       height={Math.round(width / LOCKUP_ASPECT)}
       priority={priority}

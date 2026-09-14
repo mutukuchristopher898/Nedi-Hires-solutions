@@ -54,7 +54,7 @@ function SignUpForm() {
       return;
     }
     if (!strength.meetsMinimum) {
-      setError("Please choose a stronger password — at least 8 characters with a mix of upper/lowercase letters, numbers, and symbols.");
+      setError("Please choose a stronger password, at least 8 characters with a mix of upper/lowercase letters, numbers, and symbols.");
       return;
     }
 
@@ -188,7 +188,7 @@ function SignUpForm() {
                 className={`mt-1 text-xs font-medium ${strength.meetsMinimum ? "text-emerald-dark" : "text-midnight/50"}`}
               >
                 {strength.label}
-                {!strength.meetsMinimum && " — needs 8+ characters and a mix of upper/lowercase, numbers, and symbols"}
+                {!strength.meetsMinimum && ", needs 8+ characters and a mix of upper/lowercase, numbers, and symbols"}
               </p>
             </div>
           )}

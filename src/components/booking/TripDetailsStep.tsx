@@ -169,9 +169,9 @@ export default function TripDetailsStep({
         pickupInPast
           ? "The pickup date can't be in the past. Please choose today or a later date."
           : tooLong
-          ? `The maximum rental period is ${MAX_RENTAL_DAYS} days. Please shorten your drop-off date.`
+          ? `The maximum rental period is ${MAX_RENTAL_DAYS} days. Please shorten your drop off date.`
           : dropoffInvalid
-          ? "The drop-off must be after the pickup. Please check your dates."
+          ? "The drop off must be after the pickup. Please check your dates."
           : "Please fix the highlighted fields below."
       );
       return;
@@ -183,7 +183,7 @@ export default function TripDetailsStep({
 
       if (futureDob || futureLicense) {
         setFieldErrors({ dateOfBirth: futureDob, licenseIssueDate: futureLicense });
-        setFormError("Please check your dates — they can't be in the future.");
+        setFormError("Please check your dates, they can't be in the future.");
         return;
       }
 
@@ -194,7 +194,7 @@ export default function TripDetailsStep({
       if (!eligible) {
         setFieldErrors({ dateOfBirth: true, licenseIssueDate: true });
         setFormError(
-          "This booking doesn't meet our self-drive eligibility requirements. Please choose chauffeur-driven, or contact support for assistance."
+          "This booking doesn't meet our self drive eligibility requirements. Please choose chauffeur driven, or contact support for assistance."
         );
         return;
       }
@@ -284,8 +284,8 @@ export default function TripDetailsStep({
               onChange={(e) => update("driveType", e.target.value as TripDetails["driveType"])}
               className={inputClass}
             >
-              <option value="self_drive">Self-drive</option>
-              <option value="chauffeur">Chauffeur-driven</option>
+              <option value="self_drive">Self drive</option>
+              <option value="chauffeur">Chauffeur driven</option>
             </select>
           </Field>
         </div>
@@ -324,10 +324,10 @@ export default function TripDetailsStep({
           </div>
 
           {/* The red ring sits on the container because the problem is the pair
-              of values, not either one alone — but the ring alone is invisible
+              of values, not either one alone, but the ring alone is invisible
               to assistive tech, so both inputs report invalid too. */}
           <div className={`mt-4 grid gap-4 sm:grid-cols-2 ${fieldErrors.dropoff ? "rounded-md ring-1 ring-red-500" : ""}`}>
-            <Field label="Drop-off date">
+            <Field label="Drop off date">
               <input
                 required
                 type="date"
@@ -338,7 +338,7 @@ export default function TripDetailsStep({
                 className={inputClass}
               />
             </Field>
-            <Field label="Drop-off time">
+            <Field label="Drop off time">
               <input
                 required
                 type="time"
@@ -352,33 +352,33 @@ export default function TripDetailsStep({
           </div>
 
           <p className="mt-3 text-sm text-midnight/70">
-            {formatDurationLabel(trip.durationUnit, trip.durationQuantity)} selected — billed as {days} day
+            {formatDurationLabel(trip.durationUnit, trip.durationQuantity)} selected, billed as {days} day
             {days === 1 ? "" : "s"}
             {pricing.rateLabel && (
               <>
                 {" "}
-                · <span className="font-medium text-emerald-dark">{pricing.rateLabel}</span> — you save{" "}
+                · <span className="font-medium text-emerald-dark">{pricing.rateLabel}</span>, you save{" "}
                 {formatMoney(pricing.savingsAmount, vehicle.currency)}
               </>
             )}
           </p>
         </div>
 
-        {/* One-way hire is no longer priced automatically: a different
-            drop-off is arranged as a quote, because the cost of repositioning
-            a vehicle depends on the route and when it can be collected —
+        {/* One way hire is no longer priced automatically: a different
+            drop off is arranged as a quote, because the cost of repositioning
+            a vehicle depends on the route and when it can be collected 
             things a flat fee guessed at. */}
         <div className="rounded-lg bg-offwhite p-4">
           <p className="text-sm font-medium text-midnight">Returning to a different location?</p>
           <p className="mt-1 text-sm text-midnight/70">
-            One-way hires are priced individually. Tell us the route and we&apos;ll come back with
-            a price — this booking stays a return to {trip.pickupPoint || "your pickup point"}.
+            One way hires are priced individually. Tell us the route and we&apos;ll come back with
+            a price, this booking stays a return to {trip.pickupPoint || "your pickup point"}.
           </p>
           <Link
             href="/contact"
             className="mt-3 inline-block text-sm font-semibold text-gold-dark hover:text-gold"
           >
-            Request a one-way quote &rarr;
+            Request a one way quote &rarr;
           </Link>
         </div>
 

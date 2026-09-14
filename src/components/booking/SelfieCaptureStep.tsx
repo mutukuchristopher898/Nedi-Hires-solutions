@@ -78,7 +78,7 @@ export default function SelfieCaptureStep({
     <section className="rounded-2xl bg-white p-6 ring-1 ring-line">
       <h2 className="text-lg font-semibold text-midnight">3. Selfie Verification</h2>
       <p className="mt-1 text-sm text-midnight/60">
-        Take a live photo of yourself — this can&apos;t be uploaded from your gallery, it must be
+        Take a live photo of yourself, this can&apos;t be uploaded from your gallery, it must be
         captured right now.
       </p>
 

@@ -170,7 +170,7 @@ export default function VehicleForm({
       return;
     }
     if (!data || data.length === 0) {
-      setError("That didn't save — you may not have permission.");
+      setError("That didn't save, you may not have permission.");
       return;
     }
 
@@ -189,7 +189,7 @@ export default function VehicleForm({
           onChange={(e) => { setPartnerId(e.target.value); setSaved(false); }}
           className={INPUT}
         >
-          <option value="">No partner — listed directly</option>
+          <option value="">No partner, listed directly</option>
           {partners.map((p) => (
             <option key={p.id} value={p.id}>
               {p.businessName}
@@ -258,7 +258,7 @@ export default function VehicleForm({
       <Field label="Description">
         <textarea rows={3} value={description}
           onChange={(e) => { setDescription(e.target.value); setSaved(false); }}
-          placeholder="e.g. Well-maintained saloon, serviced monthly, ideal for city driving."
+          placeholder="e.g. Well maintained saloon, serviced monthly, ideal for city driving."
           className={INPUT} />
       </Field>
 
@@ -279,7 +279,7 @@ export default function VehicleForm({
       <fieldset>
         <legend className="text-xs font-medium text-midnight/60">Photographs</legend>
         <p className="mt-1 text-xs text-midnight/50">
-          The first is the main listing image. Photos are re-encoded on upload, which strips the
+          The first is the main listing image. Photos are re encoded on upload, which strips the
           location data phones embed. A vehicle needs at least one before it can be approved.
         </p>
 

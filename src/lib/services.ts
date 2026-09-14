@@ -27,14 +27,14 @@ export interface Service {
 export const SERVICES: Service[] = [
   {
     slug: "self-drive",
-    title: "Self-Drive",
-    summary: "Rent the keys and go — full-tank, well-maintained vehicles for independent travel.",
+    title: "Self Drive",
+    summary: "Rent the keys and go. Full tank, well maintained vehicles for independent travel.",
     promise: "Rent the keys and go.",
     intro:
-      "You know where you're going. We hand you a clean, full-tank vehicle and get out of the way.",
+      "You know where you're going. We hand you a clean, full tank vehicle and get out of the way.",
     points: [
       "Full tank at pickup, serviced and inspected before every hire",
-      "Daily, weekly and monthly rates — longer bookings cost less per day",
+      "Daily, weekly and monthly rates. Longer bookings cost less per day",
       "Valid driving licence and ID verification required",
       "Nationwide delivery, or collect from us",
     ],
@@ -44,14 +44,14 @@ export const SERVICES: Service[] = [
   },
   {
     slug: "chauffeur-driven",
-    title: "Chauffeur-Driven",
-    summary: "Sit back with a vetted professional driver for airport runs or full-day hire.",
+    title: "Chauffeur Driven",
+    summary: "Sit back with a vetted professional driver for airport runs or full day hire.",
     promise: "Sit back. Someone else handles the traffic.",
     intro:
       "A vetted professional driver who knows the roads, the shortcuts, and when to stay quiet.",
     points: [
-      "Half-day, full-day and multi-day hire",
-      "Drivers background-checked and route-experienced",
+      "Half day, full day and multi day hire",
+      "Drivers background checked and route experienced",
       "Fuel and driver allowance included in the quoted rate",
       "Airport runs, meetings, city errands, upcountry trips",
     ],
@@ -62,18 +62,18 @@ export const SERVICES: Service[] = [
   {
     slug: "airport-transfers",
     title: "Airport Transfers",
-    summary: "Meet & greet pickups and drop-offs at JKIA, Moi International, and regional airports.",
+    summary: "Meet & greet pickups and drop offs at JKIA, Moi International, and regional airports.",
     promise: "We'll be there before you land.",
     intro:
-      "Meet-and-greet pickups at JKIA, Moi International, Wilson and regional airstrips — with your name on a board and your flight tracked.",
+      "Meet and greet pickups at JKIA, Moi International, Wilson and regional airstrips, with your name on a board and your flight tracked.",
     points: [
       "Flight monitoring, so delays don't cost you the ride",
-      "Fixed pricing quoted upfront — no surge, no meter",
-      "Luggage-appropriate vehicles matched to your group size",
-      "Late-night and early-morning arrivals covered",
+      "Fixed pricing quoted upfront, no surge, no meter",
+      "Luggage appropriate vehicles matched to your group size",
+      "Late night and early morning arrivals covered",
     ],
     bestFor:
-      "first-time arrivals, business travellers on tight connections, families with luggage.",
+      "first time arrivals, business travellers on tight connections, families with luggage.",
     cta: { label: "Book a transfer", href: "/contact" },
   },
   {
@@ -82,7 +82,7 @@ export const SERVICES: Service[] = [
     summary: "Vetted executive fleets and structured mobility arrangements for businesses.",
     promise: "Mobility your finance team can actually reconcile.",
     intro:
-      "Structured arrangements for companies that move people regularly — with the paperwork to match.",
+      "Structured arrangements for companies that move people regularly, with the paperwork to match.",
     points: [
       "Monthly invoicing and consolidated statements",
       "Dedicated account manager and priority dispatch",
@@ -101,10 +101,10 @@ export const SERVICES: Service[] = [
     intro:
       "Spacious vans and SUVs built for the trips where someone always forgets something.",
     points: [
-      "7, 9 and 14-seater options",
+      "7, 9 and 14 seater options",
       "Child seats available on request",
       "Coast runs, upcountry visits, weekend getaways",
-      "Self-drive or with a driver — your call",
+      "Self drive or with a driver, your call",
     ],
     // "Shags" kept: the primary market here is domestic, and it is the word a
     // Kenyan customer would actually use for the trip being described.
@@ -114,15 +114,15 @@ export const SERVICES: Service[] = [
   {
     slug: "tours-and-safaris",
     title: "Tours & Safaris",
-    summary: "Purpose-built 4x4s with pop-up roofs for game drives and coastal excursions.",
+    summary: "Purpose built 4x4s with pop up roofs for game drives and coastal excursions.",
     promise: "Built for the road that isn't a road.",
     intro:
-      "Purpose-built 4×4s with pop-up roofs, driven by guides who know which gate to use and when the light is right.",
+      "Purpose built 4×4s with pop up roofs, driven by guides who know which gate to use and when the light is right.",
     points: [
-      "Landcruisers and safari vans with pop-up viewing roofs",
-      "Park-experienced driver-guides",
+      "Landcruisers and safari vans with pop up viewing roofs",
+      "Park experienced driver guides",
       "Maasai Mara, Amboseli, Tsavo, Samburu, Diani and the coast",
-      "Multi-day itineraries arranged end to end",
+      "Multi day itineraries arranged end to end",
     ],
     bestFor:
       "game drives, coastal excursions, and visitors with one shot at getting the photo.",
@@ -131,9 +131,9 @@ export const SERVICES: Service[] = [
   {
     slug: "event-transport",
     title: "Event Transport",
-    summary: "Bulk and high-capacity transit for weddings, conferences, and group events.",
+    summary: "Bulk and high capacity transit for weddings, conferences, and group events.",
     promise: "Move a hundred people without moving a hundred times.",
-    intro: "Bulk and high-capacity transit, coordinated as one booking.",
+    intro: "Bulk and high capacity transit, coordinated as one booking.",
     points: [
       "Fleets from 3 to 30+ vehicles",
       "Single point of contact on the day",

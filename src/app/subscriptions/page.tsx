@@ -4,9 +4,9 @@ import SubscriptionPlansExplorer from "@/components/subscriptions/SubscriptionPl
 
 export const metadata: Metadata = {
   title: "Mobility Subscriptions",
-  description: "All-inclusive monthly vehicle plans with a set number of swaps — for when you need a vehicle regularly without owning one.",
+  description: "All inclusive monthly vehicle plans with a set number of swaps, for when you need a vehicle regularly without owning one.",
   alternates: { canonical: "/subscriptions" },
-  openGraph: { title: "Mobility Subscriptions", description: "All-inclusive monthly vehicle plans with a set number of swaps — for when you need a vehicle regularly without owning one.", url: "/subscriptions" },
+  openGraph: { title: "Mobility Subscriptions", description: "All inclusive monthly vehicle plans with a set number of swaps, for when you need a vehicle regularly without owning one.", url: "/subscriptions" },
 };
 
 export default async function SubscriptionsPage() {
@@ -24,7 +24,7 @@ export default async function SubscriptionsPage() {
           </h1>
           <p className="mt-3 max-w-lg text-sm text-white/70">
             Plans for individual drivers, the diaspora, corporate & hospitality partners,
-            and fleet-listing partners — each with the billing cadence that fits.
+            and fleet listing partners, each with the billing cadence that fits.
           </p>
         </div>
       </section>

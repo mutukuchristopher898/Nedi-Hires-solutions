@@ -13,7 +13,7 @@ export function validateMessage(
     return required ? { valid: false, message: `${fieldLabel} is required.` } : { valid: true };
   }
   if (value.length < minLength) {
-    return { valid: false, message: `${fieldLabel} is too short — please add a bit more detail.` };
+    return { valid: false, message: `${fieldLabel} is too short, please add a bit more detail.` };
   }
   if (/^(.)\1*$/iu.test(value.replace(/\s/g, ""))) {
     return { valid: false, message: `${fieldLabel} can't be a single character repeated.` };

@@ -10,12 +10,12 @@ export default async function AdminVehiclePricingPage() {
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h1 className="text-2xl font-bold text-midnight">Per-vehicle Pricing</h1>
         <Link href="/admin/pricing" className="text-sm font-semibold text-gold-dark hover:text-gold">
-          Platform defaults &amp; one-way fees →
+          Platform defaults &amp; one way fees →
         </Link>
       </div>
       <p className="mt-1 text-sm text-midnight/60">
-        Long-hire discounts and deposit rates per vehicle. Partners set the daily price; these are
-        yours. Changes apply to new bookings — one already placed keeps the figures it was quoted.
+        Long hire discounts and deposit rates per vehicle. Partners set the daily price; these are
+        yours. Changes apply to new bookings, one already placed keeps the figures it was quoted.
       </p>
 
       <div className="mt-6">

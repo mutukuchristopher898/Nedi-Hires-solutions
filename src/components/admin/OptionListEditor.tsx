@@ -93,7 +93,7 @@ export default function OptionListEditor({
 
       {ordered.length === 0 ? (
         <p className="mt-3 text-sm text-midnight/50">
-          Nothing on this list — the built-in defaults are being used.
+          Nothing on this list, the built in defaults are being used.
         </p>
       ) : (
         <ul className="mt-3 space-y-1.5">

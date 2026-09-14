@@ -68,7 +68,7 @@ export default function VehicleDocumentReview({
       {missing.length > 0 && (
         <p className="mb-4 rounded-md bg-amber/10 px-4 py-3 text-sm text-amber">
           Nothing on file for: <strong>{missing.join(", ")}</strong>. Approving the vehicle is still
-          possible — it is your call — but this is a car going on the site without proof of
+          possible and it is your call, but this is a car going on the site without proof of
           ownership or cover.
         </p>
       )}
@@ -133,7 +133,7 @@ function DocumentRow({
     // PostgREST reports an update matching no rows as a success. Without this
     // the screen would claim a decision was recorded when RLS refused it.
     if (!data || data.length === 0) {
-      setError("That didn't save — you may not have permission to review this document.");
+      setError("That didn't save. You may not have permission to review this document.");
       return;
     }
 
@@ -269,7 +269,7 @@ function DocumentRow({
                 <button
                   type="button"
                   disabled={busy !== null || !preset}
-                  onClick={() => decide(mode, [preset, note.trim()].filter(Boolean).join(" — "))}
+                  onClick={() => decide(mode, [preset, note.trim()].filter(Boolean).join(" "))}
                   className="rounded-md bg-gold px-3 py-1.5 text-xs font-semibold text-midnight transition hover:bg-gold-dark hover:text-white disabled:opacity-60"
                 >
                   {busy ? "Saving…" : mode === "returned" ? "Return it" : "Reject it"}

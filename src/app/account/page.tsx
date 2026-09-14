@@ -239,7 +239,7 @@ export default function AccountPage() {
       {loadError && (
         <FormError
           className="mt-6"
-          message="We couldn't load some of your records just now. They haven't gone anywhere — please refresh, and contact us if this keeps happening."
+          message="We couldn't load some of your records just now. They haven't gone anywhere, please refresh, and contact us if this keeps happening."
         />
       )}
 
@@ -309,14 +309,14 @@ export default function AccountPage() {
                     <tr key={b.id}>
                       <td className="px-5 py-3 font-mono text-xs text-midnight/70">{b.booking_ref}</td>
                       <td className="px-5 py-3 font-medium text-midnight">
-                        {b.vehicles ? `${b.vehicles.make} ${b.vehicles.model} (${b.vehicles.year})` : "—"}
+                        {b.vehicles ? `${b.vehicles.make} ${b.vehicles.model} (${b.vehicles.year})` : ""}
                       </td>
                       <td className="px-5 py-3 text-midnight/70">
                         {b.drive_type
-                          ? `${b.drive_type === "self_drive" ? "Self-drive" : "Chauffeur"} · ${
+                          ? `${b.drive_type === "self_drive" ? "Self drive" : "Chauffeur"} · ${
                               b.purpose === "commercial" ? "Commercial" : "Personal"
                             }${b.destination ? ` · ${b.destination}` : ""}`
-                          : "—"}
+                          : ""}
                       </td>
                       <td className="px-5 py-3 text-midnight/70">{formatDateRange(b.start_date, b.end_date)}</td>
                       <td className="px-5 py-3 text-midnight/70">{formatMoney(b.total_amount, b.currency)}</td>

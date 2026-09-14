@@ -68,7 +68,7 @@ export default function BookingCancelButton({
         {holdsVehicle && " This releases the vehicle for other customers."}
       </p>
       <p className="mt-1 text-xs text-midnight/60">
-        Cancelled is a terminal state — this cannot be undone from here.
+        Cancelled is a terminal state, this cannot be undone from here.
       </p>
       <div className="mt-3 flex gap-2">
         <button

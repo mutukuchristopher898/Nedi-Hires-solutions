@@ -19,7 +19,7 @@ const LINK_ERRORS: Record<string, string> = {
   link_invalid:
     "That link didn't carry a sign-in code. Request a new password reset below, and open the link in this same browser.",
   link_expired:
-    "That link has expired or was already used. Password reset links work once and time out quickly — request a new one below.",
+    "That link has expired or was already used. Password reset links work once and time out quickly, request a new one below.",
   link_incomplete:
     "That link didn't complete the sign-in. Request a new password reset below, and open it in the same browser you requested it from.",
 };

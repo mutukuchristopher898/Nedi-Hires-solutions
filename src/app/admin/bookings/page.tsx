@@ -40,7 +40,7 @@ export default async function AdminBookingsPage() {
       </div>
       <p className="mt-1 text-sm text-midnight/60">
         Every booking on the platform. Cancelling one releases its vehicle back to other
-        customers — it is the only way to free a car that is being held.
+        customers, it is the only way to free a car that is being held.
       </p>
 
       {bookings.length === 0 ? (

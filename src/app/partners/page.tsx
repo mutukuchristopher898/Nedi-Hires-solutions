@@ -5,9 +5,9 @@ import { getPartnerNetwork } from "@/lib/supabase/queries";
 
 export const metadata: Metadata = {
   title: "Become a Partner",
-  description: "List your vehicle with Nedi Hires Solutions — register your business or host profile and reach verified customers across Kenya.",
+  description: "List your vehicle with Nedi Hires Solutions, register your business or host profile and reach verified customers across Kenya.",
   alternates: { canonical: "/partners" },
-  openGraph: { title: "Become a Partner", description: "List your vehicle with Nedi Hires Solutions — register your business or host profile and reach verified customers across Kenya.", url: "/partners" },
+  openGraph: { title: "Become a Partner", description: "List your vehicle with Nedi Hires Solutions, register your business or host profile and reach verified customers across Kenya.", url: "/partners" },
 };
 
 const STEPS = [
@@ -28,7 +28,7 @@ const STEPS = [
 const CHANNELS = [
   {
     title: "Managed Leasing Program",
-    copy: "Hand your vehicle to us for full asset management under a revenue split — we handle bookings, maintenance coordination, and customer support.",
+    copy: "Hand your vehicle to us for full asset management under a revenue split. We handle bookings, maintenance coordination, and customer support.",
   },
   {
     title: "B2B Marketplace Aggregation",
@@ -48,7 +48,7 @@ export default async function PartnersPage() {
           </h1>
           <p className="mt-3 max-w-lg text-sm text-white/70">
             Individual vehicle owners, commercial fleet operators, and tourism transit
-            providers can all list inventory through a self-service partner dashboard.
+            providers can all list inventory through a self service partner dashboard.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
@@ -65,7 +65,7 @@ export default async function PartnersPage() {
             </Link>
           </div>
           <p className="mt-4 text-sm text-white/60">
-            Partners get their own subscription tier —{" "}
+            Partners get their own subscription tier {" "}
             <Link href="/subscriptions" className="underline hover:text-white">
               see partner pricing
             </Link>

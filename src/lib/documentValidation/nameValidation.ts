@@ -19,7 +19,7 @@ export function validateNamePart(rawValue: string, fieldLabel: string): { valid:
     return { valid: false, message: `${fieldLabel} can only contain letters, spaces, apostrophes, hyphens, and periods.` };
   }
   if (/(.)\1{2,}/u.test(value)) {
-    return { valid: false, message: `${fieldLabel} doesn't look right — please check for a repeated-letter typo.` };
+    return { valid: false, message: `${fieldLabel} doesn't look right, please check for a repeated-letter typo.` };
   }
   if (/^(.)\1*$/iu.test(value.replace(/\s/g, ""))) {
     return { valid: false, message: `${fieldLabel} can't be a single letter repeated.` };
