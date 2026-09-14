@@ -22,11 +22,14 @@ export interface Service {
   points: string[];
   bestFor: string;
   cta: { label: string; href: string };
+  /** Shown on the home page. The rest live on /services. */
+  featured?: boolean;
 }
 
 export const SERVICES: Service[] = [
   {
     slug: "self-drive",
+    featured: true,
     title: "Self Drive",
     summary: "Rent the keys and go. Full tank, well maintained vehicles for independent travel.",
     promise: "Rent the keys and go.",
@@ -44,6 +47,7 @@ export const SERVICES: Service[] = [
   },
   {
     slug: "chauffeur-driven",
+    featured: true,
     title: "Chauffeur Driven",
     summary: "Sit back with a vetted professional driver for airport runs or full day hire.",
     promise: "Sit back. Someone else handles the traffic.",
@@ -61,6 +65,7 @@ export const SERVICES: Service[] = [
   },
   {
     slug: "airport-transfers",
+    featured: true,
     title: "Airport Transfers",
     summary: "Meet & greet pickups and drop offs at JKIA, Moi International, and regional airports.",
     promise: "We'll be there before you land.",
@@ -113,6 +118,7 @@ export const SERVICES: Service[] = [
   },
   {
     slug: "tours-and-safaris",
+    featured: true,
     title: "Tours & Safaris",
     summary: "Purpose built 4x4s with pop up roofs for game drives and coastal excursions.",
     promise: "Built for the road that isn't a road.",

@@ -61,11 +61,11 @@ export default async function Home() {
             </p>
           </div>
           <Link href="/services" className="text-sm font-semibold text-gold-dark hover:text-gold">
-            See all services →
+            All seven services →
           </Link>
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {SERVICES.map((s) => (
+          {SERVICES.filter((s) => s.featured).map((s) => (
             <Link
               key={s.slug}
               href={`/services#${s.slug}`}
