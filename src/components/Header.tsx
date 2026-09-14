@@ -47,7 +47,7 @@ export default function Header() {
             </svg>
             {site.phoneDisplay}
           </a>
-          <span className="rounded border border-white/15 px-2 py-1 text-xs text-white/70">KES</span>
+          <span className="rounded border border-white/15 px-2 py-1 text-xs text-white/70">USD</span>
           <Link
             href="/account"
             className="text-sm font-medium text-white/80 transition hover:text-white"

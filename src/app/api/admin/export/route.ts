@@ -71,7 +71,7 @@ export async function GET(request: Request) {
       `nedi-vehicles-${stamp()}.csv`,
       toCsv(
         ["Registration", "Make", "Model", "Year", "Class", "Transmission", "Fuel",
-         "Seats", "Location", "Daily rate (KES)", "Partner", "Status", "Photos", "Listed"],
+         "Seats", "Location", "Daily rate (USD)", "Partner", "Status", "Photos", "Listed"],
         vehicles.map((v) => [
           v.licensePlate, v.make, v.model, v.year, v.classification, v.transmission,
           v.fuelType, v.capacity, v.location, v.pricePerDay, v.partnerName ?? "",

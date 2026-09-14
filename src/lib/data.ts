@@ -5343,8 +5343,23 @@ export function formatClassification(value: string) {
   return value.replace("-", " ");
 }
 
-export function formatMoney(amount: number, currency: string = "KES") {
-  return `${currency} ${Math.round(amount).toLocaleString()}`;
+// Prefix per currency rather than always printing the code. The dollar sign
+// is what a customer expects to see; KES has no widely recognised symbol, so
+// the code is the clearest thing to show.
+//
+// The currency is read from the row, never assumed. Bookings placed before the
+// switch to dollars are still held in shillings and are still shown that way:
+// those are agreed prices, and relabelling one would be claiming the customer
+// owes a different sum from the one they accepted.
+const CURRENCY_PREFIX: Record<string, string> = {
+  USD: "$",
+  EUR: "€",
+  GBP: "£",
+};
+
+export function formatMoney(amount: number, currency: string = "USD") {
+  const prefix = CURRENCY_PREFIX[currency] ?? `${currency} `;
+  return `${prefix}${Math.round(amount).toLocaleString()}`;
 }
 
 export function getVehicleById(id: string): Vehicle | undefined {

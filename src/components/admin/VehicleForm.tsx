@@ -161,7 +161,7 @@ export default function VehicleForm({
     // success to PostgREST, so this is what turns a silent no-op into an error.
     const { data, error: writeError } = isEdit
       ? await supabase.from("vehicles").update(payload).eq("id", vehicle!.id).select("id")
-      : await supabase.from("vehicles").insert({ ...payload, currency: "KES" }).select("id");
+      : await supabase.from("vehicles").insert({ ...payload, currency: "USD" }).select("id");
 
     setSaving(false);
 
@@ -248,9 +248,9 @@ export default function VehicleForm({
             {locationOptions.map((l) => <option key={l} value={l} />)}
           </datalist>
         </Field>
-        <Field label="Daily rate (KES)">
-          <input type="number" min={1} step={100} value={pricePerDay}
-            onChange={(e) => { setPricePerDay(e.target.value); setSaved(false); }} placeholder="e.g. 4500"
+        <Field label="Daily rate (USD)">
+          <input type="number" min={1} step={1} value={pricePerDay}
+            onChange={(e) => { setPricePerDay(e.target.value); setSaved(false); }} placeholder="e.g. 35"
             {...fieldProps(fieldErrors.pricePerDay ? "reject" : undefined, INPUT)} />
         </Field>
       </div>

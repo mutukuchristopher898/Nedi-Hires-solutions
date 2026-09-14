@@ -57,9 +57,9 @@ const TIER_STYLES: Record<LoyaltyTier, string> = {
 };
 
 const TIER_PERKS: Record<LoyaltyTier, string[]> = {
-  bronze: ["Earn 1 point per KES 100 spent"],
-  silver: ["Earn 1 point per KES 100 spent", "Priority customer support"],
-  gold: ["Earn 1 point per KES 100 spent", "Priority customer support", "Complimentary vehicle upgrade when available"],
+  bronze: ["Earn 1 point per $1 spent"],
+  silver: ["Earn 1 point per $1 spent", "Priority customer support"],
+  gold: ["Earn 1 point per $1 spent", "Priority customer support", "Complimentary vehicle upgrade when available"],
 };
 
 const BOOKING_STATUS_STYLES: Record<BookingRow["status"], string> = {

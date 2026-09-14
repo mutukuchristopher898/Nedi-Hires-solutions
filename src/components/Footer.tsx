@@ -56,7 +56,7 @@ export default function Footer() {
           </span>
           <span>
             Wherever you&apos;re headed, <span className="italic text-gold">twende.</span>
-            <span className="ml-3 text-white/40">All prices in KES</span>
+            <span className="ml-3 text-white/40">All prices in USD</span>
           </span>
         </div>
       </div>

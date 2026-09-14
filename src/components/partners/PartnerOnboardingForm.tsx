@@ -191,7 +191,7 @@ export default function PartnerOnboardingForm({
         license_plate: licensePlate.trim().toUpperCase(),
         location: location.trim(),
         price_per_day: priceNum,
-        currency: "KES",
+        currency: "USD",
         description: description.trim(),
         features,
         photo_paths: photoPaths,
@@ -370,14 +370,14 @@ export default function PartnerOnboardingForm({
                 ))}
               </datalist>
             </Field>
-            <Field label="Price per day (KES)">
+            <Field label="Price per day (USD)">
               <input
                 type="number"
                 min={1}
-                step={100}
+                step={1}
                 value={pricePerDay}
                 onChange={(e) => setPricePerDay(e.target.value)}
-                placeholder="e.g. 4500"
+                placeholder="e.g. 35"
                 {...fieldProps(unitFieldErrors.pricePerDay ? "reject" : undefined, INPUT_CLASS)}
               />
             </Field>
