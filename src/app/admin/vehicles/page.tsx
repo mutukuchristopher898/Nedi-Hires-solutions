@@ -1,21 +1,11 @@
-import Image from "next/image";
 import Link from "next/link";
-import VehicleLifecycleActions from "@/components/admin/VehicleLifecycleActions";
+import VehicleList from "@/components/admin/VehicleList";
 import { requireRole } from "@/lib/supabase/authz";
 import { getAdminVehicles, getVehiclePartnerNames, getVehicleLocations, getOptions } from "@/lib/supabase/queries";
-import { publicVehiclePhotoUrl } from "@/lib/supabase/vehiclePhotos";
-import { formatMoney, classifications } from "@/lib/data";
+import { classifications } from "@/lib/data";
 import type { VehicleLifecycle } from "@/lib/supabase/queries";
 
 const LIFECYCLES: VehicleLifecycle[] = ["pending", "live", "hidden", "rejected", "archived"];
-
-const LIFECYCLE_STYLES: Record<VehicleLifecycle, string> = {
-  pending: "bg-amber/10 text-amber ring-1 ring-amber/30",
-  live: "bg-emerald/10 text-emerald-dark ring-1 ring-emerald/30",
-  hidden: "bg-midnight/5 text-midnight/60 ring-1 ring-midnight/10",
-  rejected: "bg-red-500/10 text-red-600 ring-1 ring-red-500/30",
-  archived: "bg-midnight/5 text-midnight/40 ring-1 ring-midnight/10",
-};
 
 type Params = {
   status?: string;
@@ -143,69 +133,12 @@ export default async function AdminVehiclesPage({ searchParams }: { searchParams
             {lastPage > 1 ? ` · page ${page} of ${lastPage}` : ""}
           </p>
 
-          <div className="mt-4 space-y-3">
-            {vehicles.map((v) => (
-              <article key={v.id} className="flex flex-wrap gap-4 rounded-2xl bg-white p-4 ring-1 ring-line">
-                {v.photoPaths.length > 0 ? (
-                  <Image
-                    src={publicVehiclePhotoUrl(v.photoPaths[0])}
-                    alt=""
-                    width={128}
-                    height={96}
-                    className="h-24 w-32 shrink-0 rounded-lg object-cover"
-                  />
-                ) : (
-                  <div className="flex h-24 w-32 shrink-0 items-center justify-center rounded-lg bg-midnight/5 text-xs text-midnight/40">
-                    No photo
-                  </div>
-                )}
-
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Link
-                      href={`/admin/vehicles/${v.id}`}
-                      className="font-semibold text-midnight hover:text-gold-dark"
-                    >
-                      {v.make} {v.model} {v.year}
-                    </Link>
-                    <span
-                      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${LIFECYCLE_STYLES[v.lifecycle]}`}
-                    >
-                      {v.lifecycle}
-                    </span>
-                    {v.isDemo && (
-                      <span className="rounded-full bg-amber/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber">
-                        illustrative
-                      </span>
-                    )}
-                  </div>
-                  <p className="mt-1 text-sm text-midnight/60">
-                    {v.licensePlate} · {v.classification} · {v.transmission} · {v.location}
-                  </p>
-                  <p className="mt-1 text-sm text-midnight/70">
-                    {v.partnerName ?? <span className="text-midnight/40">No partner</span>} ·{" "}
-                    <span className="font-medium text-midnight">
-                      {formatMoney(v.pricePerDay, v.currency)}/day
-                    </span>
-                  </p>
-                  {v.rejectionReason && (
-                    <p className="mt-2 rounded-md bg-red-500/5 px-2 py-1 text-xs text-red-600">
-                      Rejected: {v.rejectionReason}
-                    </p>
-                  )}
-                </div>
-
-                <VehicleLifecycleActions
-                  id={v.id}
-                  label={`${v.make} ${v.model}`}
-                  lifecycle={v.lifecycle}
-                  hasPhoto={v.photoPaths.length > 0}
-                  canManage={role === "admin"}
-                  rejectionReasons={rejectionReasons}
-                />
-              </article>
-            ))}
-          </div>
+          <VehicleList
+            vehicles={vehicles}
+            canManage={role === "admin"}
+            rejectionReasons={rejectionReasons}
+            locations={locations}
+          />
 
           {lastPage > 1 && (
             <nav aria-label="Vehicle pages" className="mt-6 flex items-center justify-between gap-4">
