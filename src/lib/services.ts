@@ -117,7 +117,7 @@ export const SERVICES: Service[] = [
     summary: "Purpose built 4x4s with pop up roofs for game drives and coastal excursions.",
     promise: "Built for the road that isn't a road.",
     intro:
-      "Purpose built 4×4s with pop up roofs, driven by guides who know which gate to use and when the light is right.",
+      "Purpose built 4x4s with pop up roofs, driven by guides who know which gate to use and when the light is right.",
     points: [
       "Landcruisers and safari vans with pop up viewing roofs",
       "Park experienced driver guides",
