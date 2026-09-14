@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import VehicleForm from "@/components/admin/VehicleForm";
 import VehicleLifecycleActions from "@/components/admin/VehicleLifecycleActions";
 import VehicleDeleteButton from "@/components/admin/VehicleDeleteButton";
+import VehicleDocumentReview from "@/components/admin/VehicleDocumentReview";
 import AuditChanges from "@/components/admin/AuditChanges";
 import { requireRole } from "@/lib/supabase/authz";
 import { publicVehiclePhotoUrl } from "@/lib/supabase/vehiclePhotos";
@@ -13,6 +14,7 @@ import {
   getPartnerOptions,
   getAuditLog,
   getOptions,
+  getVehicleDocuments,
   type VehicleLifecycle,
 } from "@/lib/supabase/queries";
 
@@ -40,13 +42,17 @@ export default async function EditVehiclePage({ params }: { params: Promise<{ id
   const { role } = await requireRole(["staff", "admin"], "/admin/vehicles");
   const { id } = await params;
 
-  const [vehicle, partners, featureOptions, locationOptions, rejectionReasons] = await Promise.all([
-    getAdminVehicleById(id),
-    getPartnerOptions(),
-    getOptions("vehicle_feature"),
-    getOptions("pickup_location"),
-    getOptions("vehicle_rejection_reason"),
-  ]);
+  const [vehicle, partners, featureOptions, locationOptions, rejectionReasons, documents, expectedDocTypes, docReasons] =
+    await Promise.all([
+      getAdminVehicleById(id),
+      getPartnerOptions(),
+      getOptions("vehicle_feature"),
+      getOptions("pickup_location"),
+      getOptions("vehicle_rejection_reason"),
+      getVehicleDocuments(id),
+      getOptions("vehicle_document_type"),
+      getOptions("vehicle_document_rejection_reason"),
+    ]);
   if (!vehicle) notFound();
 
   // Recent activity for this record, which is the question an operator
@@ -135,6 +141,22 @@ export default async function EditVehiclePage({ params }: { params: Promise<{ id
             ))}
           </div>
         )}
+      </section>
+
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold text-midnight">Documentation</h2>
+        <p className="mt-1 text-sm text-midnight/60">
+          Paperwork the partner uploaded for this vehicle. Returning one lets them replace it;
+          rejecting is a decision about the document itself.
+        </p>
+        <div className="mt-4">
+          <VehicleDocumentReview
+            documents={documents}
+            expectedTypes={expectedDocTypes}
+            reasons={docReasons}
+            canReview={role === "admin"}
+          />
+        </div>
       </section>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
@@ -278,6 +300,7 @@ export default async function EditVehiclePage({ params }: { params: Promise<{ id
             label={vehicle.licensePlate}
             bookingCount={vehicle.bookingCount}
             photoPaths={vehicle.photoPaths}
+            documentPaths={documents.map((d) => d.filePath)}
             canManage={role === "admin"}
           />
         </div>

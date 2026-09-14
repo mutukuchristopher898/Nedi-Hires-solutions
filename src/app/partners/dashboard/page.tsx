@@ -1,7 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { requireRole } from "@/lib/supabase/authz";
-import { getMyPartnerAccount, getMyPartnerVehicles } from "@/lib/supabase/queries";
+import {
+  getMyPartnerAccount,
+  getMyPartnerVehicles,
+  getPartnerVehicleDocuments,
+  getOptions,
+} from "@/lib/supabase/queries";
+import VehicleDocumentsPanel from "@/components/partners/VehicleDocumentsPanel";
 import { formatMoney } from "@/lib/data";
 import { publicVehiclePhotoUrl } from "@/lib/supabase/vehiclePhotos";
 import type { ApprovalStatus } from "@/lib/types";
@@ -44,6 +50,20 @@ export default async function PartnerDashboardPage() {
   }
 
   const vehicles = await getMyPartnerVehicles(partner.id);
+
+  // Both tolerate the table not existing yet, so the dashboard keeps working
+  // in the window between this deploying and the migration being applied.
+  const [documentsByVehicle, expectedDocTypes] = await Promise.all([
+    getPartnerVehicleDocuments(vehicles.map((v) => v.id)),
+    getOptions("vehicle_document_type"),
+  ]);
+
+  const needingDocuments = vehicles.filter((v) => {
+    const held = new Set(
+      (documentsByVehicle.get(v.id) ?? []).filter((d) => d.status !== "rejected").map((d) => d.docType)
+    );
+    return expectedDocTypes.some((t) => !held.has(t));
+  }).length;
   const live = vehicles.filter((v) => v.approvalStatus === "approved").length;
   const pending = vehicles.filter((v) => v.approvalStatus === "pending").length;
   const rejected = vehicles.filter((v) => v.approvalStatus === "rejected").length;
@@ -67,6 +87,14 @@ export default async function PartnerDashboardPage() {
           List another vehicle
         </Link>
       </div>
+
+      {needingDocuments > 0 && (
+        <p className="mt-6 rounded-md bg-amber/10 px-4 py-3 text-sm text-amber">
+          {needingDocuments} of your vehicle{needingDocuments === 1 ? " is" : "s are"} missing
+          paperwork. Open <strong>Documents</strong> on each one below to send us the logbook,
+          insurance and inspection certificate.
+        </p>
+      )}
 
       {partner.status === "pending" && (
         <p className="mt-6 rounded-md bg-amber/10 px-4 py-3 text-sm text-amber">
@@ -133,6 +161,13 @@ export default async function PartnerDashboardPage() {
                     This vehicle needs at least one photograph before it can be approved.
                   </p>
                 )}
+
+                <VehicleDocumentsPanel
+                  vehicleId={v.id}
+                  vehicleLabel={`${v.make} ${v.model}`}
+                  documents={documentsByVehicle.get(v.id) ?? []}
+                  expectedTypes={expectedDocTypes}
+                />
               </div>
             </article>
           ))}

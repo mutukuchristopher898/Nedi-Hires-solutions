@@ -1301,3 +1301,193 @@ export async function getAllOptions(): Promise<AdminOption[]> {
     active: row.active,
   }));
 }
+
+// ─────────────────────────────────────────────────────────────
+// Vehicle documents
+// ─────────────────────────────────────────────────────────────
+
+export type VehicleDocumentStatus = "pending" | "approved" | "rejected" | "returned";
+
+export interface VehicleDocument {
+  id: string;
+  vehicleId: string;
+  docType: string;
+  filePath: string;
+  /** Null when signing failed; the row is still listed, just without a preview. */
+  signedUrl: string | null;
+  status: VehicleDocumentStatus;
+  expiresAt: string | null;
+  reviewReason: string | null;
+  reviewedAt: string | null;
+  submittedAt: string;
+}
+
+interface VehicleDocumentRow {
+  id: string;
+  vehicle_id: string;
+  doc_type: string;
+  file_path: string;
+  status: VehicleDocumentStatus;
+  expires_at: string | null;
+  review_reason: string | null;
+  reviewed_at: string | null;
+  submitted_at: string;
+}
+
+const VEHICLE_DOCUMENT_COLUMNS =
+  "id, vehicle_id, doc_type, file_path, status, expires_at, review_reason, reviewed_at, submitted_at";
+
+/**
+ * Signs a batch of vehicle-document paths in one request.
+ *
+ * Deliberately tolerant on every axis: the bucket is private, so a path is
+ * useless to a browser, but a failure to sign should cost the previews and
+ * not the page — the paperwork is still listed and reviewable by its type,
+ * status and dates. Mirrors getPendingDocuments.
+ */
+async function signVehicleDocuments(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  paths: string[]
+): Promise<Map<string, string>> {
+  const signed = new Map<string, string>();
+  if (paths.length === 0) return signed;
+
+  const { data } = await supabase.storage
+    .from("vehicle-documents")
+    .createSignedUrls(paths, 60 * 60)
+    .catch(() => ({ data: null }));
+
+  for (const entry of data ?? []) {
+    if (entry.path && entry.signedUrl && !entry.error) {
+      signed.set(entry.path, entry.signedUrl);
+    }
+  }
+  return signed;
+}
+
+function toVehicleDocument(row: VehicleDocumentRow, signed: Map<string, string>): VehicleDocument {
+  return {
+    id: row.id,
+    vehicleId: row.vehicle_id,
+    docType: row.doc_type,
+    filePath: row.file_path,
+    signedUrl: signed.get(row.file_path) ?? null,
+    status: row.status,
+    expiresAt: row.expires_at,
+    reviewReason: row.review_reason,
+    reviewedAt: row.reviewed_at,
+    submittedAt: row.submitted_at,
+  };
+}
+
+/**
+ * The paperwork for one vehicle.
+ *
+ * Returns an empty list rather than throwing when the table is not there yet.
+ * Deploys and hand-pasted migrations are never simultaneous, and a vehicle
+ * screen that 500s in the gap is worse than one briefly showing no documents.
+ */
+export async function getVehicleDocuments(vehicleId: string): Promise<VehicleDocument[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("vehicle_documents")
+    .select(VEHICLE_DOCUMENT_COLUMNS)
+    .eq("vehicle_id", vehicleId)
+    .order("submitted_at", { ascending: false });
+
+  if (error || !data) return [];
+
+  const rows = data as unknown as VehicleDocumentRow[];
+  const signed = await signVehicleDocuments(supabase, rows.map((r) => r.file_path));
+  return rows.map((row) => toVehicleDocument(row, signed));
+}
+
+export interface VehicleDocumentAlert extends VehicleDocument {
+  vehicleLabel: string;
+  licensePlate: string;
+}
+
+/**
+ * Documents needing attention across the whole fleet: anything awaiting
+ * review, and any approved document that has expired or is about to.
+ *
+ * An expired insurance certificate is the one that matters — it means a
+ * vehicle is bookable today that should not be — so it is surfaced on the
+ * dashboard rather than waiting to be found on a vehicle page.
+ */
+export async function getVehicleDocumentAlerts(
+  expiryWindowDays = 30
+): Promise<{ pending: VehicleDocumentAlert[]; expiring: VehicleDocumentAlert[]; expired: VehicleDocumentAlert[] }> {
+  const empty = { pending: [], expiring: [], expired: [] };
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("vehicle_documents")
+    .select(`${VEHICLE_DOCUMENT_COLUMNS}, vehicles(make, model, year, license_plate)`)
+    .in("status", ["pending", "approved"])
+    .order("submitted_at", { ascending: false })
+    .limit(500);
+
+  if (error || !data) return empty;
+
+  const rows = data as unknown as (VehicleDocumentRow & {
+    vehicles?: { make: string; model: string; year: number; license_plate: string } | null;
+  })[];
+
+  const signed = await signVehicleDocuments(supabase, rows.map((r) => r.file_path));
+
+  const alerts: VehicleDocumentAlert[] = rows.map((row) => ({
+    ...toVehicleDocument(row, signed),
+    vehicleLabel: row.vehicles
+      ? `${row.vehicles.make} ${row.vehicles.model} ${row.vehicles.year}`
+      : "Unknown vehicle",
+    licensePlate: row.vehicles?.license_plate ?? "",
+  }));
+
+  // Compared at UTC midnight on both sides so "expires today" is not decided
+  // by what time the page happens to be rendered.
+  const today = new Date().setUTCHours(0, 0, 0, 0);
+  const daysUntil = (date: string) =>
+    Math.round((new Date(`${date}T00:00:00Z`).getTime() - today) / 86_400_000);
+
+  return {
+    pending: alerts.filter((d) => d.status === "pending"),
+    expired: alerts.filter(
+      (d) => d.status === "approved" && d.expiresAt && daysUntil(d.expiresAt) < 0
+    ),
+    expiring: alerts.filter(
+      (d) =>
+        d.status === "approved" &&
+        d.expiresAt &&
+        daysUntil(d.expiresAt) >= 0 &&
+        daysUntil(d.expiresAt) <= expiryWindowDays
+    ),
+  };
+}
+
+/** Every document belonging to a partner's own vehicles, for their dashboard. */
+export async function getPartnerVehicleDocuments(
+  vehicleIds: string[]
+): Promise<Map<string, VehicleDocument[]>> {
+  const byVehicle = new Map<string, VehicleDocument[]>();
+  if (vehicleIds.length === 0) return byVehicle;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("vehicle_documents")
+    .select(VEHICLE_DOCUMENT_COLUMNS)
+    .in("vehicle_id", vehicleIds)
+    .order("submitted_at", { ascending: false });
+
+  if (error || !data) return byVehicle;
+
+  const rows = data as unknown as VehicleDocumentRow[];
+  const signed = await signVehicleDocuments(supabase, rows.map((r) => r.file_path));
+
+  for (const row of rows) {
+    const list = byVehicle.get(row.vehicle_id) ?? [];
+    list.push(toVehicleDocument(row, signed));
+    byVehicle.set(row.vehicle_id, list);
+  }
+  return byVehicle;
+}

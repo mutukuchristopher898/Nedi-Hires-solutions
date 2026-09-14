@@ -23,12 +23,14 @@ export default function VehicleDeleteButton({
   label,
   bookingCount,
   photoPaths,
+  documentPaths,
   canManage,
 }: {
   id: string;
   label: string;
   bookingCount: number;
   photoPaths: string[];
+  documentPaths: string[];
   canManage: boolean;
 }) {
   const router = useRouter();
@@ -90,6 +92,11 @@ export default function VehicleDeleteButton({
     if (photoPaths.length > 0) {
       await supabase.storage.from("vehicle-photos").remove(photoPaths);
     }
+    // The document rows went with the vehicle via ON DELETE CASCADE, but the
+    // files they pointed at are storage objects and cascade nothing.
+    if (documentPaths.length > 0) {
+      await supabase.storage.from("vehicle-documents").remove(documentPaths);
+    }
 
     router.push("/admin/vehicles");
     router.refresh();
@@ -101,7 +108,7 @@ export default function VehicleDeleteButton({
         <p className="text-sm font-medium text-midnight">Delete {label} permanently?</p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-midnight/70">
           <li>The vehicle record is removed from the database and cannot be recovered</li>
-          <li>Its photographs are deleted from storage</li>
+          <li>Its photographs and uploaded documents are deleted from storage</li>
           <li>It disappears from the partner&apos;s dashboard without explanation</li>
         </ul>
         <p className="mt-3 text-xs text-midnight/60">

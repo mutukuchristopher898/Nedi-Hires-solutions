@@ -12,7 +12,9 @@ export type OptionList =
   | "vehicle_feature"
   | "vehicle_rejection_reason"
   | "document_rejection_reason"
-  | "document_type";
+  | "document_type"
+  | "vehicle_document_type"
+  | "vehicle_document_rejection_reason";
 
 export const OPTION_LIST_LABELS: Record<OptionList, string> = {
   pickup_location: "Pickup locations",
@@ -20,6 +22,8 @@ export const OPTION_LIST_LABELS: Record<OptionList, string> = {
   vehicle_rejection_reason: "Vehicle rejection reasons",
   document_rejection_reason: "Document rejection reasons",
   document_type: "Document types",
+  vehicle_document_type: "Vehicle document types",
+  vehicle_document_rejection_reason: "Vehicle document rejection reasons",
 };
 
 export const OPTION_LIST_HINTS: Record<OptionList, string> = {
@@ -28,6 +32,8 @@ export const OPTION_LIST_HINTS: Record<OptionList, string> = {
   vehicle_rejection_reason: "Preset reasons when turning down a submitted vehicle.",
   document_rejection_reason: "Preset reasons when rejecting or returning an identity document.",
   document_type: "Kinds of identity document a customer can submit.",
+  vehicle_document_type: "Paperwork a partner must supply for each vehicle — logbook, insurance, inspection.",
+  vehicle_document_rejection_reason: "Preset reasons when rejecting or returning a vehicle document.",
 };
 
 export const OPTION_LIST_FALLBACKS: Record<OptionList, string[]> = {
@@ -62,6 +68,15 @@ export const OPTION_LIST_FALLBACKS: Record<OptionList, string[]> = {
     "Other",
   ],
   document_type: ["International Passport", "Driver's License", "National ID"],
+  vehicle_document_type: ["Logbook", "Insurance Certificate", "Inspection Certificate", "PSV Licence"],
+  vehicle_document_rejection_reason: [
+    "Document is unreadable — please upload a clearer scan",
+    "Expired — please upload a current certificate",
+    "Registration does not match the vehicle listed",
+    "Name on the document does not match the partner account",
+    "Wrong document type for this slot",
+    "Pages are missing",
+  ],
 };
 
 export const ALL_OPTION_LISTS = Object.keys(OPTION_LIST_LABELS) as OptionList[];
