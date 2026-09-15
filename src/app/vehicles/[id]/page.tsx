@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import VehiclePhoto from "@/components/VehiclePhoto";
+import VehicleStatus from "@/components/VehicleStatus";
 import { formatMoney, formatClassification } from "@/lib/data";
 import { getApprovedVehicleBySlug } from "@/lib/supabase/queries";
 
@@ -20,7 +21,7 @@ export async function generateMetadata({
   }
 
   const title = `${vehicle.make} ${vehicle.model} ${vehicle.year}`;
-  const description = `Hire a ${vehicle.year} ${vehicle.make} ${vehicle.model} in ${vehicle.location} ${formatClassification(vehicle.classification)}, ${vehicle.transmission}, ${vehicle.fuelType}, seats ${vehicle.capacity}. Self drive or chauffeur driven.`;
+  const description = `Hire a ${vehicle.year} ${vehicle.make} ${vehicle.model}, ${formatClassification(vehicle.classification)}, ${vehicle.transmission}, ${vehicle.fuelType}, seats ${vehicle.capacity}. Self drive or chauffeur driven.`;
 
   return {
     title,
@@ -91,7 +92,9 @@ export default async function VehicleDetailPage({
               you what is actually available for your dates.
             </p>
           )}
-          <p className="mt-1 text-sm text-midnight/60">{vehicle.location}</p>
+          <div className="mt-2">
+            <VehicleStatus status={vehicle.status} />
+          </div>
           <p className="mt-4 max-w-2xl text-sm text-midnight/70">{vehicle.description}</p>
 
           <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">

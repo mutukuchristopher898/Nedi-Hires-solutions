@@ -17,7 +17,7 @@ export default function ContactPage() {
           <p className="text-xs font-medium uppercase tracking-wide text-gold">Contact Support</p>
           <h1 className="mt-2 max-w-xl text-3xl font-bold sm:text-4xl">We&apos;re here to help.</h1>
           <p className="mt-3 max-w-lg text-sm text-white/70">
-            Reach us for booking help, custom tour quotes, corporate accounts, or partner
+            Reach us for booking help, custom tour quotes, corporate accounts, or fleet
             enquiries.
           </p>
         </div>
@@ -31,8 +31,8 @@ export default function ContactPage() {
             href={site.whatsappHref}
             note="Fastest response, usually within minutes during business hours."
           />
-          <ContactCard title="Email" value={site.email} href={`mailto:${site.email}`} note="For quotes, invoices, and partner enquiries." />
-          <ContactCard title="Location" value={site.location} note="Vehicle handoff and pickup points across Nairobi and partner cities." />
+          <ContactCard title="Email" value={site.email} href={`mailto:${site.email}`} note="For quotes, invoices and account enquiries." />
+          <ContactCard title="Location" value={site.location} note="Vehicle handover and pickup points across Nairobi and beyond." />
         </div>
 
         <ContactForm />

@@ -19,11 +19,11 @@ const SECTIONS = [
   },
   {
     title: "3. Identity Documents",
-    body: "Passport, driver's license, and national ID images submitted during booking are used only for verification and are shared only with the admin team or the specific partner fulfilling your booking.",
+    body: "Passport, driver's license, and national ID images submitted during booking are used only for verification and are shared only with our team and, where a vehicle is supplied by another operator, with that operator for the sole purpose of releasing the vehicle to you.",
   },
   {
-    title: "4. Sharing With Partners",
-    body: "When you book a partner listed vehicle, relevant booking details are shared with that partner to coordinate handoff and support, never sold to unrelated third parties.",
+    title: "4. Who Else Sees It",
+    body: "Where a vehicle is supplied by another operator, the booking details needed to hand the vehicle over are shared with them. Nothing is ever sold to unrelated third parties.",
   },
   {
     title: "5. Data Retention",

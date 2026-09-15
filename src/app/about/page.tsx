@@ -38,7 +38,7 @@ const PIPELINE = [
   {
     step: "02",
     title: "Identity Verification",
-    copy: "Upload a passport, driver's licence or national ID. Our team and the vehicle partner review it before the vehicle is released. This is why the cars on our platform don't disappear.",
+    copy: "Upload a passport, driver's licence or national ID. Our team reviews it before the vehicle is released. This is why the cars on our platform don't disappear.",
   },
   {
     step: "03",

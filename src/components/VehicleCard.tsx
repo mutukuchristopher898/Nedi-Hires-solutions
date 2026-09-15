@@ -3,6 +3,7 @@ import type { VehicleListing } from "@/lib/types";
 import { formatMoney } from "@/lib/data";
 import VehiclePhoto from "./VehiclePhoto";
 import DemoTag from "./DemoTag";
+import VehicleStatus from "./VehicleStatus";
 
 export default function VehicleCard({ vehicle }: { vehicle: VehicleListing }) {
   return (
@@ -38,7 +39,7 @@ export default function VehicleCard({ vehicle }: { vehicle: VehicleListing }) {
         <h3 className="text-base font-semibold text-midnight group-hover:text-gold">
           {vehicle.make} {vehicle.model}
         </h3>
-        <p className="text-xs text-midnight/60">{vehicle.location}</p>
+        <VehicleStatus status={vehicle.status} className="self-start" />
 
         <div className="mt-1 flex flex-wrap gap-1.5 text-xs text-midnight/60">
           <span>{vehicle.transmission}</span>

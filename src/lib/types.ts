@@ -282,11 +282,23 @@ export interface VehicleListing {
   imageKey: string;
   partnerName: string | null;
   isDemo: boolean;
+  /**
+   * What the card shows where the location used to be.
+   *
+   * "unavailable" is only ever reached when the customer searched with dates,
+   * because without them there is nothing to be unavailable for. "verified"
+   * means the vehicle's own paperwork has been approved, which is a stronger
+   * statement than "we list it" and is worth saying when it is true.
+   */
+  status: "available" | "verified" | "unavailable";
   rates: PricingRates;
 }
 
 export interface VehicleFilters {
   location?: string;
+  /** ISO dates. When both are given, availability is worked out for real. */
+  pickup?: string;
+  returnDate?: string;
   classification?: VehicleClassification;
   fuelType?: FuelType;
   transmission?: Transmission;

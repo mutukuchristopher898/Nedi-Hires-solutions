@@ -23,7 +23,7 @@ const SECTIONS = [
   },
   {
     title: "3. Payments & Deposits",
-    body: `Reservation deposits, remaining rental balances, and refundable security deposits are processed through ${site.name}'s payment partners. Prices are quoted and charged in US dollars.`,
+    body: `Reservation deposits, remaining rental balances, and refundable security deposits are processed through ${site.name}'s payment providers. Prices are quoted and charged in US dollars.`,
   },
   {
     title: "4. Whose Vehicle You Are Hiring",

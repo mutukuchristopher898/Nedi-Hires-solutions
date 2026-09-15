@@ -116,18 +116,15 @@ export default async function Home() {
         <div className="grid gap-6 rounded-2xl bg-midnight p-8 text-white sm:grid-cols-2 sm:items-center lg:p-12">
           <div>
             <h2 className="text-2xl font-bold">Own a vehicle? Put it to work.</h2>
+            {/* The route is still /partners/onboarding and the word is
+                deliberately absent from the copy: customers are not shown a
+                two tier fleet, so nothing here should hint at one. */}
             <p className="mt-2 text-sm text-white/70">
-              List your unit through our Managed Leasing Program or self service partner
-              dashboard. Every submission passes an admin approval queue before it goes live.
+              Tell us about your vehicle and we&apos;ll put it in front of customers. Every
+              submission is checked, and its paperwork reviewed, before it goes live.
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-            <Link
-              href="/partners"
-              className="rounded-md border border-white/20 px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-white/10"
-            >
-              Learn About Partnering
-            </Link>
             <Link
               href="/partners/onboarding"
               className="rounded-md bg-emerald px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-emerald-dark"

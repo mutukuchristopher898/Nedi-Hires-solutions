@@ -12,9 +12,9 @@ import {
 
 export const metadata: Metadata = {
   title: "Book a Car",
-  description: "Search verified self drive and chauffeur driven vehicles across Kenya, filter by location, dates, vehicle type, fuel and transmission.",
+  description: "Search verified self drive and chauffeur driven vehicles across Kenya, filter by dates, vehicle type, fuel and transmission.",
   alternates: { canonical: "/search" },
-  openGraph: { title: "Book a Car", description: "Search verified self drive and chauffeur driven vehicles across Kenya, filter by location, dates, vehicle type, fuel and transmission.", url: "/search" },
+  openGraph: { title: "Book a Car", description: "Search verified self drive and chauffeur driven vehicles across Kenya, filter by dates, vehicle type, fuel and transmission.", url: "/search" },
 };
 
 type SearchParams = {
@@ -45,8 +45,13 @@ export default async function SearchPage({
 
   // Approved vehicles, filtered in the database. This is live inventory now:
   // what a partner lists and an admin approves appears here.
+  // Location is no longer a filter. It described where a vehicle sits, and we
+  // source vehicles rather than park them at branches, so filtering on it hid
+  // cars we would happily have brought to the customer. It stays in the URL
+  // because it is the pickup point the booking flow pre fills.
   const { vehicles: results, total } = await getApprovedVehicles({
-    location,
+    pickup: params.pickup,
+    returnDate: params.return,
     classification,
     fuelType: fuel,
     transmission,
@@ -121,7 +126,7 @@ export default async function SearchPage({
           <div className="mb-5 flex items-center justify-between">
             <p className="text-sm text-midnight/60">
               {total} vehicle{total === 1 ? "" : "s"} available
-              {location ? ` at ${location}` : ""}
+              {location ? ` for pickup at ${location}` : ""}
               {lastPage > 1 ? ` · page ${page} of ${lastPage}` : ""}
             </p>
           </div>
@@ -134,7 +139,7 @@ export default async function SearchPage({
                 {page > 1
                   ? "There are no vehicles on this page."
                   : hasSearched
-                    ? "Nothing available for those dates in this category. Try shifting your dates by a day, or message us on WhatsApp, we often have partner vehicles that aren't listed yet."
+                    ? "Nothing available for those dates in this category. Try shifting your dates by a day, or message us on WhatsApp, we can often source a vehicle that isn't listed yet."
                     : "No vehicles are listed yet."}
               </p>
               {page > 1 ? (
