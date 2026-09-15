@@ -45,7 +45,7 @@ const SECTIONS = [
 // is also the brief for whoever completes them.
 const MISSING = [
   "Who you are contracting with — registered company name, registration number, KRA PIN and registered address",
-  "Insurance: what cover the partner's policy provides, the excess a renter is liable for, and what voids it",
+  "Insurance: what cover the supplying operator's policy provides, the excess a renter is liable for, and what voids it",
   "Concrete cancellation and refund terms — notice periods and what percentage is returned at each",
   "Driver requirements: minimum age, minimum licence held period, and whether foreign or international licences are accepted",
   "Mileage limits, permitted geographic area, and whether cross-border travel is allowed",
