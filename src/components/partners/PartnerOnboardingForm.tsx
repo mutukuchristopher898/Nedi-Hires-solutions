@@ -466,7 +466,7 @@ export default function PartnerOnboardingForm({
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link
-              href="/partners/dashboard"
+              href="/my-vehicles"
               className="rounded-md bg-midnight px-5 py-3 text-sm font-semibold text-white transition hover:bg-charcoal"
             >
               Go to Partner Dashboard

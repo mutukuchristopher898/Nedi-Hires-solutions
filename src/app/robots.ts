@@ -10,7 +10,7 @@ export default function robots(): MetadataRoute.Robots {
       // crawler. /admin and /booking are already role- and session-protected;
       // this stops them being crawled and surfaced, it is not the access
       // control.
-      disallow: ["/admin", "/account", "/booking", "/partners/dashboard", "/api"],
+      disallow: ["/admin", "/account", "/booking", "/my-vehicles", "/api"],
     },
     sitemap: `${site.url}/sitemap.xml`,
   };

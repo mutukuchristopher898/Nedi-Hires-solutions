@@ -151,7 +151,7 @@ export default async function SearchPage({
                 </Link>
               ) : (
                 <Link
-                  href="/partners/onboarding"
+                  href="/list-your-vehicle/start"
                   className="mt-3 inline-block text-sm font-semibold text-gold-dark hover:text-gold"
                 >
                   Have a vehicle to hire out? List it &rarr;

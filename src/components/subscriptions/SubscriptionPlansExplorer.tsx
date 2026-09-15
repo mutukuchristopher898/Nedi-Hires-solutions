@@ -144,7 +144,7 @@ export default function SubscriptionPlansExplorer({ plans }: { plans: Subscripti
             Larger fleets get a custom quote tailored to how many vehicles you&apos;re listing.
           </p>
           <Link
-            href="/partners/quote"
+            href="/fleet-quote"
             className="mt-4 inline-block rounded-md bg-emerald px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-dark"
           >
             Request a Custom Quote

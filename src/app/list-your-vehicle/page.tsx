@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getPartnerNetwork } from "@/lib/supabase/queries";
 
 
 export const metadata: Metadata = {
-  title: "Become a Partner",
+  title: "List Your Vehicle",
   description: "List your vehicle with Nedi Hires Solutions, register your business or host profile and reach verified customers across Kenya.",
-  alternates: { canonical: "/partners" },
-  openGraph: { title: "Become a Partner", description: "List your vehicle with Nedi Hires Solutions, register your business or host profile and reach verified customers across Kenya.", url: "/partners" },
+  alternates: { canonical: "/list-your-vehicle" },
+  openGraph: { title: "List Your Vehicle", description: "List your vehicle with Nedi Hires Solutions, register your business or host profile and reach verified customers across Kenya.", url: "/list-your-vehicle" },
 };
 
 const STEPS = [
@@ -36,41 +35,40 @@ const CHANNELS = [
   },
 ];
 
-export default async function PartnersPage() {
-  const network = await getPartnerNetwork();
+export default function ListYourVehiclePage() {
   return (
     <div>
       <section className="bg-midnight py-16 text-white">
         <div className="container-shell">
-          <p className="text-xs font-medium uppercase tracking-wide text-emerald">For Partners</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-emerald">For Vehicle Owners</p>
           <h1 className="mt-2 max-w-xl text-3xl font-bold sm:text-4xl">
             Decentralized inventory scaling, under centralized quality control.
           </h1>
           <p className="mt-3 max-w-lg text-sm text-white/70">
             Individual vehicle owners, commercial fleet operators, and tourism transit
-            providers can all list inventory through a self service partner dashboard.
+            providers can all list inventory through a self service dashboard.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
-              href="/partners/onboarding"
+              href="/list-your-vehicle/start"
               className="rounded-md bg-emerald px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-dark"
             >
               Start Onboarding
             </Link>
             <Link
-              href="/partners/dashboard"
+              href="/my-vehicles"
               className="rounded-md border border-white/20 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
             >
-              View Partner Dashboard
+              Go to My Vehicles
             </Link>
           </div>
           <p className="mt-4 text-sm text-white/60">
-            Partners get their own subscription tier {" "}
+            Vehicle owners get their own subscription tier {" "}
             <Link href="/subscriptions" className="underline hover:text-white">
-              see partner pricing
+              see owner pricing
             </Link>
             , or{" "}
-            <Link href="/partners/quote" className="underline hover:text-white">
+            <Link href="/fleet-quote" className="underline hover:text-white">
               request a custom quote
             </Link>{" "}
             if you&apos;re listing a larger fleet.
@@ -105,28 +103,6 @@ export default async function PartnersPage() {
         </div>
       </section>
 
-      {network.length > 0 && (
-      <section className="container-shell py-14">
-        <h2 className="text-2xl font-bold text-midnight">Our Current Partner Network</h2>
-        <p className="mt-1 text-sm text-midnight/60">
-          Fleet operators and tour agencies already listing verified vehicles with us.
-        </p>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {network.map((name) => (
-            <div key={name} className="flex items-center gap-3 rounded-xl bg-white p-4 ring-1 ring-line">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold/10 text-sm font-bold text-gold-dark">
-                {name
-                  .split(" ")
-                  .slice(0, 2)
-                  .map((w) => w[0])
-                  .join("")}
-              </span>
-              <span className="text-sm font-medium text-midnight">{name}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-      )}
     </div>
   );
 }

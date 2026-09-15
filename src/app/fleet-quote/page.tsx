@@ -10,7 +10,7 @@ import { validatePhoneNumber } from "@/lib/documentValidation/phoneValidation";
 import { fieldProps, FormError } from "@/components/forms/shared";
 import { RATE_LIMITED_MESSAGE } from "@/lib/bookingErrors";
 
-export default function PartnerQuotePage() {
+export default function OwnerQuotePage() {
   const { user, profile, ready } = useAuth();
   const [businessName, setBusinessName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
@@ -77,10 +77,10 @@ export default function PartnerQuotePage() {
           shortly.
         </p>
         <Link
-          href="/partners/dashboard"
+          href="/my-vehicles"
           className="mt-6 inline-block rounded-md bg-midnight px-5 py-3 text-sm font-semibold text-white transition hover:bg-charcoal"
         >
-          Go to Partner Dashboard
+          Go to My Vehicles
         </Link>
       </div>
     );
@@ -90,7 +90,7 @@ export default function PartnerQuotePage() {
     <div className="container-shell max-w-lg py-14">
       <h1 className="text-2xl font-bold text-midnight">Request a Custom Quote</h1>
       <p className="mt-1 text-sm text-midnight/60">
-        For partners listing more vehicles than our standard tier covers, tell us about your
+        For operators listing more vehicles than our standard tier covers, tell us about your
         fleet and we&apos;ll follow up with pricing.
       </p>
 

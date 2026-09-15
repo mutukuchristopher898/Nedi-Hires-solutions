@@ -24,32 +24,32 @@ const STATUS_LABELS: Record<ApprovalStatus, string> = {
   rejected: "Rejected",
 };
 
-export default async function PartnerDashboardPage() {
-  await requireRole(["partner", "admin"], "/partners/dashboard");
+export default async function OwnerDashboardPage() {
+  await requireRole(["partner", "admin"], "/my-vehicles");
 
-  const partner = await getMyPartnerAccount();
+  const operator = await getMyPartnerAccount();
 
   // An admin without a partner account of their own, or a partner whose row
   // vanished. Either way there is nothing to show but the way in.
-  if (!partner) {
+  if (!operator) {
     return (
       <div className="container-shell max-w-lg py-16 text-center">
-        <h1 className="text-2xl font-bold text-midnight">Partner Dashboard</h1>
+        <h1 className="text-2xl font-bold text-midnight">My Vehicles</h1>
         <p className="mt-2 text-sm text-midnight/60">
-          You don&apos;t have a partner account yet. Register your business to list your first
+          You haven&apos;t registered yet. Tell us about your business to list your first
           vehicle.
         </p>
         <Link
-          href="/partners/onboarding"
+          href="/list-your-vehicle/start"
           className="mt-6 inline-block rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
         >
-          Register as a Partner
+          Get started
         </Link>
       </div>
     );
   }
 
-  const vehicles = await getMyPartnerVehicles(partner.id);
+  const vehicles = await getMyPartnerVehicles(operator.id);
 
   // Both tolerate the table not existing yet, so the dashboard keeps working
   // in the window between this deploying and the migration being applied.
@@ -72,16 +72,16 @@ export default async function PartnerDashboardPage() {
     <div className="container-shell py-12">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-midnight">{partner.businessName}</h1>
+          <h1 className="text-2xl font-bold text-midnight">{operator.businessName}</h1>
           <p className="mt-1 flex items-center gap-2 text-sm text-midnight/60">
-            Partner account
-            <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_STYLES[partner.status]}`}>
-              {partner.status === "approved" ? "Approved" : STATUS_LABELS[partner.status]}
+            Vehicle owner
+            <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_STYLES[operator.status]}`}>
+              {operator.status === "approved" ? "Approved" : STATUS_LABELS[operator.status]}
             </span>
           </p>
         </div>
         <Link
-          href="/partners/onboarding"
+          href="/list-your-vehicle/start"
           className="rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
         >
           List another vehicle
@@ -96,7 +96,7 @@ export default async function PartnerDashboardPage() {
         </p>
       )}
 
-      {partner.status === "pending" && (
+      {operator.status === "pending" && (
         <p className="mt-6 rounded-md bg-amber/10 px-4 py-3 text-sm text-amber">
           Your business is still being reviewed. You can list vehicles now, they go live once
           both your account and the vehicle are approved.
@@ -117,7 +117,7 @@ export default async function PartnerDashboardPage() {
             You haven&apos;t listed a vehicle yet.
           </p>
           <Link
-            href="/partners/onboarding"
+            href="/list-your-vehicle/start"
             className="mt-4 inline-block text-sm font-semibold text-gold-dark hover:text-gold"
           >
             List your first vehicle →

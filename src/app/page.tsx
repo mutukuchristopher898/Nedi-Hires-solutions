@@ -96,7 +96,7 @@ export default async function Home() {
               Nothing is listed for these dates yet. Message us on WhatsApp and we&apos;ll tell you what we can source.
             </p>
             <Link
-              href="/partners/onboarding"
+              href="/list-your-vehicle/start"
               className="mt-3 inline-block text-sm font-semibold text-gold-dark hover:text-gold"
             >
               Have a vehicle to hire out? List it &rarr;
@@ -116,7 +116,7 @@ export default async function Home() {
         <div className="grid gap-6 rounded-2xl bg-midnight p-8 text-white sm:grid-cols-2 sm:items-center lg:p-12">
           <div>
             <h2 className="text-2xl font-bold">Own a vehicle? Put it to work.</h2>
-            {/* The route is still /partners/onboarding and the word is
+            {/* The route is still /list-your-vehicle/start and the word is
                 deliberately absent from the copy: customers are not shown a
                 two tier fleet, so nothing here should hint at one. */}
             <p className="mt-2 text-sm text-white/70">
@@ -126,7 +126,7 @@ export default async function Home() {
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
             <Link
-              href="/partners/onboarding"
+              href="/list-your-vehicle/start"
               className="rounded-md bg-emerald px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-emerald-dark"
             >
               List Your Vehicle
