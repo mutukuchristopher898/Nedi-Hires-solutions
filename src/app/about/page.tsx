@@ -5,7 +5,7 @@ import { site } from "@/lib/site";
 import { getPublicFleetStats } from "@/lib/supabase/queries";
 
 const DESCRIPTION =
-  "Nedi Hires Solutions is a Kenyan transport and car hire company. Every vehicle comes from a vetted partner operator, held to one inspection standard and one verification workflow.";
+  "Nedi Hires Solutions is a Kenyan transport and car hire company. We own no vehicles: we source them from operators across Kenya and stand behind every one of them ourselves.";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -82,19 +82,25 @@ export default async function AboutPage() {
               chauffeur driven trips, airport transfers, corporate travel, family trips, tours and
               safaris, and event transport.
             </p>
-            {/* Corrected from an earlier version claiming a small internal fleet.
-                There has never been one: every vehicle on the platform belongs
-                to a partner operator, and saying so plainly is a better story
-                than implying otherwise. */}
+            {/* Corrected twice. It first claimed a small internal fleet, then
+                claimed every vehicle came from a vetted partner operator. Both
+                were wrong: there is no fleet of our own, and no formal partner
+                register either. Vehicles are sourced from operators we have
+                working access to, and the customer sees no distinction because
+                there genuinely is not one. */}
             <p className="mt-3 text-sm leading-relaxed text-midnight/70">
-              Every vehicle on the platform belongs to a partner operator we have vetted and work
-              with directly: established fleets, tour operators and private hosts. We don&apos;t
-              keep a fleet of our own, and that is deliberate: it means we can be honest about
-              holding every operator to the same standard rather than grading our own homework.
-              From your side the arrangement doesn&apos;t change anything. Every vehicle meets the
-              same inspection standard, every driver passes the same background check, you book
-              once, and you hold one company accountable.
+              We own no vehicles. Every car we hire out is sourced from an operator we work with
+              somewhere in Kenya, and we do not sort them into tiers: there is no in house fleet
+              and no second class of listing, so the car you are offered is not quietly a
+              different proposition from the one next to it.
             </p>
+            <p className="mt-3 text-sm leading-relaxed text-midnight/70">
+              That matters more than it sounds. When a company owns some of its cars and brokers
+              the rest, the incentive is to push you towards the ones it owns. We have nothing to
+              push you towards. Whichever vehicle suits your trip is the one we will put you in,
+              and whoever it came from, you deal with us and you hold us accountable.
+            </p>
+
             <Link
               href="/services"
               className="mt-4 inline-block text-sm font-semibold text-gold-dark hover:text-gold"
@@ -105,13 +111,6 @@ export default async function AboutPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <Stat value={stats.vehicles} label={stats.vehicles === 1 ? "Vehicle available" : "Vehicles available"} />
-            {/* Omitted at zero rather than advertising one. The count is real
-                whenever it shows; a "0 partner operators" tile next to copy
-                explaining that every vehicle comes from a partner operator
-                just reads as broken. */}
-            {stats.operators > 0 && (
-              <Stat value={stats.operators} label={stats.operators === 1 ? "Partner operator" : "Partner operators"} />
-            )}
             <Stat value={stats.locations} label={stats.locations === 1 ? "Pickup location" : "Pickup locations"} />
             {/* Deliberately no trip counter and no "X+ vehicles" claim: these
                 three are read from the database and are true whenever the page

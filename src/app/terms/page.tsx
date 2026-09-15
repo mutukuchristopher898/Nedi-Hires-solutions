@@ -26,8 +26,8 @@ const SECTIONS = [
     body: `Reservation deposits, remaining rental balances, and refundable security deposits are processed through ${site.name}'s payment partners. Prices are quoted and charged in US dollars.`,
   },
   {
-    title: "4. Partner Vehicles",
-    body: "Every vehicle on the platform is owned and insured by the partner operator who lists it. Each is reviewed through an approval queue, with its documentation checked, before it appears to customers.",
+    title: "4. Whose Vehicle You Are Hiring",
+    body: `${site.name} does not own the vehicles it hires out. Each is owned by the operator we source it from, and that operator holds the insurance on it. Every vehicle is checked, and its documentation reviewed, before it is offered to customers. What that insurance covers and what excess you would be liable for is not yet set out here — see below, and ask us before you book.`,
   },
   {
     title: "5. Cancellations",

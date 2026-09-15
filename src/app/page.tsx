@@ -2,16 +2,13 @@ import Link from "next/link";
 import VehicleCard from "@/components/VehicleCard";
 import ServiceIcon from "@/components/ServiceIcon";
 import { SERVICES } from "@/lib/services";
-import { getApprovedVehicles, getPartnerNetwork } from "@/lib/supabase/queries";
+import { getApprovedVehicles } from "@/lib/supabase/queries";
 import { site } from "@/lib/site";
 
 
 export default async function Home() {
   // Live inventory, cheapest first, rather than a slice of the catalogue.
-  const [listings, network] = await Promise.all([
-    getApprovedVehicles({ limit: 12, sort: "newest" }),
-    getPartnerNetwork(),
-  ]);
+  const listings = await getApprovedVehicles({ limit: 12, sort: "newest" });
   const featured = listings.vehicles.slice(0, 4);
   return (
     <div>
@@ -86,7 +83,7 @@ export default async function Home() {
               <h2 className="text-2xl font-bold text-midnight">Featured vehicles</h2>
             </div>
             <p className="mt-1 text-sm text-midnight/60">
-              Verified vehicles from our partner network, ready to book.
+              Inspected, road ready and available to book now.
             </p>
           </div>
           <Link href="/search" className="text-sm font-semibold text-gold-dark hover:text-gold">
@@ -96,7 +93,7 @@ export default async function Home() {
         {featured.length === 0 ? (
           <div className="rounded-xl bg-white p-10 text-center ring-1 ring-line">
             <p className="text-sm text-midnight/60">
-              No vehicles are listed yet, our partner network is being built.
+              Nothing is listed for these dates yet. Message us on WhatsApp and we&apos;ll tell you what we can source.
             </p>
             <Link
               href="/partners/onboarding"
@@ -114,20 +111,6 @@ export default async function Home() {
         )}
       </section>
 
-      {network.length > 0 && (
-        <section className="border-y border-line bg-white py-10">
-          <div className="container-shell">
-            <p className="text-center text-xs font-semibold uppercase tracking-wide text-midnight/40">
-              Powered by a partner network across Kenya
-            </p>
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-medium text-midnight/60">
-              {network.map((name) => (
-                <span key={name}>{name}</span>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       <section className="container-shell py-16">
         <div className="grid gap-6 rounded-2xl bg-midnight p-8 text-white sm:grid-cols-2 sm:items-center lg:p-12">

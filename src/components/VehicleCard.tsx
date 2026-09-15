@@ -55,9 +55,11 @@ export default function VehicleCard({ vehicle }: { vehicle: VehicleListing }) {
             </span>
             <span className="text-xs text-midnight/60"> /day</span>
           </div>
-          {vehicle.partnerName && (
-            <span className="text-xs text-midnight/50">via {vehicle.partnerName}</span>
-          )}
+          {/* The operator's name used to show here as "via X". It no longer
+              does: we do not own vehicles and we do not run a two tier fleet,
+              so there is no distinction a customer benefits from seeing. Who
+              supplied a vehicle is our record to keep, not their decision to
+              make. It is still on the row and still shown in /admin. */}
         </div>
       </div>
     </Link>

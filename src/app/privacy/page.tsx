@@ -15,7 +15,7 @@ const SECTIONS = [
   },
   {
     title: "2. How We Use Your Information",
-    body: `${site.name} uses your information to verify bookings, communicate updates, process payments, and improve our fleet and partner network.`,
+    body: `${site.name} uses your information to verify bookings, communicate updates, process payments, and improve the vehicles and service we offer.`,
   },
   {
     title: "3. Identity Documents",

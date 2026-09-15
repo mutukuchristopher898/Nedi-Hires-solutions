@@ -74,11 +74,6 @@ export default async function VehicleDetailPage({
             <span className="rounded-full bg-midnight/5 px-3 py-1 text-xs font-medium text-midnight/70">
               {formatClassification(vehicle.classification)}
             </span>
-            {vehicle.partnerName && (
-              <span className="rounded-full bg-gold/10 px-3 py-1 text-xs font-medium text-gold-dark">
-                Partner Fleet · {vehicle.partnerName}
-              </span>
-            )}
           </div>
 
           <h1 className="mt-4 text-3xl font-bold text-midnight">
