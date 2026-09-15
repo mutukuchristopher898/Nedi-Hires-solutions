@@ -105,7 +105,13 @@ export default async function AboutPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <Stat value={stats.vehicles} label={stats.vehicles === 1 ? "Vehicle available" : "Vehicles available"} />
-            <Stat value={stats.operators} label={stats.operators === 1 ? "Partner operator" : "Partner operators"} />
+            {/* Omitted at zero rather than advertising one. The count is real
+                whenever it shows; a "0 partner operators" tile next to copy
+                explaining that every vehicle comes from a partner operator
+                just reads as broken. */}
+            {stats.operators > 0 && (
+              <Stat value={stats.operators} label={stats.operators === 1 ? "Partner operator" : "Partner operators"} />
+            )}
             <Stat value={stats.locations} label={stats.locations === 1 ? "Pickup location" : "Pickup locations"} />
             {/* Deliberately no trip counter and no "X+ vehicles" claim: these
                 three are read from the database and are true whenever the page

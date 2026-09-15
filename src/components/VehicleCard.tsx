@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { VehicleListing } from "@/lib/types";
 import { formatMoney } from "@/lib/data";
 import VehiclePhoto from "./VehiclePhoto";
+import DemoTag from "./DemoTag";
 
 export default function VehicleCard({ vehicle }: { vehicle: VehicleListing }) {
   return (
@@ -27,6 +28,12 @@ export default function VehicleCard({ vehicle }: { vehicle: VehicleListing }) {
               year is real and is what someone comparing cars actually wants. */}
           <span className="text-xs font-medium text-midnight/70">{vehicle.year}</span>
         </div>
+
+        {/* Illustrative listings are hidden from customers at the database, so
+            this should never render. It exists because it once did render, and
+            unlabelled: the whole catalogue sat in search looking bookable. If
+            one is ever unhidden, it says what it is. */}
+        {vehicle.isDemo && <DemoTag label="Illustrative example" />}
 
         <h3 className="text-base font-semibold text-midnight group-hover:text-gold">
           {vehicle.make} {vehicle.model}

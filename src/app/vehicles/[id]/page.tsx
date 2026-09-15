@@ -84,6 +84,18 @@ export default async function VehicleDetailPage({
           <h1 className="mt-4 text-3xl font-bold text-midnight">
             {vehicle.make} {vehicle.model} <span className="text-midnight/50">({vehicle.year})</span>
           </h1>
+
+          {/* Illustrative listings are hidden from customers at the database.
+              This is the backstop for the page where someone actually decides
+              to book: better a plain warning than a booking for a car that was
+              only ever an example. */}
+          {vehicle.isDemo && (
+            <p className="mt-3 rounded-md bg-amber/10 px-4 py-3 text-sm text-amber">
+              <strong>This is an illustrative example, not a vehicle we hold.</strong> It shows
+              the kind of car and the sort of rate you can expect. Talk to us and we&apos;ll tell
+              you what is actually available for your dates.
+            </p>
+          )}
           <p className="mt-1 text-sm text-midnight/60">{vehicle.location}</p>
           <p className="mt-4 max-w-2xl text-sm text-midnight/70">{vehicle.description}</p>
 
