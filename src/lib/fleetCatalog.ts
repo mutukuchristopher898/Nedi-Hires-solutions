@@ -10,6 +10,26 @@
 // vehicle, and 86 of the 112 have none: the card falls back to the class
 // artwork, which is honest about showing a type rather than a car.
 
+/**
+ * The customer-facing vehicle classes the search page filters on, mapped from
+ * the owner's own eleven categories. Approximate by design: a customer
+ * narrowing to "SUV" wants a Prado and a Fortuner in the same answer, and does
+ * not care that one is filed under 4WD.
+ */
+export const CATEGORY_CLASSIFICATION: Record<string, string> = {
+  "Hatchback & Small Car": "Economy",
+  Saloon: "Economy",
+  "Station Wagon": "Economy",
+  "Executive Saloon": "Luxury",
+  "SUV & Crossover": "SUV",
+  "4WD & Off-Road": "SUV",
+  Pickup: "SUV",
+  "MPV & People Carrier": "Road-Trip Van",
+  "Van & Commercial": "Road-Trip Van",
+  "Tour & Safari Vehicle": "Road-Trip Van",
+  "Bus & Coach": "Bus",
+};
+
 export interface FleetEntry {
   slug: string;
   category: string;
@@ -33,6 +53,22 @@ export const FLEET_CATEGORIES = [
   "Tour & Safari Vehicle",
   "Bus & Coach",
 ] as const;
+
+/**
+ * Catalogue entries matching a classification, photographed ones first.
+ *
+ * Shown under the bookable results on search: two vehicles in stock is a thin
+ * answer to "what can I hire", and "we don't have one listed but we can get
+ * you these" is both truthful and more use than an empty page.
+ */
+export function sourceableFor(classification?: string, limit = 8): FleetEntry[] {
+  const matches = classification
+    ? FLEET.filter((v) => CATEGORY_CLASSIFICATION[v.category] === classification)
+    : FLEET;
+  return [...matches]
+    .sort((a, b) => Number(Boolean(b.image)) - Number(Boolean(a.image)))
+    .slice(0, limit);
+}
 
 export const FLEET: FleetEntry[] = [
   { slug: "toyota-vitz", category: "Hatchback & Small Car", make: "Toyota", model: "Vitz", seats: "5", image: "/fleet/toyota-vitz.jpg" },
