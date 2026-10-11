@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { BookingStep } from "@/lib/types";
-import { isBackable, previousStep, STEP_LABELS, STEP_ORDER } from "@/lib/bookingSteps";
+import { isBackable, previousStep, STEP_LABELS, STEP_ORDER, visibleStep } from "@/lib/bookingSteps";
 
 export default function WizardNav({
   vehicleId,
@@ -15,8 +15,8 @@ export default function WizardNav({
   furthest: BookingStep;
   locked: boolean;
 }) {
-  const currentIndex = STEP_ORDER.indexOf(current);
-  const furthestIndex = STEP_ORDER.indexOf(furthest);
+  const currentIndex = STEP_ORDER.indexOf(visibleStep(current));
+  const furthestIndex = STEP_ORDER.indexOf(visibleStep(furthest));
   const back = previousStep(current);
   const canGoBack = isBackable(current, locked) && back;
 

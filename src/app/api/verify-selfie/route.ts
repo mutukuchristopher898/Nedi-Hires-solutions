@@ -3,8 +3,16 @@ import { createClient } from "@/lib/supabase/server";
 import { isOwnBookingStoragePath } from "@/lib/uploads";
 import { enforceApiRateLimit, readJsonObject, rejectCrossSite } from "@/lib/apiSecurity";
 import { verifySelfie } from "@/lib/smileIdentity";
+import { SELFIE_VERIFICATION_ENABLED } from "@/lib/features";
 
 export async function POST(request: Request) {
+  // Switched off in src/lib/features.ts. Refused outright rather than left
+  // callable: a feature nobody can see should not be an endpoint anyone can
+  // use (it calls a paid identity service).
+  if (!SELFIE_VERIFICATION_ENABLED) {
+    return NextResponse.json({ error: "Selfie verification is not currently in use." }, { status: 404 });
+  }
+
   const crossSite = rejectCrossSite(request);
   if (crossSite) return crossSite;
 

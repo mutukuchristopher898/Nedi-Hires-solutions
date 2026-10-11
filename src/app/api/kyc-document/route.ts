@@ -7,6 +7,7 @@ import {
   pdfHasActiveContent,
   rejectCrossSite,
 } from "@/lib/apiSecurity";
+import { SELFIE_VERIFICATION_ENABLED } from "@/lib/features";
 import { MAX_UPLOAD_BYTES, MAX_UPLOAD_LABEL } from "@/lib/uploads";
 
 // Identity documents go through here for the same reason vehicle photos do: a
@@ -76,6 +77,10 @@ export async function POST(request: Request) {
   // Goes into a storage path, so it may only ever be one of ours.
   if (!["id", "license", "passport-photo", "selfie"].includes(docSlug)) {
     return NextResponse.json({ error: "Unknown document type." }, { status: 400 });
+  }
+  // Selfies are only collected while that step is switched on.
+  if (docSlug === "selfie" && !SELFIE_VERIFICATION_ENABLED) {
+    return NextResponse.json({ error: "Selfie verification is not currently in use." }, { status: 400 });
   }
 
   // RLS scopes this to bookings the caller owns, so an empty result means

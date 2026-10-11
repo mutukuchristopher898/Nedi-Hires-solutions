@@ -1,6 +1,7 @@
 import type { BookingStep } from "@/lib/types";
+import { SELFIE_VERIFICATION_ENABLED } from "@/lib/features";
 
-export const STEP_ORDER: BookingStep[] = [
+const ALL_STEPS: BookingStep[] = [
   "trip",
   "applicant",
   "selfie",
@@ -10,6 +11,22 @@ export const STEP_ORDER: BookingStep[] = [
   "settlement",
   "confirmed",
 ];
+
+// The steps actually shown. A switched-off step is left out entirely, so the
+// progress bar, the step count and Back/next all skip it.
+export const STEP_ORDER: BookingStep[] = ALL_STEPS.filter(
+  (step) => step !== "selfie" || SELFIE_VERIFICATION_ENABLED,
+);
+
+/**
+ * A booking draft saved while a step was still switched on can name that step
+ * as the furthest one reached. Treat it as the step that now follows, so the
+ * customer is not stranded.
+ */
+export function visibleStep(step: BookingStep): BookingStep {
+  if (step === "selfie" && !SELFIE_VERIFICATION_ENABLED) return "agreement";
+  return step;
+}
 
 export const STEP_LABELS: Record<BookingStep, string> = {
   trip: "Trip Details",

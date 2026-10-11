@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
@@ -9,8 +9,36 @@ import { useBookingDraft, useLockGuard, useRequireBookingId } from "@/lib/bookin
 import SelfieCaptureStep from "@/components/booking/SelfieCaptureStep";
 import WizardNav from "@/components/booking/WizardNav";
 import { FormError } from "@/components/booking/shared";
+import { SELFIE_VERIFICATION_ENABLED } from "@/lib/features";
 
+// The selfie step can be switched off in src/lib/features.ts. When it is, this
+// page only exists to move anyone who reaches it (a bookmark, a back button,
+// a booking started before the switch) on to the rental agreement.
 export default function SelfiePage() {
+  return SELFIE_VERIFICATION_ENABLED ? <SelfieStepPage /> : <SkipSelfie />;
+}
+
+function SkipSelfie() {
+  const router = useRouter();
+  const { draft, patchDraft, vehicle } = useBookingDraft();
+
+  useEffect(() => {
+    if (draft.lockedAfterPayment) {
+      router.replace(`/booking/${vehicle.slug}/verification`);
+      return;
+    }
+    if (draft.furthestStepReached === "selfie") {
+      patchDraft({ furthestStepReached: "agreement" });
+    }
+    router.replace(`/booking/${vehicle.slug}/agreement`);
+  }, [draft.lockedAfterPayment, draft.furthestStepReached, patchDraft, router, vehicle.slug]);
+
+  return (
+    <div className="py-20 text-center text-sm text-midnight/60">Taking you to the rental agreement…</div>
+  );
+}
+
+function SelfieStepPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { draft, patchDraft, vehicle } = useBookingDraft();

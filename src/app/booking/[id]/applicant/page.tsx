@@ -8,6 +8,10 @@ import { useBookingDraft, useLockGuard, useRequireBookingId } from "@/lib/bookin
 import ApplicantDetailsStep, { type ApplicantSubmission } from "@/components/booking/ApplicantDetailsStep";
 import WizardNav from "@/components/booking/WizardNav";
 import { FormError } from "@/components/booking/shared";
+import { nextStep } from "@/lib/bookingSteps";
+
+// Selfie when that step is switched on, otherwise the rental agreement.
+const afterApplicant = nextStep("applicant") ?? "agreement";
 
 export default function ApplicantPage() {
   const router = useRouter();
@@ -109,9 +113,11 @@ export default function ApplicantPage() {
           guarantorRelationship: data.guarantorRelationship,
         },
         applicantName,
-        furthestStepReached: "selfie",
+        // The selfie step can be switched off (src/lib/features.ts), so the
+        // next step is looked up rather than hardcoded.
+        furthestStepReached: afterApplicant,
       });
-      router.push(`/booking/${vehicle.slug}/selfie`);
+      router.push(`/booking/${vehicle.slug}/${afterApplicant}`);
     } catch (err) {
       setSaving(false);
       setError(err instanceof Error ? err.message : "Could not submit your details. Please try again.");
