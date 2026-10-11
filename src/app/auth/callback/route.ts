@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { safeRedirectPath } from "@/lib/safeRedirect";
 
 /**
  * Where every emailed auth link lands.
@@ -13,11 +14,10 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/account";
-
-  // Only relative paths, so a crafted ?next= cannot bounce someone off-site
-  // with a freshly minted session.
-  const destination = next.startsWith("/") ? next : "/account";
+  // Only same-site paths, so a crafted ?next= cannot bounce someone off-site
+  // with a freshly minted session. See safeRedirectPath for why a plain
+  // startsWith("/") check was not enough.
+  const destination = safeRedirectPath(searchParams.get("next"));
 
   if (!code) {
     // Supabase can also return the session in the URL fragment

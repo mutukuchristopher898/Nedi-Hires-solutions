@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import sharp from "sharp";
 import { createClient } from "@/lib/supabase/server";
+import {
+  enforceApiRateLimit,
+  MAX_INPUT_PIXELS,
+  rejectCrossSite,
+} from "@/lib/apiSecurity";
 import { MAX_VEHICLE_PHOTO_BYTES, MAX_VEHICLE_PHOTO_LABEL } from "@/lib/uploads";
 
 // Vehicle photographs are uploaded through here rather than straight from the
@@ -23,12 +28,20 @@ const ALLOWED_FORMATS = ["jpeg", "png", "webp"] as const;
 const MAX_DIMENSION = 2000;
 
 export async function POST(request: Request) {
+  const crossSite = rejectCrossSite(request);
+  if (crossSite) return crossSite;
+
   const supabase = await createClient();
   const { data: userData } = await supabase.auth.getUser();
 
   if (!userData.user) {
     return NextResponse.json({ error: "Not signed in" }, { status: 401 });
   }
+
+  // Every upload is decoded and re-encoded, which is real CPU. Metered per
+  // account so one session cannot keep the functions busy.
+  const limited = await enforceApiRateLimit(supabase, "vehicle_photo_upload");
+  if (limited) return limited;
 
   // Checked before reading the body into memory, so an oversized upload is
   // refused rather than buffered.
@@ -65,7 +78,7 @@ export async function POST(request: Request) {
   let format: string | undefined;
   try {
     // Reads the real container, not the filename or the declared type.
-    ({ format } = await sharp(input).metadata());
+    ({ format } = await sharp(input, { limitInputPixels: MAX_INPUT_PIXELS }).metadata());
   } catch {
     return NextResponse.json(
       { error: "This file couldn't be read. Try a different image." },
@@ -84,7 +97,7 @@ export async function POST(request: Request) {
 
   let output: Buffer;
   try {
-    output = await sharp(input)
+    output = await sharp(input, { limitInputPixels: MAX_INPUT_PIXELS })
       // Applies the EXIF orientation before it is discarded, so a photo taken
       // sideways does not end up sideways.
       .rotate()

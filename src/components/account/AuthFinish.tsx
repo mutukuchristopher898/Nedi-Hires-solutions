@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { safeRedirectPath } from "@/lib/safeRedirect";
 
 export default function AuthFinish() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") || "/account";
+  const next = safeRedirectPath(searchParams.get("next"));
   const [stuck, setStuck] = useState(false);
 
   // An effect is unavoidable here: the answer is in window.location.hash,
@@ -25,8 +26,7 @@ export default function AuthFinish() {
       if (cancelled) return;
 
       if (data.session) {
-        const destination = next.startsWith("/") ? next : "/account";
-        router.replace(destination);
+        router.replace(next);
         return;
       }
 

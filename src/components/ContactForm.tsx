@@ -19,6 +19,11 @@ export default function ContactForm() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
+  // Spam trap. Hidden from people and screen readers; form-filling bots fill
+  // every field they find. A filled trap gets the normal "sent" screen and
+  // nothing is stored, so the bot learns nothing. The database rate limit is
+  // still what stops a script posting to the API directly.
+  const [website, setWebsite] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{ name?: boolean; phone?: boolean; email?: boolean; message?: boolean }>({});
 
   if (sent) {
@@ -38,6 +43,11 @@ export default function ContactForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError(null);
+
+    if (website.trim() !== "") {
+      setSent(true);
+      return;
+    }
 
     const nameResult = validateNamePart(name, "Full name");
     const phoneResult = phone.trim() ? validatePhoneNumber(phone, "KE", "Phone number") : { valid: true };
@@ -90,6 +100,19 @@ export default function ContactForm() {
       {formError && (
         <FormError message={formError} details={fieldErrors} />
       )}
+      <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}>
+        <label>
+          Leave this field empty
+          <input
+            type="text"
+            name="website"
+            tabIndex={-1}
+            autoComplete="off"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+          />
+        </label>
+      </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
           <span className="text-xs font-medium text-midnight/60">Full Name</span>

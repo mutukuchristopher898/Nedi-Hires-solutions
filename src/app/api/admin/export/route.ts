@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { csvResponse, toCsv } from "@/lib/csv";
+import { enforceApiRateLimit } from "@/lib/apiSecurity";
 import {
   getAdminVehicles,
   getAdminAccounts,
@@ -43,6 +44,12 @@ export async function GET(request: Request) {
   if (role !== "admin" && role !== "staff") {
     return Response.json({ error: "Not permitted" }, { status: 403 });
   }
+
+  // Exports are the fastest way to move a lot of customer data out of the
+  // system, so they are metered: plenty for real reporting, not enough to
+  // page through everything with a stolen staff session.
+  const limited = await enforceApiRateLimit(supabase, "admin_export");
+  if (limited) return limited;
 
   const { searchParams } = new URL(request.url);
   const entity = searchParams.get("entity");

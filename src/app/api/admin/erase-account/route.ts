@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { enforceApiRateLimit, readJsonObject, rejectCrossSite } from "@/lib/apiSecurity";
 
 // Erasing an account has to happen in two places, and SQL can only reach one
 // of them: anonymise_account() scrubs the rows, but identity documents are
@@ -13,6 +14,11 @@ import { createClient } from "@/lib/supabase/server";
 // outcome an erasure must not produce.
 
 export async function POST(request: Request) {
+  // Erasure is irreversible, so it is exactly the request a forged
+  // cross-site form would want to trigger with an admin's session.
+  const crossSite = rejectCrossSite(request);
+  if (crossSite) return crossSite;
+
   const supabase = await createClient();
   const { data: userData } = await supabase.auth.getUser();
 
@@ -32,14 +38,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Only an admin can erase an account" }, { status: 403 });
   }
 
-  let body: { profileId?: unknown; confirmEmail?: unknown };
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: "Malformed request." }, { status: 400 });
-  }
+  // A ceiling on erasures per admin session. A legitimate admin erases a
+  // handful at most; a hijacked session should not be able to wipe the
+  // customer base in a loop.
+  const limited = await enforceApiRateLimit(supabase, "admin_erase");
+  if (limited) return limited;
 
-  const { profileId, confirmEmail } = body;
+  const parsed = await readJsonObject(request);
+  if ("error" in parsed) return parsed.error;
+  const { profileId, confirmEmail } = parsed.body;
 
   if (typeof profileId !== "string" || typeof confirmEmail !== "string") {
     return NextResponse.json({ error: "Missing account details." }, { status: 400 });
@@ -104,7 +111,13 @@ export async function POST(request: Request) {
   });
 
   if (rpcError) {
-    return NextResponse.json({ error: rpcError.message }, { status: 400 });
+    console.error("erase-account: anonymise_account failed", rpcError.code, rpcError.message);
+    // Messages raised deliberately by anonymise_account are written for
+    // admins and pass through; anything else stays in the logs.
+    return NextResponse.json(
+      { error: rpcError.code === "P0001" ? rpcError.message : "The account could not be erased. Try again." },
+      { status: 400 }
+    );
   }
 
   return NextResponse.json({ erased: true, documentsErased: paths.length });

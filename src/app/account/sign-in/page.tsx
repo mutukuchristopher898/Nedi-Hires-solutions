@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { safeRedirectPath } from "@/lib/safeRedirect";
 import { validateEmail } from "@/lib/formValidation/email";
 import { fieldProps, FormError } from "@/components/forms/shared";
 
@@ -27,7 +28,9 @@ const LINK_ERRORS: Record<string, string> = {
 function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") || "/account";
+  // Validated, because ?next= is attacker-controllable and this is where a
+  // freshly signed-in customer gets sent. See src/lib/safeRedirect.ts.
+  const next = safeRedirectPath(searchParams.get("next"));
 
   // The auth callback redirects here with a reason when an emailed link
   // doesn't work. Without showing it, a failed reset looked identical to a

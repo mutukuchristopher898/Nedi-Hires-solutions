@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { safeRedirectPath } from "@/lib/safeRedirect";
 import { evaluatePasswordStrength } from "@/lib/passwordStrength";
 import { isPasswordBreached } from "@/lib/breachedPassword";
 import { validateEmail } from "@/lib/formValidation/email";
@@ -22,7 +23,9 @@ export default function SignUpPage() {
 function SignUpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") || "/account";
+  // Validated, because ?next= is attacker-controllable and this is where a
+  // freshly signed-in customer gets sent. See src/lib/safeRedirect.ts.
+  const next = safeRedirectPath(searchParams.get("next"));
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");

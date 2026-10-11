@@ -183,6 +183,15 @@ Self-drive eligibility (27+ years old, 3+ years licensed) is enforced twice: onc
   where id = (select id from auth.users where email = 'your-email@example.com');
   ```
 
+- **Security audit, October 2026** (`20261011090000_security_audit_hardening.sql` plus app changes). Worth knowing before touching these areas:
+  - Every state-changing `/api` route starts with `rejectCrossSite()`, `readJsonObject()` and `enforceApiRateLimit()` from `src/lib/apiSecurity.ts`. Copy that pattern into any new route. Limits are set in the database (`check_api_rate_limit`), not in code.
+  - Any `?next=` redirect must go through `safeRedirectPath()` (`src/lib/safeRedirect.ts`). `startsWith("/")` is not enough; `//evil.example` passes it.
+  - `find_duplicate_id_number` and `find_overlapping_active_booking` now require `VERIFICATION_WRITER_SECRET`, so the applicant step needs that env var set, not only the verification routes.
+  - `enforce_rate_limit()` and `has_app_capability()` are internal: not callable through the API. Don't re-grant them.
+  - The Content Security Policy is **enforced**. Adding any third-party script, embed, font CDN or API called from the browser means adding its origin in `next.config.ts`, or it will silently fail.
+  - Next.js must stay patched: 16.3.1 had an unauthenticated remote-code-execution bug. Run `npm audit --omit=dev` before each deploy.
+  - Not done yet: enforced two-factor sign-in for staff/admin accounts, and a nonce-based CSP that drops `'unsafe-inline'`.
+
 ---
 
 ## 10. If you get stuck

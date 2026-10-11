@@ -1,12 +1,18 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isOwnBookingStoragePath } from "@/lib/uploads";
+import { enforceApiRateLimit, readJsonObject, rejectCrossSite } from "@/lib/apiSecurity";
 import { verifySelfie } from "@/lib/smileIdentity";
 
 export async function POST(request: Request) {
-  const { bookingId, selfieStoragePath } = await request.json();
+  const crossSite = rejectCrossSite(request);
+  if (crossSite) return crossSite;
 
-  if (!bookingId || !selfieStoragePath) {
+  const parsed = await readJsonObject(request);
+  if ("error" in parsed) return parsed.error;
+  const { bookingId, selfieStoragePath } = parsed.body;
+
+  if (typeof bookingId !== "string" || typeof selfieStoragePath !== "string" || !bookingId || !selfieStoragePath) {
     return NextResponse.json({ error: "bookingId and selfieStoragePath are required" }, { status: 400 });
   }
 
@@ -15,6 +21,11 @@ export async function POST(request: Request) {
   if (!userData.user) {
     return NextResponse.json({ error: "Not signed in" }, { status: 401 });
   }
+
+  // Each call here can be a paid request to the identity provider. Metered
+  // per account so a script cannot run up the bill or use us to hammer them.
+  const limited = await enforceApiRateLimit(supabase, "identity_verification");
+  if (limited) return limited;
 
   const { data: booking } = await supabase.from("bookings").select("id").eq("id", bookingId).maybeSingle();
   if (!booking) {
@@ -41,6 +52,13 @@ export async function POST(request: Request) {
     .eq("booking_id", bookingId)
     .eq("doc_type", applicant.id_type)
     .single();
+
+  // The ID document path came from the database, but it was originally
+  // written from browser input, so it gets the same ownership check as the
+  // selfie path rather than being trusted because of where it was read from.
+  if (idDoc && !isOwnBookingStoragePath(idDoc.file_url, userData.user.id, bookingId)) {
+    return NextResponse.json({ error: "Could not read the selfie or ID document" }, { status: 400 });
+  }
 
   const [selfieDownload, docDownload] = await Promise.all([
     supabase.storage.from("kyc-documents").download(selfieStoragePath),

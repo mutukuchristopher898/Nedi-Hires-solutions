@@ -127,7 +127,7 @@ export default async function EditVehiclePage({ params }: { params: Promise<{ id
                 key={path}
                 href={publicVehiclePhotoUrl(path)}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="group relative block overflow-hidden rounded-xl ring-1 ring-line"
               >
                 <Image
@@ -333,7 +333,7 @@ function PaperworkLink({ label, url }: { label: string; url: string | null }) {
       <a
         href={url}
         target="_blank"
-        rel="noreferrer"
+        rel="noopener noreferrer"
         className="font-semibold text-gold-dark hover:text-gold"
       >
         Open →

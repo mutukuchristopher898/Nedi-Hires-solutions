@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import sharp from "sharp";
 import { createClient } from "@/lib/supabase/server";
+import {
+  enforceApiRateLimit,
+  MAX_INPUT_PIXELS,
+  pdfHasActiveContent,
+  rejectCrossSite,
+} from "@/lib/apiSecurity";
 import { MAX_UPLOAD_BYTES, MAX_UPLOAD_LABEL } from "@/lib/uploads";
 
 // Identity documents go through here for the same reason vehicle photos do: a
@@ -27,12 +33,20 @@ function storagePath(userId: string, bookingId: string, docSlug: string, extensi
 }
 
 export async function POST(request: Request) {
+  const crossSite = rejectCrossSite(request);
+  if (crossSite) return crossSite;
+
   const supabase = await createClient();
   const { data: userData } = await supabase.auth.getUser();
 
   if (!userData.user) {
     return NextResponse.json({ error: "Not signed in" }, { status: 401 });
   }
+
+  // Every upload is decoded and re-encoded, which is real CPU. Metered per
+  // account so one session cannot keep the functions busy.
+  const limited = await enforceApiRateLimit(supabase, "kyc_upload");
+  if (limited) return limited;
 
   const declaredLength = Number(request.headers.get("content-length") ?? 0);
   if (declaredLength > MAX_UPLOAD_BYTES) {
@@ -91,6 +105,12 @@ export async function POST(request: Request) {
   // carry script, and an admin opens these. They are served from a private
   // bucket over a short-lived signed URL, never rendered inside our origin.
   if (input.subarray(0, PDF_MAGIC.length).equals(PDF_MAGIC)) {
+    if (pdfHasActiveContent(input)) {
+      return NextResponse.json(
+        { error: "This PDF contains scripts or attachments. Please upload a plain scan or photo instead." },
+        { status: 415 }
+      );
+    }
     const path = storagePath(userData.user.id, bookingId, docSlug, "pdf");
     const { error } = await supabase.storage
       .from("kyc-documents")
@@ -107,7 +127,7 @@ export async function POST(request: Request) {
 
   let format: string | undefined;
   try {
-    ({ format } = await sharp(input).metadata());
+    ({ format } = await sharp(input, { limitInputPixels: MAX_INPUT_PIXELS }).metadata());
   } catch {
     return NextResponse.json(
       { error: "This file couldn't be read. Try a different image." },
@@ -124,7 +144,7 @@ export async function POST(request: Request) {
 
   let output: Buffer;
   try {
-    output = await sharp(input)
+    output = await sharp(input, { limitInputPixels: MAX_INPUT_PIXELS })
       .rotate()
       .resize({ width: MAX_DIMENSION, height: MAX_DIMENSION, fit: "inside", withoutEnlargement: true })
       // JPEG rather than WebP: these get posted on to the identity
