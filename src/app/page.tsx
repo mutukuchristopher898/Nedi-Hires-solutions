@@ -8,6 +8,9 @@ import { getApprovedVehicles } from "@/lib/supabase/queries";
 import { site } from "@/lib/site";
 
 
+const mainServices = SERVICES.filter((s) => s.featured);
+const otherServices = SERVICES.filter((s) => !s.featured);
+
 export default async function Home() {
   // Live inventory, cheapest first, rather than a slice of the catalogue.
   const listings = await getApprovedVehicles({ limit: 12, sort: "newest" });
@@ -56,31 +59,81 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* Advertises the main services (featured: true in src/lib/services.ts)
+          in large cards; the rest are one tap away on /services. */}
       <section className="container-shell py-14">
-        <div className="mb-8 flex items-end justify-between">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-2xl font-bold text-midnight">Our Services</h2>
+            <p className="text-xs font-medium uppercase tracking-wide text-gold-dark">Our services</p>
+            <h2 className="mt-1 text-2xl font-bold text-midnight sm:text-3xl">How would you like to travel?</h2>
             <p className="mt-1 text-sm text-midnight/60">
-              Affordable · Reliable · Comfortable, one platform for every kind of trip.
+              Affordable · Reliable · Comfortable, from one vetted fleet.
             </p>
           </div>
           <Link href="/services" className="text-sm font-semibold text-gold-dark hover:text-gold">
-            All seven services →
+            See all services →
           </Link>
         </div>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {SERVICES.filter((s) => s.featured).map((s) => (
-            <Link
+
+        <div className={`grid gap-6 ${mainServices.length > 1 ? "lg:grid-cols-2" : ""}`}>
+          {mainServices.map((s) => (
+            <article
               key={s.slug}
-              href={`/services#${s.slug}`}
-              className="rounded-xl bg-white p-5 ring-1 ring-line transition hover:ring-gold"
+              className="flex flex-col rounded-2xl bg-midnight p-7 text-white ring-1 ring-white/5 sm:p-9"
             >
-              <ServiceIcon name={s.title} className="h-9 w-9 text-gold" />
-              <h3 className="mt-3 font-semibold text-midnight">{s.title}</h3>
-              <p className="mt-2 text-sm text-midnight/60">{s.summary}</p>
-            </Link>
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gold/15">
+                  <ServiceIcon name={s.title} className="h-7 w-7 text-gold" />
+                </div>
+                <h3 className="text-lg font-semibold text-gold">{s.title}</h3>
+              </div>
+
+              <p className="mt-5 text-2xl font-bold leading-snug sm:text-3xl">{s.promise}</p>
+              <p className="mt-3 text-sm leading-relaxed text-white/70">{s.intro}</p>
+
+              <ul className="mt-5 space-y-2">
+                {s.points.slice(0, 3).map((point) => (
+                  <li key={point} className="flex gap-2 text-sm text-white/80">
+                    <span aria-hidden className="mt-0.5 text-gold">
+                      ✓
+                    </span>
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-auto flex flex-wrap gap-3 pt-7">
+                <Link
+                  href={s.cta.href}
+                  className="rounded-md bg-gold px-6 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
+                >
+                  {s.cta.label}
+                </Link>
+                <Link
+                  href={`/services#${s.slug}`}
+                  className="rounded-md border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                >
+                  Learn more
+                </Link>
+              </div>
+            </article>
           ))}
         </div>
+
+        {otherServices.length > 0 && (
+          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl bg-offwhite px-5 py-4 ring-1 ring-line">
+            <span className="text-sm font-semibold text-midnight">Also available:</span>
+            {otherServices.map((s) => (
+              <Link
+                key={s.slug}
+                href={`/services#${s.slug}`}
+                className="rounded-full bg-white px-3 py-1 text-sm text-midnight/70 ring-1 ring-line transition hover:text-gold-dark hover:ring-gold"
+              >
+                {s.title}
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="container-shell py-14">

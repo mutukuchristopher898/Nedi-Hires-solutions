@@ -22,7 +22,12 @@ export interface Service {
   points: string[];
   bestFor: string;
   cta: { label: string; href: string };
-  /** Shown on the home page. The rest live on /services. */
+  /**
+   * A main service: advertised in large cards on the home page. Keep this to
+   * one or two so the home page says clearly what the business is best at.
+   * Every service, featured or not, is listed on /services.
+   * To change which services are the main ones, move `featured: true`.
+   */
   featured?: boolean;
 }
 
@@ -65,7 +70,6 @@ export const SERVICES: Service[] = [
   },
   {
     slug: "airport-transfers",
-    featured: true,
     title: "Airport Transfers",
     summary: "Meet & greet pickups and drop offs at JKIA, Moi International, and regional airports.",
     promise: "We'll be there before you land.",
@@ -118,7 +122,6 @@ export const SERVICES: Service[] = [
   },
   {
     slug: "tours-and-safaris",
-    featured: true,
     title: "Tours & Safaris",
     summary: "Purpose built 4x4s with pop up roofs for game drives and coastal excursions.",
     promise: "Built for the road that isn't a road.",
