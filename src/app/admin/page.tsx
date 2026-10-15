@@ -35,7 +35,7 @@ export default async function AdminOverviewPage() {
             {vehicleDocs.expired.slice(0, 5).map((d) => (
               <li key={d.id}>
                 <Link href={`/admin/vehicles/${d.vehicleId}`} className="hover:text-gold-dark">
-                  {d.vehicleLabel} ({d.licensePlate}) {d.docType}
+                  {d.vehicleLabel}{d.licensePlate ? ` (${d.licensePlate})` : ""} {d.docType}
                 </Link>
               </li>
             ))}
@@ -54,7 +54,7 @@ export default async function AdminOverviewPage() {
             <strong>{vehicleDocs.expiring.length}</strong> vehicle document
             {vehicleDocs.expiring.length === 1 ? "" : "s"} expire
             {vehicleDocs.expiring.length === 1 ? "s" : ""} within 30 days:{" "}
-            {vehicleDocs.expiring.slice(0, 4).map((d) => d.licensePlate).join(", ")}
+            {vehicleDocs.expiring.slice(0, 4).map((d) => d.licensePlate || d.vehicleLabel).join(", ")}
             {vehicleDocs.expiring.length > 4 ? "…" : ""}
           </p>
         </div>

@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { classifications } from "@/lib/data";
-import { validateKenyanPlate } from "@/lib/formValidation/licensePlate";
 import { Field, fieldProps, FormError } from "@/components/forms/shared";
 import { uploadVehiclePhoto, publicVehiclePhotoUrl } from "@/lib/supabase/vehiclePhotos";
 import { MAX_VEHICLE_PHOTO_LABEL, isAllowedVehiclePhoto, isVehiclePhotoWithinLimit } from "@/lib/uploads";
@@ -40,7 +39,6 @@ export default function VehicleForm({
   const [fuelType, setFuelType] = useState<string>(vehicle?.fuelType ?? "Petrol");
   const [transmission, setTransmission] = useState<string>(vehicle?.transmission ?? "Automatic");
   const [capacity, setCapacity] = useState(vehicle ? String(vehicle.capacity) : "5");
-  const [licensePlate, setLicensePlate] = useState(vehicle?.licensePlate ?? "");
   const [location, setLocation] = useState(vehicle?.location ?? "");
   const [pricePerDay, setPricePerDay] = useState(vehicle ? String(vehicle.pricePerDay) : "");
   const [description, setDescription] = useState(vehicle?.description ?? "");
@@ -115,7 +113,6 @@ export default function VehicleForm({
     setError(null);
     setSaved(false);
 
-    const plateResult = validateKenyanPlate(licensePlate);
     const yearNum = Number(year);
     const capacityNum = Number(capacity);
     const priceNum = Number(pricePerDay);
@@ -124,7 +121,6 @@ export default function VehicleForm({
       make: !make.trim(),
       model: !model.trim(),
       year: !Number.isInteger(yearNum) || yearNum < 1990 || yearNum > new Date().getFullYear() + 1,
-      licensePlate: !plateResult.valid,
       location: location.trim().length < 2,
       capacity: !Number.isInteger(capacityNum) || capacityNum < 1 || capacityNum > 60,
       pricePerDay: !(priceNum > 0),
@@ -147,7 +143,6 @@ export default function VehicleForm({
       fuel_type: fuelType,
       transmission,
       capacity: capacityNum,
-      license_plate: licensePlate.trim().toUpperCase(),
       location: location.trim(),
       price_per_day: priceNum,
       description: description.trim(),
@@ -215,10 +210,6 @@ export default function VehicleForm({
           <input type="number" min={1990} max={new Date().getFullYear() + 1} value={year}
             onChange={(e) => { setYear(e.target.value); setSaved(false); }} placeholder="e.g. 2019"
             {...fieldProps(fieldErrors.year ? "reject" : undefined, INPUT)} />
-        </Field>
-        <Field label="Registration number">
-          <input value={licensePlate} onChange={(e) => { setLicensePlate(e.target.value); setSaved(false); }}
-            placeholder="e.g. KDX 123A" {...fieldProps(fieldErrors.licensePlate ? "reject" : undefined, INPUT)} />
         </Field>
         <Field label="Class">
           <select value={classification} onChange={(e) => { setClassification(e.target.value); setSaved(false); }} className={INPUT}>

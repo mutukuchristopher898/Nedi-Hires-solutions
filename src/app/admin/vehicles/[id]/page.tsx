@@ -71,7 +71,7 @@ export default async function EditVehiclePage({ params }: { params: Promise<{ id
             {vehicle.make} {vehicle.model} {vehicle.year}
           </h1>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
-            <span className="text-sm text-midnight/60">{vehicle.licensePlate}</span>
+            {vehicle.licensePlate && <span className="text-sm text-midnight/60">{vehicle.licensePlate}</span>}
             <span
               className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${LIFECYCLE_STYLES[vehicle.lifecycle]}`}
             >
@@ -297,7 +297,7 @@ export default async function EditVehiclePage({ params }: { params: Promise<{ id
         <div className="mt-3">
           <VehicleDeleteButton
             id={vehicle.id}
-            label={vehicle.licensePlate}
+            label={vehicle.licensePlate || `${vehicle.make} ${vehicle.model}`}
             bookingCount={vehicle.bookingCount}
             photoPaths={vehicle.photoPaths}
             documentPaths={documents.map((d) => d.filePath)}

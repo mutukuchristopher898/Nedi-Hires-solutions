@@ -238,7 +238,7 @@ interface AdminBookingRow {
   currency: string;
   created_at: string;
   profiles: { full_name: string | null } | null;
-  vehicles: { make: string; model: string; year: number; license_plate: string } | null;
+  vehicles: { make: string; model: string; year: number; license_plate: string | null } | null;
 }
 
 // Admin-only: "Admins can view all bookings" (20260818120000) is what widens
@@ -287,7 +287,8 @@ interface VehicleRow {
   fuel_type: FuelType;
   transmission: Transmission;
   capacity: number;
-  license_plate: string;
+  // Optional since October 2026: the business does not record plates.
+  license_plate: string | null;
   location: string;
   price_per_day: number;
   currency: string;
@@ -314,7 +315,7 @@ function toPartnerVehicle(row: VehicleRow): PartnerVehicle {
     fuelType: row.fuel_type,
     transmission: row.transmission,
     capacity: row.capacity,
-    licensePlate: row.license_plate,
+    licensePlate: row.license_plate ?? "",
     location: row.location,
     pricePerDay: row.price_per_day,
     currency: row.currency,
@@ -821,10 +822,10 @@ export async function getVehiclePricing(): Promise<VehiclePricingRow[]> {
 
   if (error) throw new Error(`Failed to load vehicle pricing: ${error.message}`);
 
-  return (data as unknown as (ListingRow & { license_plate: string; approval_status: ApprovalStatus })[]).map((row) => ({
+  return (data as unknown as (ListingRow & { license_plate: string | null; approval_status: ApprovalStatus })[]).map((row) => ({
     id: row.id,
     label: `${row.make} ${row.model} ${row.year}`,
-    licensePlate: row.license_plate,
+    licensePlate: row.license_plate ?? "",
     partnerName: row.partner_name,
     approvalStatus: row.approval_status,
     pricePerDay: Number(row.price_per_day),
@@ -1500,7 +1501,7 @@ export async function getVehicleDocumentAlerts(
   if (error || !data) return empty;
 
   const rows = data as unknown as (VehicleDocumentRow & {
-    vehicles?: { make: string; model: string; year: number; license_plate: string } | null;
+    vehicles?: { make: string; model: string; year: number; license_plate: string | null } | null;
   })[];
 
   const signed = await signVehicleDocuments(supabase, rows.map((r) => r.file_path));

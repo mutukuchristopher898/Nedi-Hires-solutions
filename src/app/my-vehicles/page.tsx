@@ -151,7 +151,7 @@ export default async function OwnerDashboardPage() {
                   </span>
                 </div>
                 <p className="mt-1 text-sm text-midnight/60">
-                  {v.licensePlate} · {formatClassification(v.classification)} · {v.transmission} · {v.location}
+                  {[v.licensePlate, formatClassification(v.classification), v.transmission, v.location].filter(Boolean).join(" · ")}
                 </p>
                 <p className="mt-1 text-sm font-medium text-midnight">
                   {formatMoney(v.pricePerDay, v.currency)} / day

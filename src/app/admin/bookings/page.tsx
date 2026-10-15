@@ -71,7 +71,7 @@ export default async function AdminBookingsPage() {
                     </div>
                     <p className="mt-1 text-sm text-midnight/70">
                       {b.customerName ?? "Unknown customer"} · {b.vehicleLabel}{" "}
-                      <span className="text-midnight/40">({b.licensePlate})</span>
+                      {b.licensePlate && <span className="text-midnight/40">({b.licensePlate})</span>}
                     </p>
                     <p className="mt-0.5 text-sm text-midnight/60">
                       {formatDate(b.startDate)} – {formatDate(b.endDate)} ·{" "}

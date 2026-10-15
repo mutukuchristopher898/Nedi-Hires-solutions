@@ -16,7 +16,7 @@ const STEPS = [
   },
   {
     title: "Unit Specification Input",
-    copy: "Submit Make, Model, Year, License Plate, Classification, Fuel Type, Transmission, and Capacity for every vehicle.",
+    copy: "Submit Make, Model, Year, Classification, Fuel Type, Transmission, and Capacity for every vehicle.",
   },
   {
     title: "Admin Approval Queue",

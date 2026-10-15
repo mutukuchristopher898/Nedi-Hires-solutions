@@ -114,7 +114,7 @@ export default function VehicleList({
                   )}
                 </div>
                 <p className="mt-1 text-sm text-midnight/60">
-                  {v.licensePlate} · {v.classification} · {v.transmission} · {v.location}
+                  {[v.licensePlate, v.classification, v.transmission, v.location].filter(Boolean).join(" · ")}
                 </p>
                 <p className="mt-1 text-sm text-midnight/70">
                   {v.partnerName ?? <span className="text-midnight/40">No partner</span>} ·{" "}

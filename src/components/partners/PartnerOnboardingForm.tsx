@@ -8,7 +8,6 @@ import { classifications } from "@/lib/data";
 import { findCatalogEntry, getMakes, getModelsForMake } from "@/lib/vehicleCatalog";
 import { validateBusinessName } from "@/lib/formValidation/businessName";
 import { validateEmail } from "@/lib/formValidation/email";
-import { validateKenyanPlate } from "@/lib/formValidation/licensePlate";
 import { Field, fieldProps, FormError } from "@/components/forms/shared";
 import { uploadVehiclePhoto } from "@/lib/supabase/vehiclePhotos";
 import {
@@ -55,7 +54,6 @@ export default function PartnerOnboardingForm({
   const [fuelType, setFuelType] = useState("Petrol");
   const [transmission, setTransmission] = useState("Automatic");
   const [capacity, setCapacity] = useState("5");
-  const [licensePlate, setLicensePlate] = useState("");
   const [location, setLocation] = useState("");
   const [pricePerDay, setPricePerDay] = useState("");
   const [description, setDescription] = useState("");
@@ -132,7 +130,6 @@ export default function PartnerOnboardingForm({
       return;
     }
 
-    const plateResult = validateKenyanPlate(licensePlate);
     const yearNum = Number(year);
     const capacityNum = Number(capacity);
     const priceNum = Number(pricePerDay);
@@ -141,7 +138,6 @@ export default function PartnerOnboardingForm({
       make: !make,
       model: !model,
       year: !Number.isInteger(yearNum) || yearNum < 1990 || yearNum > new Date().getFullYear() + 1,
-      licensePlate: !plateResult.valid,
       location: location.trim().length < 2,
       capacity: !Number.isInteger(capacityNum) || capacityNum < 1 || capacityNum > 60,
       pricePerDay: !(priceNum > 0),
@@ -188,7 +184,6 @@ export default function PartnerOnboardingForm({
         fuel_type: fuelType,
         transmission,
         capacity: capacityNum,
-        license_plate: licensePlate.trim().toUpperCase(),
         location: location.trim(),
         price_per_day: priceNum,
         currency: "USD",
@@ -315,14 +310,6 @@ export default function PartnerOnboardingForm({
                 onChange={(e) => setYear(e.target.value)}
                 placeholder="e.g. 2019"
                 {...fieldProps(unitFieldErrors.year ? "reject" : undefined, INPUT_CLASS)}
-              />
-            </Field>
-            <Field label="License Plate">
-              <input
-                value={licensePlate}
-                onChange={(e) => setLicensePlate(e.target.value)}
-                placeholder="e.g. KDX 123A"
-                {...fieldProps(unitFieldErrors.licensePlate ? "reject" : undefined, INPUT_CLASS)}
               />
             </Field>
             <Field label="Classification">
@@ -477,7 +464,6 @@ export default function PartnerOnboardingForm({
                 setMake("");
                 setModel("");
                 setYear("");
-                setLicensePlate("");
                 setLocation("");
                 setPricePerDay("");
                 setDescription("");
