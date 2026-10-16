@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import VehicleForm from "@/components/admin/VehicleForm";
 import VehicleLifecycleActions from "@/components/admin/VehicleLifecycleActions";
 import VehicleDeleteButton from "@/components/admin/VehicleDeleteButton";
+import VehicleAvailabilityToggle from "@/components/admin/VehicleAvailabilityToggle";
 import VehicleDocumentReview from "@/components/admin/VehicleDocumentReview";
 import AuditChanges from "@/components/admin/AuditChanges";
 import { requireRole } from "@/lib/supabase/authz";
@@ -96,6 +97,10 @@ export default async function EditVehiclePage({ params }: { params: Promise<{ id
           canManage={role === "admin"}
           rejectionReasons={rejectionReasons}
         />
+      </div>
+
+      <div className="mt-5">
+        <VehicleAvailabilityToggle id={vehicle.id} isAvailable={vehicle.isAvailable} canManage={role === "admin"} />
       </div>
 
       {vehicle.archivedAt && (

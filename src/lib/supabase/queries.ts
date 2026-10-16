@@ -299,11 +299,12 @@ interface VehicleRow {
   approval_status: ApprovalStatus;
   created_at: string;
   partner_id: string | null;
+  is_available: boolean | null;
   partners?: { business_name: string } | null;
 }
 
 const VEHICLE_COLUMNS =
-  "id, slug, make, model, year, classification, fuel_type, transmission, capacity, license_plate, location, price_per_day, currency, description, features, photo_paths, approval_status, created_at, partner_id";
+  "id, slug, make, model, year, classification, fuel_type, transmission, capacity, license_plate, location, price_per_day, currency, description, features, photo_paths, approval_status, created_at, partner_id, is_available";
 
 function toPartnerVehicle(row: VehicleRow): PartnerVehicle {
   return {
@@ -316,6 +317,7 @@ function toPartnerVehicle(row: VehicleRow): PartnerVehicle {
     fuelType: row.fuel_type,
     transmission: row.transmission,
     capacity: row.capacity,
+    isAvailable: row.is_available !== false,
     licensePlate: row.license_plate ?? "",
     location: row.location,
     pricePerDay: row.price_per_day,
@@ -433,10 +435,11 @@ export async function getFleetCounts(): Promise<FleetCounts> {
 }
 
 const LISTING_COLUMNS =
-  "id, slug, make, model, year, classification, fuel_type, transmission, capacity, location, price_per_day, currency, description, features, photo_paths, image_key, partner_name, is_demo, weekly_threshold_days, weekly_discount, monthly_threshold_days, monthly_discount, reservation_deposit_rate, security_deposit_rate, partners(business_name)";
+  "id, slug, make, model, year, classification, fuel_type, transmission, capacity, location, price_per_day, currency, description, features, photo_paths, image_key, partner_name, is_demo, is_available, weekly_threshold_days, weekly_discount, monthly_threshold_days, monthly_discount, reservation_deposit_rate, security_deposit_rate, partners(business_name)";
 
 interface ListingRow {
   id: string;
+  is_available: boolean | null;
   slug: string | null;
   make: string;
   model: string;
@@ -507,52 +510,29 @@ function resolveRates(row: ListingRow, defaults: PricingDefaultsRow): PricingRat
 }
 
 /**
- * Vehicles already spoken for across a date range, and vehicles whose own
- * paperwork has been approved.
+ * Vehicles whose own paperwork has been approved, for the "Verified" badge.
  *
- * Two bounded queries rather than one per card. Asking is_vehicle_available()
- * for each result would be 25 sequential round trips inside a single server
- * render, which is a slow page at best.
- *
- * Both are tolerant: if either fails the listing simply does not claim to be
- * verified or unavailable, which is the safe direction to fail in.
+ * Availability is no longer worked out from bookings here: since October
+ * 2026 it is the admin's Available / Not available switch, read straight off
+ * the vehicle row. Tolerant: if the query fails, nothing claims "verified".
  */
 async function loadListingStatus(
   supabase: Awaited<ReturnType<typeof createClient>>,
   vehicleIds: string[],
-  pickup?: string,
-  returnDate?: string
-): Promise<{ busy: Set<string>; verified: Set<string> }> {
-  const busy = new Set<string>();
+): Promise<{ verified: Set<string> }> {
   const verified = new Set<string>();
-  if (vehicleIds.length === 0) return { busy, verified };
+  if (vehicleIds.length === 0) return { verified };
 
-  const [bookingResult, documentResult] = await Promise.all([
-    // Only meaningful with both dates. A booking overlaps when it starts
-    // before our window ends and ends after our window starts.
-    pickup && returnDate
-      ? supabase
-          .from("bookings")
-          .select("vehicle_id")
-          .in("vehicle_id", vehicleIds)
-          .neq("status", "cancelled")
-          .lte("start_date", returnDate)
-          .gte("end_date", pickup)
-      : Promise.resolve({ data: null, error: null }),
-    supabase
-      .from("vehicle_documents")
-      .select("vehicle_id")
-      .in("vehicle_id", vehicleIds)
-      .eq("status", "approved"),
-  ]);
+  const documentResult = await supabase
+    .from("vehicle_documents")
+    .select("vehicle_id")
+    .in("vehicle_id", vehicleIds)
+    .eq("status", "approved");
 
-  for (const row of (bookingResult.data ?? []) as { vehicle_id: string }[]) {
-    busy.add(row.vehicle_id);
-  }
   for (const row of (documentResult.data ?? []) as { vehicle_id: string }[]) {
     verified.add(row.vehicle_id);
   }
-  return { busy, verified };
+  return { verified };
 }
 
 function toListing(row: ListingRow, defaults: PricingDefaultsRow): VehicleListing {
@@ -579,10 +559,10 @@ function toListing(row: ListingRow, defaults: PricingDefaultsRow): VehicleListin
     // the seeded rows carry, since they have no partner record.
     partnerName: row.partners?.business_name ?? row.partner_name,
     isDemo: row.is_demo,
-    // Overwritten by the caller once availability is known. Defaulting to
-    // "available" rather than "verified": listing a vehicle is not the same
-    // as having checked its logbook, and only one of those is a claim.
-    status: "available",
+    // The admin's switch decides availability. A caller may upgrade an
+    // available vehicle to "verified" once its paperwork is known approved.
+    status: row.is_available === false ? "unavailable" : "available",
+    isAvailable: row.is_available !== false,
     rates: resolveRates(row, defaults),
   };
 }
@@ -654,19 +634,13 @@ export async function getApprovedVehicles(filters: VehicleFilters = {}): Promise
     toListing(row, defaults)
   );
 
-  const { busy, verified } = await loadListingStatus(
+  const { verified } = await loadListingStatus(
     supabase,
     listings.map((v) => v.id),
-    filters.pickup,
-    filters.returnDate
   );
 
   for (const listing of listings) {
-    listing.status = busy.has(listing.id)
-      ? "unavailable"
-      : verified.has(listing.id)
-        ? "verified"
-        : "available";
+    if (listing.isAvailable && verified.has(listing.id)) listing.status = "verified";
   }
 
   return { vehicles: listings, total: countResult.count ?? 0 };

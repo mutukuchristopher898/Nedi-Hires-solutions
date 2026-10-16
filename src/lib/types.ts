@@ -218,6 +218,8 @@ export interface PartnerAccount {
 }
 
 export interface PartnerVehicle {
+  /** The admin's Available / Not available switch. */
+  isAvailable: boolean;
   id: string;
   slug: string | null;
   make: string;
@@ -285,12 +287,14 @@ export interface VehicleListing {
   /**
    * What the card shows where the location used to be.
    *
-   * "unavailable" is only ever reached when the customer searched with dates,
-   * because without them there is nothing to be unavailable for. "verified"
-   * means the vehicle's own paperwork has been approved, which is a stronger
-   * statement than "we list it" and is worth saying when it is true.
+   * "unavailable" means an admin has switched the vehicle to Not available
+   * (vehicles.is_available). Since October 2026 availability is the admin's
+   * call, not worked out from bookings. "verified" means the vehicle's own
+   * paperwork has been approved, which is worth saying when it is true.
    */
   status: "available" | "verified" | "unavailable";
+  /** The admin's Available / Not available switch. */
+  isAvailable: boolean;
   rates: PricingRates;
 }
 

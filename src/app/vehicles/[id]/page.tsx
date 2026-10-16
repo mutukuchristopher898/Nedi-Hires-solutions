@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { site } from "@/lib/site";
 import VehiclePhoto from "@/components/VehiclePhoto";
 import VehicleStatus from "@/components/VehicleStatus";
 import { formatMoney, formatClassification } from "@/lib/data";
@@ -126,12 +127,23 @@ export default async function VehicleDetailPage({
             {formatClassification(vehicle.classification)} · {vehicle.capacity} seats · {vehicle.transmission}
           </p>
 
-          <Link
-            href={`/booking/${vehicle.slug}`}
-            className="mt-6 block rounded-md bg-gold px-5 py-3 text-center text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
-          >
-            Reserve This Vehicle
-          </Link>
+          {vehicle.isAvailable ? (
+            <Link
+              href={`/booking/${vehicle.slug}`}
+              className="mt-6 block rounded-md bg-gold px-5 py-3 text-center text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
+            >
+              Reserve This Vehicle
+            </Link>
+          ) : (
+            // Switched off by an admin. Shown rather than hidden, so a
+            // customer knows the car exists and can ask about it.
+            <div className="mt-6 rounded-md bg-midnight/5 px-5 py-3 text-center text-sm text-midnight/70">
+              Not available at the moment.{" "}
+              <a href={site.whatsappHref} target="_blank" rel="noopener noreferrer" className="font-semibold text-gold-dark hover:text-gold">
+                Ask us on WhatsApp
+              </a>
+            </div>
+          )}
           <p className="mt-3 text-center text-xs text-midnight/50">
             Trip details, identity verification, and a signed agreement before deposit
           </p>

@@ -6,7 +6,7 @@
 // mapped to one sentence here rather than either reaching a booking screen.
 
 export const VEHICLE_UNAVAILABLE_MESSAGE =
-  "Someone else has just taken this vehicle for those dates. Please choose different dates, or pick another vehicle.";
+  "This vehicle is not available at the moment. Please pick another vehicle, or message us and we\u2019ll help.";
 
 const EXCLUSION_VIOLATION = "23P01";
 

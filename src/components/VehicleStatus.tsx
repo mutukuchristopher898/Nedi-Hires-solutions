@@ -9,7 +9,7 @@ const STYLES: Record<VehicleListing["status"], string> = {
 const LABELS: Record<VehicleListing["status"], string> = {
   available: "Available",
   verified: "Verified",
-  unavailable: "Unavailable for your dates",
+  unavailable: "Not available",
 };
 
 /**

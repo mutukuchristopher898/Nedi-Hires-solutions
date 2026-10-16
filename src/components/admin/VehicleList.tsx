@@ -102,6 +102,11 @@ export default function VehicleList({
                   >
                     {v.make} {v.model}
                   </Link>
+                  {!v.isAvailable && (
+                    <span className="inline-flex items-center rounded-full bg-midnight/10 px-2.5 py-1 text-xs font-medium text-midnight/70">
+                      Not available
+                    </span>
+                  )}
                   <span
                     className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${LIFECYCLE_STYLES[v.lifecycle]}`}
                   >
