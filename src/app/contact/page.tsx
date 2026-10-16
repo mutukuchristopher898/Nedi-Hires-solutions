@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ContactForm from "@/components/ContactForm";
 import { site } from "@/lib/site";
+import { findTopic } from "@/lib/enquiryTopics";
 
 export const metadata: Metadata = {
   title: "Contact Support",
@@ -9,7 +10,15 @@ export const metadata: Metadata = {
   openGraph: { title: "Contact Support", description: "Talk to the Nedi Hires Solutions team about a booking, a quote, or group and event transport across Kenya.", url: "/contact" },
 };
 
-export default function ContactPage() {
+export default async function ContactPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ topic?: string | string[] }>;
+}) {
+  // Services link here with ?topic=…, so the right topic is already chosen.
+  const { topic } = await searchParams;
+  const initialTopic = findTopic(typeof topic === "string" ? topic : undefined)?.value;
+
   return (
     <div>
       <section className="bg-midnight py-14 text-white">
@@ -17,8 +26,8 @@ export default function ContactPage() {
           <p className="text-xs font-medium uppercase tracking-wide text-gold">Contact Support</p>
           <h1 className="mt-2 max-w-xl text-3xl font-bold sm:text-4xl">We&apos;re here to help.</h1>
           <p className="mt-3 max-w-lg text-sm text-white/70">
-            Reach us for booking help, custom tour quotes, corporate accounts, or fleet
-            enquiries.
+            Reach us for booking help, custom tour quotes, corporate leasing, insurance
+            replacement vehicles, or fleet enquiries.
           </p>
         </div>
       </section>
@@ -35,7 +44,7 @@ export default function ContactPage() {
           <ContactCard title="Location" value={site.location} note="Vehicle handover and pickup points across Nairobi and beyond." />
         </div>
 
-        <ContactForm />
+        <ContactForm initialTopic={initialTopic} />
       </section>
     </div>
   );

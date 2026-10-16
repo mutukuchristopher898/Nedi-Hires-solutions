@@ -1,4 +1,4 @@
-// The seven services, in one place.
+// The services, in one place.
 //
 // The homepage cards and the /services page were drifting apart — the homepage
 // had a one-line summary and the detail lived nowhere — so both now read from
@@ -101,6 +101,40 @@ export const SERVICES: Service[] = [
     bestFor:
       "organisations with recurring staff movement, visiting delegations, or ongoing project transport.",
     cta: { label: "Talk to our corporate team", href: "/contact" },
+  },
+  {
+    slug: "corporate-leasing",
+    title: "Corporate Leasing",
+    summary: "Vehicles leased to companies for weeks, months or longer, from one car to a whole fleet.",
+    promise: "The vehicles your business needs, without buying a fleet.",
+    intro:
+      "Lease vehicles for your company on longer terms, so your teams have reliable transport without the cost of buying, insuring and maintaining cars of your own.",
+    points: [
+      "Single vehicles or whole fleets, from economy cars to vans and buses",
+      "Weekly, monthly or longer lease terms, agreed with you",
+      "One agreement covering all of your leased vehicles",
+      "Self drive for your staff, or with our chauffeurs",
+    ],
+    bestFor:
+      "companies, NGOs and projects that need vehicles for staff, field teams or management over weeks or months.",
+    cta: { label: "Request a lease quote", href: "/contact?topic=corporate-leasing" },
+  },
+  {
+    slug: "insurance-replacement",
+    title: "Insurance Replacement",
+    summary: "Replacement vehicles for insurers’ clients while their own car is being repaired.",
+    promise: "Keeping policyholders on the road while their car is in the garage.",
+    intro:
+      "We work with insurance companies to provide a replacement vehicle for their customers whose own car is off the road for repairs after a claim.",
+    points: [
+      "A suitable vehicle for the length of the repair",
+      "Arranged by the insurer on behalf of the policyholder",
+      "Billing agreed directly with the insurance company",
+      "The hire can be extended if repairs take longer than planned",
+    ],
+    bestFor:
+      "insurance companies, brokers and assessors arranging courtesy vehicles for clients. If your own car is being repaired, ask your insurer whether they can book one with us.",
+    cta: { label: "Partner with us", href: "/contact?topic=insurance-replacement" },
   },
   {
     slug: "family-trips",

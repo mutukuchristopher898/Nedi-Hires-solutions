@@ -1,4 +1,20 @@
 const ICONS: Record<string, React.ReactNode> = {
+  // A key, for vehicles handed over on a lease.
+  "Corporate Leasing": (
+    <>
+      <circle cx="8" cy="12" r="4" />
+      <path d="M12 12h9" />
+      <path d="M18 12v3" />
+      <path d="M21 12v2" />
+    </>
+  ),
+  // A shield, for vehicles provided under an insurance claim.
+  "Insurance Replacement": (
+    <>
+      <path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6z" />
+      <path d="M9 12l2 2 4-4" />
+    </>
+  ),
   "Self Drive": (
     <>
       <path d="M4 15l1.5-5A3 3 0 0 1 8.4 8h7.2a3 3 0 0 1 2.9 2l1.5 5" />

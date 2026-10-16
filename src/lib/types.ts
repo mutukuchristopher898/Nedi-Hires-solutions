@@ -143,6 +143,8 @@ export interface ContactMessage {
   email: string;
   phone: string | null;
   message: string;
+  /** The enquiry topic chosen on the form (see src/lib/enquiryTopics.ts). */
+  subject: string | null;
   status: "new" | "read" | "replied";
   createdAt: string;
 }

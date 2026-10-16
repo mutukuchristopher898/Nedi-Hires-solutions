@@ -110,6 +110,7 @@ interface ContactMessageRow {
   email: string;
   phone: string | null;
   message: string;
+  subject: string | null;
   status: ContactMessage["status"];
   created_at: string;
 }
@@ -118,7 +119,7 @@ export async function getContactMessages(): Promise<ContactMessage[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("contact_messages")
-    .select("id, name, email, phone, message, status, created_at")
+    .select("id, name, email, phone, message, subject, status, created_at")
     .order("created_at", { ascending: false });
 
   if (error) throw new Error(`Failed to load contact messages: ${error.message}`);
@@ -129,6 +130,7 @@ export async function getContactMessages(): Promise<ContactMessage[]> {
     email: row.email,
     phone: row.phone,
     message: row.message,
+    subject: row.subject ?? null,
     status: row.status,
     createdAt: row.created_at,
   }));

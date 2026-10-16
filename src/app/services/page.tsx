@@ -5,7 +5,7 @@ import { SERVICES } from "@/lib/services";
 import { site } from "@/lib/site";
 
 const DESCRIPTION =
-  "Self drive and chauffeur driven car hire, airport transfers, corporate travel, family trips, tours and safaris, and event transport. One vetted fleet across Kenya.";
+  "Self drive and chauffeur driven car hire, airport transfers, corporate travel, corporate vehicle leasing, insurance replacement vehicles, family trips, tours and safaris, and event transport. One vetted fleet across Kenya.";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -50,7 +50,7 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* A jump list, because seven long sections is a lot of scrolling to find
+      {/* A jump list, because nine long sections is a lot of scrolling to find
           the one you came for. */}
       <nav aria-label="Services" className="border-b border-line bg-offwhite">
         <div className="container-shell flex flex-wrap gap-x-4 gap-y-2 py-4">

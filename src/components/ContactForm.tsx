@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { DEFAULT_TOPIC, ENQUIRY_TOPICS, findTopic } from "@/lib/enquiryTopics";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
 import { validateNamePart } from "@/lib/documentValidation/nameValidation";
@@ -10,7 +11,7 @@ import { validateMessage } from "@/lib/formValidation/freeText";
 import { fieldProps, FormError } from "@/components/forms/shared";
 import { RATE_LIMITED_MESSAGE } from "@/lib/bookingErrors";
 
-export default function ContactForm() {
+export default function ContactForm({ initialTopic = DEFAULT_TOPIC }: { initialTopic?: string }) {
   const { user } = useAuth();
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -18,6 +19,7 @@ export default function ContactForm() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [topic, setTopic] = useState(findTopic(initialTopic) ? initialTopic : DEFAULT_TOPIC);
   const [formError, setFormError] = useState<string | null>(null);
   // Spam trap. Hidden from people and screen readers; form-filling bots fill
   // every field they find. A filled trap gets the normal "sent" screen and
@@ -78,6 +80,7 @@ export default function ContactForm() {
       email: email.trim(),
       phone: phone.trim() || null,
       message: message.trim(),
+      subject: topic,
       sender_profile_id: user?.id ?? null,
     });
 
@@ -147,13 +150,27 @@ export default function ContactForm() {
         />
       </label>
       <label className="block">
+        <span className="text-xs font-medium text-midnight/60">What&apos;s this about?</span>
+        <select
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          {...fieldProps(undefined)}
+        >
+          {ENQUIRY_TOPICS.map((t) => (
+            <option key={t.value} value={t.value}>
+              {t.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="block">
         <span className="text-xs font-medium text-midnight/60">How can we help?</span>
         <textarea
           required
           rows={4}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Tell us about your trip, dates, and preferred vehicle..."
+          placeholder={findTopic(topic)?.placeholder ?? "How can we help?"}
           {...fieldProps(fieldErrors.message ? "reject" : undefined)}
         />
       </label>

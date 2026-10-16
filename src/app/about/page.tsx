@@ -78,9 +78,10 @@ export default async function AboutPage() {
           <div>
             <h2 className="text-2xl font-bold text-midnight">What we do</h2>
             <p className="mt-3 text-sm leading-relaxed text-midnight/70">
-              We run a single booking platform across seven services: self drive hire,
-              chauffeur driven trips, airport transfers, corporate travel, family trips, tours and
-              safaris, and event transport.
+              We run a single booking platform across our services: self drive hire, chauffeur
+              driven trips, airport transfers, corporate travel, corporate vehicle leasing,
+              replacement vehicles for insurance companies, family trips, tours and safaris, and
+              event transport.
             </p>
             {/* Corrected twice. It first claimed a small internal fleet, then
                 claimed every vehicle came from a vetted partner operator. Both
@@ -105,7 +106,7 @@ export default async function AboutPage() {
               href="/services"
               className="mt-4 inline-block text-sm font-semibold text-gold-dark hover:text-gold"
             >
-              See all seven services →
+              See all our services →
             </Link>
           </div>
 

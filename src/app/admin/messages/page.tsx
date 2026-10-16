@@ -1,6 +1,7 @@
 import MessageStatusSelect from "@/components/admin/MessageStatusSelect";
 import { getContactMessages } from "@/lib/supabase/queries";
 import { site } from "@/lib/site";
+import { findTopic } from "@/lib/enquiryTopics";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString("en-KE", {
@@ -39,7 +40,14 @@ export default async function AdminMessagesPage() {
               <article key={m.id} className="rounded-2xl bg-white p-5 ring-1 ring-line">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <h2 className="font-semibold text-midnight">{m.name}</h2>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="font-semibold text-midnight">{m.name}</h2>
+                      {m.subject && m.subject !== "general" && (
+                        <span className="rounded-full bg-gold/15 px-2.5 py-0.5 text-xs font-semibold text-gold-dark">
+                          {findTopic(m.subject)?.label ?? m.subject}
+                        </span>
+                      )}
+                    </div>
                     <p className="mt-0.5 text-sm text-midnight/60">
                       <a href={`mailto:${m.email}`} className="hover:text-midnight hover:underline">
                         {m.email}
