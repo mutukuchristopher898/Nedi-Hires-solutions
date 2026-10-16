@@ -20,8 +20,8 @@ export async function generateMetadata({
     return { title: "Vehicle not found" };
   }
 
-  const title = `${vehicle.make} ${vehicle.model} ${vehicle.year}`;
-  const description = `Hire a ${vehicle.year} ${vehicle.make} ${vehicle.model}, ${formatClassification(vehicle.classification)}, ${vehicle.transmission}, ${vehicle.fuelType}, seats ${vehicle.capacity}. Self drive or chauffeur driven.`;
+  const title = `${vehicle.make} ${vehicle.model}`;
+  const description = `Hire a ${vehicle.make} ${vehicle.model}, ${formatClassification(vehicle.classification)}, ${vehicle.transmission}, ${vehicle.fuelType}, seats ${vehicle.capacity}. Self drive or chauffeur driven.`;
 
   return {
     title,
@@ -78,7 +78,7 @@ export default async function VehicleDetailPage({
           </div>
 
           <h1 className="mt-4 text-3xl font-bold text-midnight">
-            {vehicle.make} {vehicle.model} <span className="text-midnight/50">({vehicle.year})</span>
+            {vehicle.make} {vehicle.model}
           </h1>
 
           {/* Illustrative listings are hidden from customers at the database.
@@ -101,7 +101,6 @@ export default async function VehicleDetailPage({
             <Spec label="Transmission" value={vehicle.transmission} />
             <Spec label="Fuel Type" value={vehicle.fuelType} />
             <Spec label="Capacity" value={`${vehicle.capacity} seats`} />
-            <Spec label="Year" value={String(vehicle.year)} />
           </div>
 
           <div className="mt-8">

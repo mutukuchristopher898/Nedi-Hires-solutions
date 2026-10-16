@@ -27,7 +27,7 @@ interface BookingRow {
   destination: string | null;
   purpose: "personal" | "commercial" | null;
   drive_type: "self_drive" | "chauffeur" | null;
-  vehicles: { make: string; model: string; year: number } | null;
+  vehicles: { make: string; model: string } | null;
 }
 
 interface DocumentRow {
@@ -309,7 +309,7 @@ export default function AccountPage() {
                     <tr key={b.id}>
                       <td className="px-5 py-3 font-mono text-xs text-midnight/70">{b.booking_ref}</td>
                       <td className="px-5 py-3 font-medium text-midnight">
-                        {b.vehicles ? `${b.vehicles.make} ${b.vehicles.model} (${b.vehicles.year})` : ""}
+                        {b.vehicles ? `${b.vehicles.make} ${b.vehicles.model}` : ""}
                       </td>
                       <td className="px-5 py-3 text-midnight/70">
                         {b.drive_type

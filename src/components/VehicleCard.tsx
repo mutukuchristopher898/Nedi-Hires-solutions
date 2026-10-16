@@ -27,7 +27,6 @@ export default function VehicleCard({ vehicle }: { vehicle: VehicleListing }) {
               reviews feature, the number came from the illustrative
               catalogue, and a listing nobody has hired cannot have one. The
               year is real and is what someone comparing cars actually wants. */}
-          <span className="text-xs font-medium text-midnight/70">{vehicle.year}</span>
         </div>
 
         {/* Illustrative listings are hidden from customers at the database, so

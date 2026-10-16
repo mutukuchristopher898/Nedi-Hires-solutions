@@ -75,7 +75,7 @@ export default function VehicleList({
                   type="checkbox"
                   checked={isSelected}
                   onChange={() => toggle(v.id)}
-                  aria-label={`Select ${v.make} ${v.model} ${v.year}`}
+                  aria-label={`Select ${v.make} ${v.model}`}
                   className="h-4 w-4 rounded border-line accent-gold"
                 />
               </label>
@@ -100,7 +100,7 @@ export default function VehicleList({
                     href={`/admin/vehicles/${v.id}`}
                     className="font-semibold text-midnight hover:text-gold-dark"
                   >
-                    {v.make} {v.model} {v.year}
+                    {v.make} {v.model}
                   </Link>
                   <span
                     className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${LIFECYCLE_STYLES[v.lifecycle]}`}

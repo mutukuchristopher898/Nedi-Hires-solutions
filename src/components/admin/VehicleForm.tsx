@@ -34,7 +34,6 @@ export default function VehicleForm({
   const [partnerId, setPartnerId] = useState(vehicle?.partnerId ?? "");
   const [make, setMake] = useState(vehicle?.make ?? "");
   const [model, setModel] = useState(vehicle?.model ?? "");
-  const [year, setYear] = useState(vehicle ? String(vehicle.year) : "");
   const [classification, setClassification] = useState<string>(vehicle?.classification ?? classifications[0]);
   const [fuelType, setFuelType] = useState<string>(vehicle?.fuelType ?? "Petrol");
   const [transmission, setTransmission] = useState<string>(vehicle?.transmission ?? "Automatic");
@@ -113,14 +112,12 @@ export default function VehicleForm({
     setError(null);
     setSaved(false);
 
-    const yearNum = Number(year);
     const capacityNum = Number(capacity);
     const priceNum = Number(pricePerDay);
 
     const errors: Record<string, boolean> = {
       make: !make.trim(),
       model: !model.trim(),
-      year: !Number.isInteger(yearNum) || yearNum < 1990 || yearNum > new Date().getFullYear() + 1,
       location: location.trim().length < 2,
       capacity: !Number.isInteger(capacityNum) || capacityNum < 1 || capacityNum > 60,
       pricePerDay: !(priceNum > 0),
@@ -138,7 +135,6 @@ export default function VehicleForm({
       partner_id: partnerId || null,
       make: make.trim(),
       model: model.trim(),
-      year: yearNum,
       classification,
       fuel_type: fuelType,
       transmission,
@@ -205,11 +201,6 @@ export default function VehicleForm({
         <Field label="Model">
           <input value={model} onChange={(e) => { setModel(e.target.value); setSaved(false); }}
             placeholder="e.g. Axio" {...fieldProps(fieldErrors.model ? "reject" : undefined, INPUT)} />
-        </Field>
-        <Field label="Year">
-          <input type="number" min={1990} max={new Date().getFullYear() + 1} value={year}
-            onChange={(e) => { setYear(e.target.value); setSaved(false); }} placeholder="e.g. 2019"
-            {...fieldProps(fieldErrors.year ? "reject" : undefined, INPUT)} />
         </Field>
         <Field label="Class">
           <select value={classification} onChange={(e) => { setClassification(e.target.value); setSaved(false); }} className={INPUT}>

@@ -144,7 +144,7 @@ export default async function OwnerDashboardPage() {
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="font-semibold text-midnight">
-                    {v.make} {v.model} {v.year}
+                    {v.make} {v.model}
                   </h3>
                   <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_STYLES[v.approvalStatus]}`}>
                     {STATUS_LABELS[v.approvalStatus]}

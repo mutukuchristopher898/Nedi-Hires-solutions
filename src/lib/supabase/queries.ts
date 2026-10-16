@@ -238,7 +238,7 @@ interface AdminBookingRow {
   currency: string;
   created_at: string;
   profiles: { full_name: string | null } | null;
-  vehicles: { make: string; model: string; year: number; license_plate: string | null } | null;
+  vehicles: { make: string; model: string; year: number | null; license_plate: string | null } | null;
 }
 
 // Admin-only: "Admins can view all bookings" (20260818120000) is what widens
@@ -266,7 +266,7 @@ export async function getAdminBookings(): Promise<AdminBooking[]> {
     currency: row.currency,
     createdAt: row.created_at,
     customerName: row.profiles?.full_name ?? null,
-    vehicleLabel: row.vehicles ? `${row.vehicles.make} ${row.vehicles.model} ${row.vehicles.year}` : "Unknown vehicle",
+    vehicleLabel: row.vehicles ? `${row.vehicles.make} ${row.vehicles.model}` : "Unknown vehicle",
     licensePlate: row.vehicles?.license_plate ?? "",
     // Mirrors enforce_vehicle_availability (20260911120000): anything not
     // cancelled, whose dates haven't passed, is still withholding the car.
@@ -282,7 +282,8 @@ interface VehicleRow {
   slug: string | null;
   make: string;
   model: string;
-  year: number;
+  // Optional since October 2026: years of manufacture are no longer recorded.
+  year: number | null;
   classification: VehicleClassification;
   fuel_type: FuelType;
   transmission: Transmission;
@@ -439,7 +440,8 @@ interface ListingRow {
   slug: string | null;
   make: string;
   model: string;
-  year: number;
+  // Optional since October 2026: years of manufacture are no longer recorded.
+  year: number | null;
   classification: VehicleClassification;
   fuel_type: FuelType;
   transmission: Transmission;
@@ -593,7 +595,8 @@ const SORT_COLUMNS: Record<SortOption, { column: string; ascending: boolean }> =
   newest: { column: "created_at", ascending: false },
   price_asc: { column: "price_per_day", ascending: true },
   price_desc: { column: "price_per_day", ascending: false },
-  year_desc: { column: "year", ascending: false },
+  // Years are no longer recorded; kept so old links still work, as "newest".
+  year_desc: { column: "created_at", ascending: false },
 };
 
 export interface VehiclePage {
@@ -824,7 +827,7 @@ export async function getVehiclePricing(): Promise<VehiclePricingRow[]> {
 
   return (data as unknown as (ListingRow & { license_plate: string | null; approval_status: ApprovalStatus })[]).map((row) => ({
     id: row.id,
-    label: `${row.make} ${row.model} ${row.year}`,
+    label: `${row.make} ${row.model}`,
     licensePlate: row.license_plate ?? "",
     partnerName: row.partner_name,
     approvalStatus: row.approval_status,
@@ -1300,7 +1303,7 @@ export async function getAccountDetail(id: string): Promise<AccountDetail | null
       currency: b.currency,
       createdAt: b.created_at,
       customerName: b.profiles?.full_name ?? null,
-      vehicleLabel: b.vehicles ? `${b.vehicles.make} ${b.vehicles.model} ${b.vehicles.year}` : "Unknown vehicle",
+      vehicleLabel: b.vehicles ? `${b.vehicles.make} ${b.vehicles.model}` : "Unknown vehicle",
       licensePlate: b.vehicles?.license_plate ?? "",
       holdsVehicle: b.status !== "cancelled" && b.end_date >= today,
     })),
@@ -1501,7 +1504,7 @@ export async function getVehicleDocumentAlerts(
   if (error || !data) return empty;
 
   const rows = data as unknown as (VehicleDocumentRow & {
-    vehicles?: { make: string; model: string; year: number; license_plate: string | null } | null;
+    vehicles?: { make: string; model: string; year: number | null; license_plate: string | null } | null;
   })[];
 
   const signed = await signVehicleDocuments(supabase, rows.map((r) => r.file_path));
@@ -1509,7 +1512,7 @@ export async function getVehicleDocumentAlerts(
   const alerts: VehicleDocumentAlert[] = rows.map((row) => ({
     ...toVehicleDocument(row, signed),
     vehicleLabel: row.vehicles
-      ? `${row.vehicles.make} ${row.vehicles.model} ${row.vehicles.year}`
+      ? `${row.vehicles.make} ${row.vehicles.model}`
       : "Unknown vehicle",
     licensePlate: row.vehicles?.license_plate ?? "",
   }));

@@ -68,7 +68,7 @@ export default async function EditVehiclePage({ params }: { params: Promise<{ id
       <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-midnight">
-            {vehicle.make} {vehicle.model} {vehicle.year}
+            {vehicle.make} {vehicle.model}
           </h1>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
             {vehicle.licensePlate && <span className="text-sm text-midnight/60">{vehicle.licensePlate}</span>}

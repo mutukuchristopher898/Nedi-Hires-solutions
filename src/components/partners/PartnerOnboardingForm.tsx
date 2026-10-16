@@ -49,7 +49,6 @@ export default function PartnerOnboardingForm({
   // ── Vehicle step ───────────────────────────────────────────
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
-  const [year, setYear] = useState("");
   const [classification, setClassification] = useState<string>(classifications[0]);
   const [fuelType, setFuelType] = useState("Petrol");
   const [transmission, setTransmission] = useState("Automatic");
@@ -130,14 +129,12 @@ export default function PartnerOnboardingForm({
       return;
     }
 
-    const yearNum = Number(year);
     const capacityNum = Number(capacity);
     const priceNum = Number(pricePerDay);
 
     const errors: Record<string, boolean> = {
       make: !make,
       model: !model,
-      year: !Number.isInteger(yearNum) || yearNum < 1990 || yearNum > new Date().getFullYear() + 1,
       location: location.trim().length < 2,
       capacity: !Number.isInteger(capacityNum) || capacityNum < 1 || capacityNum > 60,
       pricePerDay: !(priceNum > 0),
@@ -179,7 +176,6 @@ export default function PartnerOnboardingForm({
         partner_id: partner.id,
         make,
         model,
-        year: yearNum,
         classification,
         fuel_type: fuelType,
         transmission,
@@ -199,7 +195,7 @@ export default function PartnerOnboardingForm({
         return;
       }
 
-      setListedName(`${make} ${model} ${year}`);
+      setListedName(`${make} ${model}`);
       setSavingUnit(false);
       setStage("done");
       router.refresh();
@@ -300,17 +296,6 @@ export default function PartnerOnboardingForm({
                   <option key={m.model} value={m.model}>{m.model}</option>
                 ))}
               </select>
-            </Field>
-            <Field label="Year">
-              <input
-                type="number"
-                min={1990}
-                max={new Date().getFullYear() + 1}
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-                placeholder="e.g. 2019"
-                {...fieldProps(unitFieldErrors.year ? "reject" : undefined, INPUT_CLASS)}
-              />
             </Field>
             <Field label="Classification">
               <select value={classification} onChange={(e) => setClassification(e.target.value)} className={SELECT_CLASS}>
@@ -463,7 +448,6 @@ export default function PartnerOnboardingForm({
               onClick={() => {
                 setMake("");
                 setModel("");
-                setYear("");
                 setLocation("");
                 setPricePerDay("");
                 setDescription("");

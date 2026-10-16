@@ -19,7 +19,7 @@ export interface Vehicle {
   id: string;
   make: string;
   model: string;
-  year: number;
+  year: number | null;
   classification: VehicleClassification;
   fuelType: FuelType;
   transmission: Transmission;
@@ -222,7 +222,7 @@ export interface PartnerVehicle {
   slug: string | null;
   make: string;
   model: string;
-  year: number;
+  year: number | null;
   classification: VehicleClassification;
   fuelType: FuelType;
   transmission: Transmission;
@@ -267,7 +267,7 @@ export interface VehicleListing {
   slug: string;
   make: string;
   model: string;
-  year: number;
+  year: number | null;
   classification: VehicleClassification;
   fuelType: FuelType;
   transmission: Transmission;
