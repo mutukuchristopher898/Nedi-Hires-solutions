@@ -5,7 +5,14 @@ import VehiclePhoto from "./VehiclePhoto";
 import DemoTag from "./DemoTag";
 import VehicleStatus from "./VehicleStatus";
 
-export default function VehicleCard({ vehicle }: { vehicle: VehicleListing }) {
+export default function VehicleCard({
+  vehicle,
+  showDescription = false,
+}: {
+  vehicle: VehicleListing;
+  /** A two-line excerpt of the description, for the fleet page. */
+  showDescription?: boolean;
+}) {
   return (
     <Link
       href={`/vehicles/${vehicle.slug}`}
@@ -26,7 +33,7 @@ export default function VehicleCard({ vehicle }: { vehicle: VehicleListing }) {
           {/* This slot held a star rating. There is no ratings column and no
               reviews feature, the number came from the illustrative
               catalogue, and a listing nobody has hired cannot have one. The
-              year is real and is what someone comparing cars actually wants. */}
+              year used to sit here; years are no longer recorded. */}
         </div>
 
         {/* Illustrative listings are hidden from customers at the database, so
@@ -39,6 +46,10 @@ export default function VehicleCard({ vehicle }: { vehicle: VehicleListing }) {
           {vehicle.make} {vehicle.model}
         </h3>
         <VehicleStatus status={vehicle.status} className="self-start" />
+
+        {showDescription && vehicle.description && (
+          <p className="line-clamp-2 text-sm text-midnight/70">{vehicle.description}</p>
+        )}
 
         <div className="mt-1 flex flex-wrap gap-1.5 text-xs text-midnight/60">
           <span>{vehicle.transmission}</span>

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import VehicleCard from "@/components/VehicleCard";
-import SourceableFleet from "@/components/SourceableFleet";
 import SearchWidget from "@/components/SearchWidget";
 import { classifications, formatClassification } from "@/lib/data";
 import { getApprovedVehicles } from "@/lib/supabase/queries";
@@ -201,7 +200,6 @@ export default async function SearchPage({
             </>
           )}
 
-          <SourceableFleet classification={classification} />
         </div>
       </div>
     </div>
