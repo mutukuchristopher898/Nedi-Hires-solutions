@@ -18,3 +18,15 @@
  * place: src/app/booking/[id]/selfie, SelfieCaptureStep, /api/verify-selfie.
  */
 export const SELFIE_VERIFICATION_ENABLED = false;
+
+/**
+ * Whether the site is open to the public.
+ *
+ * false = pre-launch: visitors see the "Coming soon" page (with contact
+ * details), search engines are asked not to list anything, and new customer
+ * sign-ups are paused. Admin and staff accounts can still sign in and use the
+ * whole site, to prepare the fleet and test bookings.
+ *
+ * Launch day: change false to true, commit, and the full site opens.
+ */
+export const SITE_LAUNCHED = false;
