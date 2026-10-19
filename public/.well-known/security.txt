@@ -1,0 +1,5 @@
+Contact: mailto:mutukuchristopher898@gmail.com
+Contact: https://nedi-hires-solutions.vercel.app/contact
+Expires: 2027-10-01T00:00:00.000Z
+Preferred-Languages: en, sw
+Canonical: https://nedi-hires-solutions.vercel.app/.well-known/security.tx
