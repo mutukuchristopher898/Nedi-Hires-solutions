@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "Services",
   description: DESCRIPTION,
   alternates: { canonical: "/services" },
-  openGraph: { title: "Services", description: DESCRIPTION, url: "/services" },
+  openGraph: { images: [site.ogImage], title: "Services", description: DESCRIPTION, url: "/services" },
 };
 
 export default function ServicesPage() {

@@ -41,7 +41,7 @@ export default function GlobalError({ reset }: { error: Error & { digest?: strin
             Try again
           </button>
           <p style={{ marginTop: "1.5rem", fontSize: "0.875rem", color: "#667085" }}>
-            Or call us on +254 794 772 271.
+            Or call us on 0113 624 058.
           </p>
         </div>
       </body>

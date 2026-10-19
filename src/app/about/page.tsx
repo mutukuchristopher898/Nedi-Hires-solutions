@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "About Us",
   description: DESCRIPTION,
   alternates: { canonical: "/about" },
-  openGraph: { title: "About Us", description: DESCRIPTION, url: "/about" },
+  openGraph: { images: [site.ogImage], title: "About Us", description: DESCRIPTION, url: "/about" },
 };
 
 const VALUES = [

@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Terms & Conditions",
   description: "The terms governing use of Nedi Hires Solutions and its vehicle hire services.",
   alternates: { canonical: "/terms" },
-  openGraph: { title: "Terms & Conditions", description: "The terms governing use of Nedi Hires Solutions and its vehicle hire services.", url: "/terms" },
+  openGraph: { images: [site.ogImage], title: "Terms & Conditions", description: "The terms governing use of Nedi Hires Solutions and its vehicle hire services.", url: "/terms" },
 };
 
 // These describe how the platform actually behaves today, which is the part

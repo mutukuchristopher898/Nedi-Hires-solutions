@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { site } from "@/lib/site";
 
 
 export const metadata: Metadata = {
   title: "List Your Vehicle",
   description: "List your vehicle with Nedi Hires Solutions, register your business or host profile and reach verified customers across Kenya.",
   alternates: { canonical: "/list-your-vehicle" },
-  openGraph: { title: "List Your Vehicle", description: "List your vehicle with Nedi Hires Solutions, register your business or host profile and reach verified customers across Kenya.", url: "/list-your-vehicle" },
+  openGraph: { images: [site.ogImage], title: "List Your Vehicle", description: "List your vehicle with Nedi Hires Solutions, register your business or host profile and reach verified customers across Kenya.", url: "/list-your-vehicle" },
 };
 
 const STEPS = [

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Contact us",
   description: "Talk to the Nedi Hires Solutions team about a booking, a quote, or group and event transport across Kenya.",
   alternates: { canonical: "/contact" },
-  openGraph: { title: "Contact us", description: "Talk to the Nedi Hires Solutions team about a booking, a quote, or group and event transport across Kenya.", url: "/contact" },
+  openGraph: { images: [site.ogImage], title: "Contact us", description: "Talk to the Nedi Hires Solutions team about a booking, a quote, or group and event transport across Kenya.", url: "/contact" },
 };
 
 export default async function ContactPage({

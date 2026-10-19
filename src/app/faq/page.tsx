@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import FaqAccordion from "@/components/FaqAccordion";
+import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Frequently Asked Questions",
   description: "How deposits, identity verification, chauffeur hire, cancellations and vehicle listing work at Nedi Hires Solutions.",
   alternates: { canonical: "/faq" },
-  openGraph: { title: "Frequently Asked Questions", description: "How deposits, identity verification, chauffeur hire, cancellations and vehicle listing work at Nedi Hires Solutions.", url: "/faq" },
+  openGraph: { images: [site.ogImage], title: "Frequently Asked Questions", description: "How deposits, identity verification, chauffeur hire, cancellations and vehicle listing work at Nedi Hires Solutions.", url: "/faq" },
 };
 
 export default function FaqPage() {

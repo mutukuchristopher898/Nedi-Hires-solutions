@@ -24,7 +24,8 @@ export const metadata: Metadata = {
   // social-image fields.
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} | ${site.tagline}`,
+    // Leads with what people search for; the slogan stays on the page itself.
+    default: `${site.name} | Car Hire, Drivers & Fleet Leasing in Kenya`,
     // Pages set only their own title; this appends the brand.
     template: `%s | ${site.name}`,
   },
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: site.name,
-    title: `${site.name} | ${site.tagline}`,
+    title: `${site.name} | Car Hire, Drivers & Fleet Leasing in Kenya`,
     description: site.description,
     locale: "en_KE",
     url: "/",
@@ -43,15 +44,20 @@ export const metadata: Metadata = {
     card: "summary",
     site: site.xHandle,
     creator: site.xHandle,
-    title: `${site.name} | ${site.tagline}`,
+    title: `${site.name} | Car Hire, Drivers & Fleet Leasing in Kenya`,
     description: site.description,
   },
 };
 
 const ORGANIZATION_JSON_LD = JSON.stringify({
   "@context": "https://schema.org",
-  "@type": "Organization",
+  // AutoRental is the schema.org type for a car hire business, so search
+  // engines can show it for car hire searches, not just as a company name.
+  "@type": "AutoRental",
   name: site.name,
+  description: site.description,
+  areaServed: { "@type": "Country", name: "Kenya" },
+  currenciesAccepted: "USD",
   url: site.url,
   logo: `${site.url}/logo-lockup.png`,
   email: site.email,

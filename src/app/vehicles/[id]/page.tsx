@@ -21,14 +21,15 @@ export async function generateMetadata({
     return { title: "Vehicle not found" };
   }
 
-  const title = `${vehicle.make} ${vehicle.model}`;
+  // "for hire in Kenya" matches how people search for a specific car.
+  const title = `${vehicle.make} ${vehicle.model} for hire in Kenya`;
   const description = `Hire a ${vehicle.make} ${vehicle.model}, ${formatClassification(vehicle.classification)}, ${vehicle.transmission}, ${vehicle.fuelType}, seats ${vehicle.capacity}. Self drive or chauffeur driven.`;
 
   return {
     title,
     description,
     alternates: { canonical: `/vehicles/${vehicle.slug}` },
-    openGraph: { title, description, url: `/vehicles/${vehicle.slug}` },
+    openGraph: { images: [site.ogImage], title, description, url: `/vehicles/${vehicle.slug}` },
   };
 }
 

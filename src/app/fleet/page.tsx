@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   title: "Our Fleet",
   description: DESCRIPTION,
   alternates: { canonical: "/fleet" },
-  openGraph: { title: "Our Fleet", description: DESCRIPTION, url: "/fleet" },
+  openGraph: { images: [site.ogImage], title: "Our Fleet", description: DESCRIPTION, url: "/fleet" },
 };
 
 const CLASSES = [
