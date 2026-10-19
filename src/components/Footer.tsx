@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { LogoLockup } from "./Logo";
 import { site } from "@/lib/site";
+import SocialLinks from "@/components/SocialLinks";
 
 export default function Footer() {
   return (
@@ -9,6 +10,10 @@ export default function Footer() {
         <div className="sm:col-span-2 lg:col-span-2">
           <LogoLockup light width={260} />
           <p className="mt-4 max-w-xs text-sm">{site.description}</p>
+          <div className="mt-5">
+            <p className="mb-2 text-sm font-semibold text-white">Follow us</p>
+            <SocialLinks tone="dark" />
+          </div>
         </div>
 
         <div>

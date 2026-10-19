@@ -41,15 +41,36 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary",
+    site: site.xHandle,
+    creator: site.xHandle,
     title: `${site.name} | ${site.tagline}`,
     description: site.description,
   },
 };
 
+const ORGANIZATION_JSON_LD = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: site.name,
+  url: site.url,
+  logo: `${site.url}/logo-lockup.png`,
+  email: site.email,
+  telephone: site.phoneTel,
+  address: { "@type": "PostalAddress", addressLocality: "Nairobi", addressCountry: "KE" },
+  sameAs: site.socials.map((s) => s.href),
+}).replace(/</g, "\\u003c");
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${inter.variable} ${cormorant.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-offwhite text-midnight">
+        {/* Who the business is, for search engines: lets Google connect the
+            site with its social profiles and contact details. Built only from
+            fixed values in site.ts, and "<" is escaped regardless. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: ORGANIZATION_JSON_LD }}
+        />
         <AuthProvider>
           {/* Every page has a sticky header with roughly eight focusable
               controls. Without this, a keyboard user tabs through all of them

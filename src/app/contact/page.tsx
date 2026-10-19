@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ContactForm from "@/components/ContactForm";
+import SocialLinks from "@/components/SocialLinks";
 import { site } from "@/lib/site";
 import { findTopic } from "@/lib/enquiryTopics";
 
@@ -69,6 +70,12 @@ export default async function ContactPage({
             <h2 className="text-sm font-semibold text-midnight">Where we operate</h2>
             <p className="mt-1 text-base font-semibold text-midnight">{site.location}</p>
             <p className="mt-1 text-sm text-midnight/60">Vehicle handover and pickup across Nairobi and beyond.</p>
+          </div>
+
+          <div className="rounded-xl bg-white p-5 ring-1 ring-line">
+            <h2 className="text-sm font-semibold text-midnight">Follow us</h2>
+            <p className="mb-3 mt-1 text-sm text-midnight/60">News, offers and new vehicles.</p>
+            <SocialLinks />
           </div>
         </div>
 
