@@ -1,4 +1,11 @@
 const ICONS: Record<string, React.ReactNode> = {
+  // A person, for a driver supplied on their own.
+  "Driver Hire": (
+    <>
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M5 20c.8-3.6 3.6-6 7-6s6.2 2.4 7 6" />
+    </>
+  ),
   // A key, for vehicles handed over on a lease.
   "Corporate Leasing": (
     <>

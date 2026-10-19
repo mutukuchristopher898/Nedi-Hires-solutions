@@ -7,6 +7,8 @@ import { createClient } from "@/lib/supabase/client";
 import { safeRedirectPath } from "@/lib/safeRedirect";
 import { validateEmail } from "@/lib/formValidation/email";
 import { fieldProps, FormError } from "@/components/forms/shared";
+import PasswordInput from "@/components/account/PasswordInput";
+import { friendlyAuthError } from "@/lib/authErrors";
 
 export default function SignInPage() {
   return (
@@ -65,7 +67,7 @@ function SignInForm() {
     setSubmitting(false);
 
     if (signInError) {
-      setError(signInError.message);
+      setError(friendlyAuthError(signInError));
       return;
     }
 
@@ -74,7 +76,7 @@ function SignInForm() {
 
   return (
     <div className="container-shell max-w-md py-16">
-      <h1 className="text-2xl font-bold text-midnight">Sign In</h1>
+      <h1 className="text-2xl font-bold text-midnight">Sign in</h1>
       <p className="mt-1 text-sm text-midnight/60">
         Access your bookings, documents, and profile.
       </p>
@@ -89,6 +91,8 @@ function SignInForm() {
           <input
             required
             type="email"
+            autoComplete="email"
+            inputMode="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="e.g. jane.wanjiru@example.com"
@@ -97,12 +101,13 @@ function SignInForm() {
         </label>
         <label className="block">
           <span className="text-xs font-medium text-midnight/60">Password</span>
-          <input
+          <PasswordInput
             required
-            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             {...fieldProps(fieldErrors.password ? "reject" : undefined)}
+          
+            autoComplete="current-password"
           />
         </label>
 
@@ -117,7 +122,7 @@ function SignInForm() {
           disabled={submitting}
           className="w-full rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white disabled:opacity-60"
         >
-          {submitting ? "Signing in…" : "Sign In"}
+          {submitting ? "Signing in…" : "Sign in"}
         </button>
       </form>
 

@@ -48,7 +48,7 @@ export const SERVICES: Service[] = [
     ],
     bestFor:
       "residents, returning visitors, and anyone who'd rather set their own schedule.",
-    cta: { label: "Check availability", href: "/search" },
+    cta: { label: "Choose your car", href: "/fleet" },
   },
   {
     slug: "chauffeur-driven",
@@ -65,8 +65,25 @@ export const SERVICES: Service[] = [
       "Airport runs, meetings, city errands, upcountry trips",
     ],
     bestFor:
-      "visitors unfamiliar with Kenyan roads, executives between meetings, anyone who'd rather not park in town.",
-    cta: { label: "Request a driver", href: "/contact" },
+      "visitors unfamiliar with Kenyan roads, executives between meetings, anyone who’d rather not park in town. Have your own vehicle and only need a driver? See Driver Hire.",
+    cta: { label: "Choose a car with a driver", href: "/fleet" },
+  },
+  {
+    slug: "driver-hire",
+    title: "Driver Hire",
+    summary: "A professional driver for your own vehicle, for a day, a trip or a longer arrangement.",
+    promise: "Your vehicle, our driver.",
+    intro:
+      "Already have a vehicle but need someone to drive it? We provide drivers on their own: for an event, a long trip upcountry, or a company that needs drivers for its own fleet.",
+    points: [
+      "A driver for your own car, van or company vehicles",
+      "By the day, by the week or on a longer arrangement",
+      "For individuals, families and companies",
+      "Book for a single trip or for ongoing work",
+    ],
+    bestFor:
+      "vehicle owners who want a driver for a trip or an occasion, and companies that need drivers for vehicles they already own.",
+    cta: { label: "Hire a driver", href: "/contact?topic=driver-hire" },
   },
   {
     slug: "airport-transfers",

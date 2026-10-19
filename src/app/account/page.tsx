@@ -285,7 +285,7 @@ export default function AccountPage() {
             <div className="rounded-2xl bg-white p-8 text-center ring-1 ring-line">
               <p className="text-sm text-midnight/60">You don&apos;t have any bookings yet.</p>
               <Link
-                href="/search"
+                href="/fleet"
                 className="mt-4 inline-block rounded-md bg-gold px-5 py-2.5 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
               >
                 Browse Vehicles

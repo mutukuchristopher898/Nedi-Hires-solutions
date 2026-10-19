@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { validateEmail } from "@/lib/formValidation/email";
 import { fieldProps, FormError } from "@/components/forms/shared";
+import { friendlyAuthError } from "@/lib/authErrors";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -34,7 +35,7 @@ export default function ForgotPasswordPage() {
     setSending(false);
 
     if (resetError) {
-      setError(resetError.message);
+      setError(friendlyAuthError(resetError));
       return;
     }
 
@@ -77,6 +78,8 @@ export default function ForgotPasswordPage() {
           <input
             required
             type="email"
+            autoComplete="email"
+            inputMode="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="e.g. jane.wanjiru@example.com"

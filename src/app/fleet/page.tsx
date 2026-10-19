@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import VehicleCard from "@/components/VehicleCard";
 import { getApprovedVehicles } from "@/lib/supabase/queries";
 import { site } from "@/lib/site";
@@ -49,8 +48,7 @@ export default async function FleetPage() {
     <div>
       <section className="bg-midnight py-16 text-white">
         <div className="container-shell">
-          <p className="text-xs font-medium uppercase tracking-wide text-gold">Our fleet</p>
-          <h1 className="mt-2 max-w-2xl text-3xl font-bold sm:text-4xl">
+          <h1 className="max-w-2xl text-3xl font-bold sm:text-4xl">
             {total > 0 ? `${total} vehicles ready to book` : "Our fleet"}
           </h1>
           <p className="mt-4 max-w-2xl text-sm text-white/70 sm:text-base">
@@ -58,12 +56,6 @@ export default async function FleetPage() {
             driven, with the daily price on every vehicle.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link
-              href="/search"
-              className="rounded-md bg-gold px-7 py-3.5 text-center text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
-            >
-              Check availability
-            </Link>
             <a
               href={site.whatsappHref}
               target="_blank"

@@ -39,7 +39,7 @@ export default async function Home() {
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
-              href="/search"
+              href="/fleet"
               className="rounded-md bg-gold px-7 py-3.5 text-center text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
             >
               Twende, Book a Ride
@@ -61,14 +61,13 @@ export default async function Home() {
       <section className="container-shell py-14">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-gold-dark">Our services</p>
-            <h2 className="mt-1 text-2xl font-bold text-midnight sm:text-3xl">How would you like to travel?</h2>
+            <h2 className="text-2xl font-bold text-midnight sm:text-3xl">How would you like to travel?</h2>
             <p className="mt-1 text-sm text-midnight/60">
               Affordable · Reliable · Comfortable, from one vetted fleet.
             </p>
           </div>
           <Link href="/services" className="text-sm font-semibold text-gold-dark hover:text-gold">
-            See all services →
+            See all services
           </Link>
         </div>
 
@@ -143,8 +142,8 @@ export default async function Home() {
               Inspected, road ready and available to book now.
             </p>
           </div>
-          <Link href="/search" className="text-sm font-semibold text-gold-dark hover:text-gold">
-            View all →
+          <Link href="/fleet" className="text-sm font-semibold text-gold-dark hover:text-gold">
+            View all
           </Link>
         </div>
         {featured.length === 0 ? (

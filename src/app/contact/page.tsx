@@ -4,10 +4,10 @@ import { site } from "@/lib/site";
 import { findTopic } from "@/lib/enquiryTopics";
 
 export const metadata: Metadata = {
-  title: "Contact Support",
+  title: "Contact us",
   description: "Talk to the Nedi Hires Solutions team about a booking, a quote, or group and event transport across Kenya.",
   alternates: { canonical: "/contact" },
-  openGraph: { title: "Contact Support", description: "Talk to the Nedi Hires Solutions team about a booking, a quote, or group and event transport across Kenya.", url: "/contact" },
+  openGraph: { title: "Contact us", description: "Talk to the Nedi Hires Solutions team about a booking, a quote, or group and event transport across Kenya.", url: "/contact" },
 };
 
 export default async function ContactPage({
@@ -23,55 +23,57 @@ export default async function ContactPage({
     <div>
       <section className="bg-midnight py-14 text-white">
         <div className="container-shell">
-          <p className="text-xs font-medium uppercase tracking-wide text-gold">Contact Support</p>
-          <h1 className="mt-2 max-w-xl text-3xl font-bold sm:text-4xl">We&apos;re here to help.</h1>
-          <p className="mt-3 max-w-lg text-sm text-white/70">
-            Reach us for booking help, custom tour quotes, corporate leasing, insurance
-            replacement vehicles, or fleet enquiries.
+          <h1 className="max-w-xl text-3xl font-bold sm:text-4xl">Contact us</h1>
+          <p className="mt-3 max-w-lg text-sm text-white/70 sm:text-base">
+            Help with a booking, a quote for your company or insurance clients, or a driver for your
+            own vehicle. Choose the quickest way to reach us.
           </p>
         </div>
       </section>
 
-      <section className="container-shell grid gap-8 py-14 lg:grid-cols-[1fr_1.2fr]">
+      <section className="container-shell grid gap-8 py-14 lg:grid-cols-[1fr_1.4fr]">
         <div className="space-y-4">
-          <ContactCard
-            title="Call / WhatsApp"
-            value={site.phoneDisplay}
-            href={site.whatsappHref}
-            note="Fastest response, usually within minutes during business hours."
-          />
-          <ContactCard title="Email" value={site.email} href={`mailto:${site.email}`} note="For quotes, invoices and account enquiries." />
-          <ContactCard title="Location" value={site.location} note="Vehicle handover and pickup points across Nairobi and beyond." />
+          <div className="rounded-xl bg-white p-5 ring-1 ring-line">
+            <h2 className="text-sm font-semibold text-midnight">Phone and WhatsApp</h2>
+            <p className="mt-1 text-lg font-semibold text-midnight">{site.phoneDisplay}</p>
+            <p className="mt-1 text-sm text-midnight/60">
+              The fastest way to reach us, usually answered within minutes during business hours.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <a
+                href={`tel:${site.phoneTel}`}
+                className="rounded-md bg-midnight px-4 py-2 text-sm font-semibold text-white transition hover:bg-midnight/85"
+              >
+                Call us
+              </a>
+              <a
+                href={site.whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-md border border-line px-4 py-2 text-sm font-semibold text-midnight transition hover:border-gold hover:text-gold-dark"
+              >
+                WhatsApp
+              </a>
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-white p-5 ring-1 ring-line">
+            <h2 className="text-sm font-semibold text-midnight">Email</h2>
+            <a href={`mailto:${site.email}`} className="mt-1 block break-all text-base font-semibold text-midnight hover:text-gold-dark">
+              {site.email}
+            </a>
+            <p className="mt-1 text-sm text-midnight/60">For quotes, invoices and account questions.</p>
+          </div>
+
+          <div className="rounded-xl bg-white p-5 ring-1 ring-line">
+            <h2 className="text-sm font-semibold text-midnight">Where we operate</h2>
+            <p className="mt-1 text-base font-semibold text-midnight">{site.location}</p>
+            <p className="mt-1 text-sm text-midnight/60">Vehicle handover and pickup across Nairobi and beyond.</p>
+          </div>
         </div>
 
         <ContactForm initialTopic={initialTopic} />
       </section>
-    </div>
-  );
-}
-
-function ContactCard({
-  title,
-  value,
-  href,
-  note,
-}: {
-  title: string;
-  value: string;
-  href?: string;
-  note: string;
-}) {
-  return (
-    <div className="rounded-xl bg-white p-5 ring-1 ring-line">
-      <div className="text-xs font-medium uppercase tracking-wide text-midnight/50">{title}</div>
-      {href ? (
-        <a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" className="mt-1 block text-lg font-semibold text-midnight hover:text-gold-dark">
-          {value}
-        </a>
-      ) : (
-        <div className="mt-1 text-lg font-semibold text-midnight">{value}</div>
-      )}
-      <p className="mt-1 text-sm text-midnight/60">{note}</p>
     </div>
   );
 }

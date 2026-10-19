@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 import { evaluatePasswordStrength } from "@/lib/passwordStrength";
 import { isPasswordBreached } from "@/lib/breachedPassword";
 import { fieldProps, FormError } from "@/components/forms/shared";
+import PasswordInput from "@/components/account/PasswordInput";
+import { friendlyAuthError } from "@/lib/authErrors";
 
 export default function ResetPasswordForm() {
   const router = useRouter();
@@ -53,7 +55,7 @@ export default function ResetPasswordForm() {
     setSaving(false);
 
     if (updateError) {
-      setError(updateError.message);
+      setError(friendlyAuthError(updateError));
       return;
     }
 
@@ -75,14 +77,15 @@ export default function ResetPasswordForm() {
 
         <label className="block">
           <span className="text-xs font-medium text-midnight/60">New password</span>
-          <input
+          <PasswordInput
             required
             minLength={8}
-            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="e.g. Nairobi#Drive26"
             {...fieldProps(fieldErrors.password ? "reject" : undefined)}
+          
+            autoComplete="new-password"
           />
           {password && (
             <div className="mt-2">
@@ -107,12 +110,13 @@ export default function ResetPasswordForm() {
 
         <label className="block">
           <span className="text-xs font-medium text-midnight/60">Confirm new password</span>
-          <input
+          <PasswordInput
             required
-            type="password"
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             {...fieldProps(fieldErrors.confirm ? "reject" : undefined)}
+          
+            autoComplete="new-password"
           />
         </label>
 

@@ -55,8 +55,7 @@ export default async function AboutPage() {
       <section className="bg-midnight py-16 text-white">
         <div className="container-shell grid gap-8 lg:grid-cols-[1.3fr_auto] lg:items-center">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-gold">About Us</p>
-            <h1 className="mt-2 max-w-xl text-3xl font-bold sm:text-4xl">
+            <h1 className="max-w-xl text-3xl font-bold sm:text-4xl">
               Getting people where they&apos;re going, safely and on time
             </h1>
             <p className="mt-4 max-w-lg text-sm text-white/70">
@@ -79,7 +78,7 @@ export default async function AboutPage() {
             <h2 className="text-2xl font-bold text-midnight">What we do</h2>
             <p className="mt-3 text-sm leading-relaxed text-midnight/70">
               We run a single booking platform across our services: self drive hire, chauffeur
-              driven trips, airport transfers, corporate travel, corporate vehicle leasing,
+              driven trips, drivers for your own vehicle, airport transfers, corporate travel, corporate vehicle leasing,
               replacement vehicles for insurance companies, family trips, tours and safaris, and
               event transport.
             </p>
@@ -106,7 +105,7 @@ export default async function AboutPage() {
               href="/services"
               className="mt-4 inline-block text-sm font-semibold text-gold-dark hover:text-gold"
             >
-              See all our services →
+              See all our services
             </Link>
           </div>
 
@@ -187,7 +186,7 @@ export default async function AboutPage() {
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link
-              href="/search"
+              href="/fleet"
               className="rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
             >
               Twende. Book a Ride

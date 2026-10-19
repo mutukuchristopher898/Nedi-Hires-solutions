@@ -120,7 +120,7 @@ export default async function OwnerDashboardPage() {
             href="/list-your-vehicle/start"
             className="mt-4 inline-block text-sm font-semibold text-gold-dark hover:text-gold"
           >
-            List your first vehicle →
+            List your first vehicle
           </Link>
         </div>
       ) : (

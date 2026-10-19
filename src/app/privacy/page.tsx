@@ -54,8 +54,7 @@ const MISSING = [
 export default function PrivacyPage() {
   return (
     <div className="container-shell max-w-2xl py-14">
-      <p className="text-xs font-medium uppercase tracking-wide text-gold-dark">Legal</p>
-      <h1 className="mt-2 text-3xl font-bold text-midnight">Privacy Policy</h1>
+      <h1 className="text-3xl font-bold text-midnight">Privacy Policy</h1>
       <div className="mt-4 rounded-lg bg-amber/10 p-4 text-sm text-amber">
         <p className="font-semibold">This policy is incomplete.</p>
         <p className="mt-1.5">

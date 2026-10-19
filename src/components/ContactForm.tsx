@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DEFAULT_TOPIC, ENQUIRY_TOPICS, findTopic } from "@/lib/enquiryTopics";
+import { DEFAULT_TOPIC, ENQUIRY_TOPICS, QUOTE_TOPICS, findTopic } from "@/lib/enquiryTopics";
 import { useAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/client";
 import { validateNamePart } from "@/lib/documentValidation/nameValidation";
@@ -20,6 +20,10 @@ export default function ContactForm({ initialTopic = DEFAULT_TOPIC }: { initialT
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [topic, setTopic] = useState(findTopic(initialTopic) ? initialTopic : DEFAULT_TOPIC);
+  const [company, setCompany] = useState("");
+  // Business enquiries are quote requests: they get a quote heading, a
+  // company field and a "Request quote" button.
+  const isQuote = QUOTE_TOPICS.has(topic);
   const [formError, setFormError] = useState<string | null>(null);
   // Spam trap. Hidden from people and screen readers; form-filling bots fill
   // every field they find. A filled trap gets the normal "sent" screen and
@@ -34,9 +38,11 @@ export default function ContactForm({ initialTopic = DEFAULT_TOPIC }: { initialT
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald/10 text-2xl text-emerald-dark">
           ✓
         </div>
-        <h2 className="mt-4 text-lg font-semibold text-midnight">Message Sent</h2>
+        <h2 className="mt-4 text-lg font-semibold text-midnight">
+          {isQuote ? "Quote request received" : "Message sent"}
+        </h2>
         <p className="mt-1 text-sm text-midnight/60">
-          Thanks for reaching out, our team typically replies within a few hours.
+          Thank you. We’ll reply to {email || "you"}, usually within a few hours during business hours.
         </p>
       </div>
     );
@@ -79,7 +85,9 @@ export default function ContactForm({ initialTopic = DEFAULT_TOPIC }: { initialT
       name: name.trim(),
       email: email.trim(),
       phone: phone.trim() || null,
-      message: message.trim(),
+      // The company goes at the top of the message, so the admin inbox shows
+      // it without a separate column.
+      message: company.trim() ? `Company: ${company.trim()}\n\n${message.trim()}` : message.trim(),
       subject: topic,
       sender_profile_id: user?.id ?? null,
     });
@@ -99,7 +107,15 @@ export default function ContactForm({ initialTopic = DEFAULT_TOPIC }: { initialT
   }
 
   return (
-    <form noValidate className="space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line" onSubmit={handleSubmit}>
+    <form noValidate className="space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line sm:p-8" onSubmit={handleSubmit}>
+      <div>
+        <h2 className="text-lg font-semibold text-midnight">{isQuote ? "Request a quote" : "Send us a message"}</h2>
+        <p className="mt-1 text-sm text-midnight/60">
+          {isQuote
+            ? "Tell us what you need and we’ll come back with a price."
+            : "We reply by email or phone, usually within a few hours."}
+        </p>
+      </div>
       {formError && (
         <FormError message={formError} details={fieldErrors} />
       )}
@@ -122,6 +138,7 @@ export default function ContactForm({ initialTopic = DEFAULT_TOPIC }: { initialT
           <input
             required
             value={name}
+          autoComplete="name"
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Jane Wanjiru"
             {...fieldProps(fieldErrors.name ? "reject" : undefined)}
@@ -132,6 +149,8 @@ export default function ContactForm({ initialTopic = DEFAULT_TOPIC }: { initialT
           <input
             type="tel"
             value={phone}
+          autoComplete="tel"
+          inputMode="tel"
             onChange={(e) => setPhone(e.target.value)}
             placeholder="e.g. 0712 345 678"
             {...fieldProps(fieldErrors.phone ? "reject" : undefined)}
@@ -143,6 +162,8 @@ export default function ContactForm({ initialTopic = DEFAULT_TOPIC }: { initialT
         <input
           required
           type="email"
+          autoComplete="email"
+          inputMode="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="e.g. jane.wanjiru@example.com"
@@ -163,6 +184,19 @@ export default function ContactForm({ initialTopic = DEFAULT_TOPIC }: { initialT
           ))}
         </select>
       </label>
+      {isQuote && (
+        <label className="block">
+          <span className="text-xs font-medium text-midnight/60">Company or organisation (optional)</span>
+          <input
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+            maxLength={120}
+            autoComplete="organization"
+            placeholder="e.g. Acme Kenya Ltd"
+            {...fieldProps(undefined)}
+          />
+        </label>
+      )}
       <label className="block">
         <span className="text-xs font-medium text-midnight/60">How can we help?</span>
         <textarea
@@ -179,7 +213,7 @@ export default function ContactForm({ initialTopic = DEFAULT_TOPIC }: { initialT
         disabled={sending}
         className="rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white disabled:opacity-60"
       >
-        {sending ? "Sending…" : "Send Message"}
+        {sending ? "Sending…" : isQuote ? "Request quote" : "Send message"}
       </button>
     </form>
   );

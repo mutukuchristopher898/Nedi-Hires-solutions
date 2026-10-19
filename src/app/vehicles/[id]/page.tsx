@@ -43,8 +43,8 @@ export default async function VehicleDetailPage({
 
   return (
     <div className="container-shell py-10">
-      <Link href="/search" className="text-sm text-midnight/60 hover:text-gold">
-        ← Back to search
+      <Link href="/fleet" className="text-sm text-midnight/60 hover:text-gold">
+        ← Back to Our Fleet
       </Link>
 
       <div className="mt-4 grid gap-8 lg:grid-cols-[1.4fr_1fr]">

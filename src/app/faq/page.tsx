@@ -12,8 +12,7 @@ export const metadata: Metadata = {
 export default function FaqPage() {
   return (
     <div className="container-shell max-w-2xl py-14">
-      <p className="text-xs font-medium uppercase tracking-wide text-gold-dark">Support</p>
-      <h1 className="mt-2 text-3xl font-bold text-midnight">Frequently Asked Questions</h1>
+      <h1 className="text-3xl font-bold text-midnight">Frequently Asked Questions</h1>
       <p className="mt-2 text-sm text-midnight/60">
         Can&apos;t find what you&apos;re looking for?{" "}
         <Link href="/contact" className="font-medium text-gold-dark hover:text-gold">

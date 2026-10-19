@@ -11,6 +11,8 @@ import { validateEmail } from "@/lib/formValidation/email";
 import { validateNamePart } from "@/lib/documentValidation/nameValidation";
 import { validatePhoneNumber } from "@/lib/documentValidation/phoneValidation";
 import { fieldProps, FormError } from "@/components/forms/shared";
+import PasswordInput from "@/components/account/PasswordInput";
+import { friendlyAuthError } from "@/lib/authErrors";
 
 export default function SignUpPage() {
   return (
@@ -85,7 +87,7 @@ function SignUpForm() {
     setSubmitting(false);
 
     if (signUpError) {
-      setError(signUpError.message);
+      setError(friendlyAuthError(signUpError));
       return;
     }
 
@@ -112,7 +114,7 @@ function SignUpForm() {
           href={`/account/sign-in?next=${encodeURIComponent(next)}`}
           className="mt-6 inline-block rounded-md bg-midnight px-5 py-3 text-sm font-semibold text-white transition hover:bg-charcoal"
         >
-          Go to Sign In
+          Go to sign in
         </Link>
       </div>
     );
@@ -120,7 +122,7 @@ function SignUpForm() {
 
   return (
     <div className="container-shell max-w-md py-16">
-      <h1 className="text-2xl font-bold text-midnight">Create an Account</h1>
+      <h1 className="text-2xl font-bold text-midnight">Create an account</h1>
       <p className="mt-1 text-sm text-midnight/60">
         Book faster, track your rentals, and manage your documents in one place.
       </p>
@@ -135,6 +137,7 @@ function SignUpForm() {
           <input
             required
             value={name}
+            autoComplete="name"
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Jane Wanjiru"
             {...fieldProps(fieldErrors.name ? "reject" : undefined)}
@@ -145,6 +148,8 @@ function SignUpForm() {
           <input
             required
             type="email"
+            autoComplete="email"
+            inputMode="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="e.g. jane.wanjiru@example.com"
@@ -157,6 +162,8 @@ function SignUpForm() {
             required
             type="tel"
             value={phone}
+            autoComplete="tel"
+            inputMode="tel"
             onChange={(e) => setPhone(e.target.value)}
             placeholder="e.g. 0712 345 678"
             {...fieldProps(fieldErrors.phone ? "reject" : undefined)}
@@ -164,14 +171,15 @@ function SignUpForm() {
         </label>
         <label className="block">
           <span className="text-xs font-medium text-midnight/60">Password</span>
-          <input
+          <PasswordInput
             required
             minLength={8}
-            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="e.g. Nairobi#Drive26"
             {...fieldProps(fieldErrors.password ? "reject" : undefined)}
+          
+            autoComplete="new-password"
           />
           {password && (
             <div className="mt-2">
@@ -202,8 +210,19 @@ function SignUpForm() {
           disabled={submitting}
           className="w-full rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white disabled:opacity-60"
         >
-          {submitting ? "Creating account…" : "Create Account"}
+          {submitting ? "Creating account…" : "Create account"}
         </button>
+        <p className="text-center text-xs leading-relaxed text-midnight/55">
+          By creating an account you agree to our{" "}
+          <Link href="/terms" className="font-medium text-midnight/75 underline-offset-2 hover:underline">
+            Terms &amp; Conditions
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="font-medium text-midnight/75 underline-offset-2 hover:underline">
+            Privacy Policy
+          </Link>
+          , including how we handle your ID documents.
+        </p>
       </form>
 
       <p className="mt-4 text-center text-sm text-midnight/60">

@@ -8,7 +8,6 @@ export default function NotFound() {
   return (
     <div className="container-shell py-20">
       <div className="mx-auto max-w-lg text-center">
-        <p className="text-sm font-semibold uppercase tracking-wide text-gold-dark">Page not found</p>
         <h1 className="mt-3 text-3xl font-bold text-midnight">We couldn&apos;t find that page</h1>
         <p className="mt-3 text-sm text-midnight/60">
           The link may be out of date, or the vehicle may no longer be available to book. Our
@@ -17,7 +16,7 @@ export default function NotFound() {
 
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <Link
-            href="/search"
+            href="/fleet"
             className="rounded-md bg-gold px-6 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
           >
             Browse available vehicles

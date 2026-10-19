@@ -27,6 +27,12 @@ export const ENQUIRY_TOPICS: EnquiryTopic[] = [
       "Your company name, how many vehicles, which types, how long you need them, and self drive or chauffeur driven.",
   },
   {
+    value: "driver-hire",
+    label: "Driver hire (for your own vehicle)",
+    placeholder:
+      "Your vehicle type and gearbox (automatic or manual), the dates and hours, where the driver should start, and whether it’s personal or for a company.",
+  },
+  {
     value: "insurance-replacement",
     label: "Insurance replacement vehicle",
     placeholder:
@@ -40,6 +46,9 @@ export const ENQUIRY_TOPICS: EnquiryTopic[] = [
 ];
 
 export const DEFAULT_TOPIC = "general";
+
+/** Topics where the person is asking for a price: the form becomes a quote request. */
+export const QUOTE_TOPICS = new Set(["corporate-leasing", "insurance-replacement", "driver-hire", "tours-and-events"]);
 
 export function findTopic(value: string | null | undefined): EnquiryTopic | undefined {
   return ENQUIRY_TOPICS.find((t) => t.value === value);

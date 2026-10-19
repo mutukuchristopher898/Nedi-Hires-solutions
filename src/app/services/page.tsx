@@ -5,7 +5,7 @@ import { SERVICES } from "@/lib/services";
 import { site } from "@/lib/site";
 
 const DESCRIPTION =
-  "Self drive and chauffeur driven car hire, airport transfers, corporate travel, corporate vehicle leasing, insurance replacement vehicles, family trips, tours and safaris, and event transport. One vetted fleet across Kenya.";
+  "Self drive and chauffeur driven car hire, drivers for your own vehicle, airport transfers, corporate travel, corporate vehicle leasing, insurance replacement vehicles, family trips, tours and safaris, and event transport. One vetted fleet across Kenya.";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -19,8 +19,7 @@ export default function ServicesPage() {
     <div>
       <section className="bg-midnight py-16 text-white">
         <div className="container-shell">
-          <p className="text-xs font-medium uppercase tracking-wide text-gold">What we do</p>
-          <h1 className="mt-2 max-w-2xl text-3xl font-bold sm:text-4xl">
+          <h1 className="max-w-2xl text-3xl font-bold sm:text-4xl">
             Every kind of trip, one platform
           </h1>
           <p className="mt-4 max-w-xl text-sm text-white/70 sm:text-base">
@@ -33,7 +32,7 @@ export default function ServicesPage() {
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
-              href="/search"
+              href="/fleet"
               className="rounded-md bg-gold px-7 py-3.5 text-center text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
             >
               Twende, Book a Ride
@@ -50,7 +49,7 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* A jump list, because nine long sections is a lot of scrolling to find
+      {/* A jump list, because ten long sections is a lot of scrolling to find
           the one you came for. */}
       <nav aria-label="Services" className="border-b border-line bg-offwhite">
         <div className="container-shell flex flex-wrap gap-x-4 gap-y-2 py-4">
@@ -125,7 +124,7 @@ export default function ServicesPage() {
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link
-              href="/search"
+              href="/fleet"
               className="rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
             >
               Twende, Book a Ride

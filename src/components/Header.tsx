@@ -7,9 +7,10 @@ import { useAuth } from "@/lib/auth";
 import { site } from "@/lib/site";
 
 const NAV_LINKS = [
-  { href: "/search", label: "Book a Car" },
-  { href: "/services", label: "Services" },
+  // One place to choose a car: Our Fleet. "Book a Car" (the old search page)
+  // listed the same vehicles a second way and was merged into it.
   { href: "/fleet", label: "Our Fleet" },
+  { href: "/services", label: "Services" },
   { href: "/subscriptions", label: "Subscriptions" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
@@ -56,7 +57,7 @@ export default function Header() {
             {ready && user ? `Hi, ${firstName}` : "Sign In"}
           </Link>
           <Link
-            href="/search"
+            href="/fleet"
             className="rounded-md bg-gold px-4 py-2 text-sm font-semibold text-midnight shadow-sm transition hover:bg-gold-dark hover:text-white"
           >
             Book Now
@@ -91,7 +92,7 @@ export default function Header() {
               WhatsApp / Call: {site.phoneDisplay}
             </a>
             <Link
-              href="/search"
+              href="/fleet"
               className="rounded-md bg-gold px-4 py-2 text-center font-semibold text-midnight"
               onClick={() => setOpen(false)}
             >

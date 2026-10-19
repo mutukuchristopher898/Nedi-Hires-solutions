@@ -10,7 +10,6 @@ export default function Error({ reset }: { error: Error & { digest?: string }; r
   return (
     <div className="container-shell py-20">
       <div className="mx-auto max-w-lg text-center">
-        <p className="text-sm font-semibold uppercase tracking-wide text-amber">Something went wrong</p>
         <h1 className="mt-3 text-3xl font-bold text-midnight">This page didn&apos;t load</h1>
         <p className="mt-3 text-sm text-midnight/60">
           The problem is on our side, not yours. Nothing you were doing has been lost, try again,
