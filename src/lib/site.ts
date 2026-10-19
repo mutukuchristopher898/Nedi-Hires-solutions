@@ -2,7 +2,7 @@ export const site = {
   name: "Nedi Hires Solutions",
   // Canonical origin, used for metadataBase, the sitemap and robots. Change
   // this the day a custom domain is pointed at the site.
-  url: "https://nedisolutions.com",
+  url: "https://www.nedisolutions.com",
   tagline: "Drive. Explore. Experience.",
   description:
     "Car hire in Nairobi and across Kenya: self drive and chauffeur driven cars, drivers for your own vehicle, corporate fleet leasing, insurance replacement vehicles, airport transfers and safaris.",
