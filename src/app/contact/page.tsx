@@ -3,6 +3,8 @@ import ContactForm from "@/components/ContactForm";
 import SocialLinks from "@/components/SocialLinks";
 import { site } from "@/lib/site";
 import { findTopic } from "@/lib/enquiryTopics";
+import PageHero from "@/components/PageHero";
+import { HERO_IMAGES } from "@/lib/heroImages";
 
 export const metadata: Metadata = {
   title: "Contact us",
@@ -22,7 +24,7 @@ export default async function ContactPage({
 
   return (
     <div>
-      <section className="bg-midnight py-14 text-white">
+      <PageHero image={HERO_IMAGES.contact} className="py-14">
         <div className="container-shell">
           <h1 className="max-w-xl text-3xl font-bold sm:text-4xl">Contact us</h1>
           <p className="mt-3 max-w-lg text-sm text-white/70 sm:text-base">
@@ -30,7 +32,7 @@ export default async function ContactPage({
             own vehicle. Choose the quickest way to reach us.
           </p>
         </div>
-      </section>
+      </PageHero>
 
       <section className="container-shell grid gap-8 py-14 lg:grid-cols-[1fr_1.4fr]">
         <div className="space-y-4">

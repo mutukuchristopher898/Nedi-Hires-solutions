@@ -15,6 +15,12 @@
   --color-emerald: #12a575;
   --color-emerald-dark: #0e8a62;
   --color-amber: #d97706;
+  /* Kenyan sunset accents (October 2026), alongside midnight and gold. */
+  --color-terracotta: #b8492a;
+  --color-terracotta-dark: #8f3820;
+  --color-teal: #0f5c5e;
+  --color-teal-dark: #0a4244;
+  --color-sand: #f6ead6;
 }
 
 @theme inline {
@@ -28,6 +34,11 @@
   --color-emerald: var(--color-emerald);
   --color-emerald-dark: var(--color-emerald-dark);
   --color-amber: var(--color-amber);
+  --color-terracotta: var(--color-terracotta);
+  --color-terracotta-dark: var(--color-terracotta-dark);
+  --color-teal: var(--color-teal);
+  --color-teal-dark: var(--color-teal-dark);
+  --color-sand: var(--color-sand);
   --font-sans: var(--font-inter);
   --font-serif: var(--font-cormorant);
 }

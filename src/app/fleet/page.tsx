@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import VehicleCard from "@/components/VehicleCard";
 import { getApprovedVehicles } from "@/lib/supabase/queries";
 import { site } from "@/lib/site";
+import PageHero from "@/components/PageHero";
+import { HERO_IMAGES } from "@/lib/heroImages";
 
 // The fleet page lists the bookable fleet from the database: every vehicle
 // an admin has approved, grouped by class, each with its price and
@@ -46,7 +48,7 @@ export default async function FleetPage() {
 
   return (
     <div>
-      <section className="bg-midnight py-16 text-white">
+      <PageHero image={HERO_IMAGES.fleet} className="py-16">
         <div className="container-shell">
           <h1 className="max-w-2xl text-3xl font-bold sm:text-4xl">
             {total > 0 ? `${total} vehicles ready to book` : "Our fleet"}
@@ -66,10 +68,10 @@ export default async function FleetPage() {
             </a>
           </div>
         </div>
-      </section>
+      </PageHero>
 
       {groups.length > 1 && (
-        <nav aria-label="Vehicle classes" className="border-b border-line bg-offwhite">
+        <nav aria-label="Vehicle classes" className="border-b border-line bg-sand">
           <div className="container-shell flex flex-wrap gap-x-5 gap-y-2 py-4">
             {groups.map((g) => (
               <a
@@ -96,6 +98,7 @@ export default async function FleetPage() {
         groups.map((g) => (
           <section key={g.classification} id={anchor(g.title)} className="container-shell scroll-mt-24 py-12">
             <div className="mb-6">
+              <span aria-hidden="true" className="mb-3 block h-1 w-10 rounded-full bg-terracotta" />
               <h2 className="text-2xl font-bold text-midnight">{g.title}</h2>
               <p className="mt-1 text-sm text-midnight/60">{g.blurb}</p>
             </div>

@@ -3,6 +3,8 @@ import Link from "next/link";
 import { LogoLockup } from "@/components/Logo";
 import { site } from "@/lib/site";
 import { getPublicFleetStats } from "@/lib/supabase/queries";
+import PageHero from "@/components/PageHero";
+import { HERO_IMAGES } from "@/lib/heroImages";
 
 const DESCRIPTION =
   "Nedi Hires Solutions is a Kenyan transport and car hire company. We own no vehicles: we source them from operators across Kenya and stand behind every one of them ourselves.";
@@ -52,7 +54,7 @@ export default async function AboutPage() {
 
   return (
     <div>
-      <section className="bg-midnight py-16 text-white">
+      <PageHero image={HERO_IMAGES.about} className="py-16">
         <div className="container-shell grid gap-8 lg:grid-cols-[1.3fr_auto] lg:items-center">
           <div>
             <h1 className="max-w-xl text-3xl font-bold sm:text-4xl">
@@ -70,7 +72,7 @@ export default async function AboutPage() {
             <LogoLockup light width={340} priority />
           </div>
         </div>
-      </section>
+      </PageHero>
 
       <section className="container-shell py-14">
         <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
@@ -177,7 +179,7 @@ export default async function AboutPage() {
       </section>
 
       <section className="container-shell pb-16">
-        <div className="flex flex-col items-center gap-4 rounded-2xl bg-midnight p-10 text-center text-white">
+        <div className="flex flex-col items-center gap-4 rounded-2xl bg-gradient-to-br from-teal-dark via-teal to-terracotta p-10 text-center text-white">
           <h2 className="text-2xl font-bold">
             Wherever you&apos;re headed, <span className="italic text-gold">twende.</span>
           </h2>

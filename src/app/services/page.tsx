@@ -3,6 +3,8 @@ import Link from "next/link";
 import ServiceIcon from "@/components/ServiceIcon";
 import { SERVICES } from "@/lib/services";
 import { site } from "@/lib/site";
+import PageHero from "@/components/PageHero";
+import { HERO_IMAGES } from "@/lib/heroImages";
 
 const DESCRIPTION =
   "Self drive and chauffeur driven car hire, drivers for your own vehicle, airport transfers, corporate travel, corporate vehicle leasing, insurance replacement vehicles, family trips, tours and safaris, and event transport. One vetted fleet across Kenya.";
@@ -17,7 +19,7 @@ export const metadata: Metadata = {
 export default function ServicesPage() {
   return (
     <div>
-      <section className="bg-midnight py-16 text-white">
+      <PageHero image={HERO_IMAGES.services} className="py-16">
         <div className="container-shell">
           <h1 className="max-w-2xl text-3xl font-bold sm:text-4xl">
             Every kind of trip, one platform
@@ -47,7 +49,7 @@ export default function ServicesPage() {
             </a>
           </div>
         </div>
-      </section>
+      </PageHero>
 
       {/* A jump list, because ten long sections is a lot of scrolling to find
           the one you came for. */}
@@ -116,7 +118,7 @@ export default function ServicesPage() {
       </div>
 
       <section className="container-shell pb-16">
-        <div className="flex flex-col items-center gap-4 rounded-2xl bg-midnight p-10 text-center text-white">
+        <div className="flex flex-col items-center gap-4 rounded-2xl bg-gradient-to-br from-teal-dark via-teal to-terracotta p-10 text-center text-white">
           <h2 className="text-2xl font-bold">Not sure which one you need?</h2>
           <p className="max-w-md text-sm text-white/70">
             Tell us where you&apos;re going and how many of you there are. We&apos;ll tell you what

@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function ComingSoonPage() {
   return (
-    <div className="fixed inset-0 z-[100] overflow-y-auto bg-midnight text-white">
+    <div className="fixed inset-0 z-[100] overflow-y-auto bg-gradient-to-br from-teal-dark via-teal to-terracotta text-white">
       <main className="mx-auto flex min-h-full max-w-xl flex-col items-center justify-center px-6 py-16 text-center">
         <LogoLockup light width={220} />
 
