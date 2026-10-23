@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { getSubscriptionPlans } from "@/lib/supabase/queries";
 import SubscriptionPlansExplorer from "@/components/subscriptions/SubscriptionPlansExplorer";
 import { site } from "@/lib/site";
+import { redirect } from "next/navigation";
+import { SUBSCRIPTIONS_ENABLED } from "@/lib/features";
 
 export const metadata: Metadata = {
   title: "Mobility Subscriptions",
@@ -11,6 +13,9 @@ export const metadata: Metadata = {
 };
 
 export default async function SubscriptionsPage() {
+  // Paused while the product is unfinished. See src/lib/features.ts.
+  if (!SUBSCRIPTIONS_ENABLED) redirect("/services");
+
   const subscriptionPlans = await getSubscriptionPlans();
 
   return (

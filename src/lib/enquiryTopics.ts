@@ -16,6 +16,12 @@ export const ENQUIRY_TOPICS: EnquiryTopic[] = [
     placeholder: "How can we help?",
   },
   {
+    value: "quote",
+    label: "Request a quote",
+    placeholder:
+      "Which service, your dates, pickup and drop-off places, how many people, and any vehicle you prefer.",
+  },
+  {
     value: "booking",
     label: "Help with a booking",
     placeholder: "Your booking reference (if you have one) and what you need help with.",
@@ -48,8 +54,25 @@ export const ENQUIRY_TOPICS: EnquiryTopic[] = [
 export const DEFAULT_TOPIC = "general";
 
 /** Topics where the person is asking for a price: the form becomes a quote request. */
-export const QUOTE_TOPICS = new Set(["corporate-leasing", "insurance-replacement", "driver-hire", "tours-and-events"]);
+export const QUOTE_TOPICS = new Set(["quote", "corporate-leasing", "insurance-replacement", "driver-hire", "tours-and-events"]);
 
 export function findTopic(value: string | null | undefined): EnquiryTopic | undefined {
   return ENQUIRY_TOPICS.find((t) => t.value === value);
+}
+
+/**
+ * Where a service's "Get a quote" button goes: the contact form, set to the
+ * matching quote topic and naming the service in the message.
+ */
+const TOPIC_FOR_SERVICE: Record<string, string> = {
+  "corporate-leasing": "corporate-leasing",
+  "insurance-replacement": "insurance-replacement",
+  "driver-hire": "driver-hire",
+  "tours-and-safaris": "tours-and-events",
+  "event-transport": "tours-and-events",
+};
+
+export function quoteHref(serviceSlug: string): string {
+  const topic = TOPIC_FOR_SERVICE[serviceSlug] ?? "quote";
+  return `/contact?topic=${topic}&service=${encodeURIComponent(serviceSlug)}`;
 }

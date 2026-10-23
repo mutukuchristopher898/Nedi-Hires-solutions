@@ -11,14 +11,21 @@ import { validateMessage } from "@/lib/formValidation/freeText";
 import { fieldProps, FormError } from "@/components/forms/shared";
 import { RATE_LIMITED_MESSAGE } from "@/lib/bookingErrors";
 
-export default function ContactForm({ initialTopic = DEFAULT_TOPIC }: { initialTopic?: string }) {
+export default function ContactForm({
+  initialTopic = DEFAULT_TOPIC,
+  initialMessage = "",
+}: {
+  initialTopic?: string;
+  /** Starts the message box off, e.g. naming the service a quote is for. */
+  initialMessage?: string;
+}) {
   const { user } = useAuth();
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(initialMessage);
   const [topic, setTopic] = useState(findTopic(initialTopic) ? initialTopic : DEFAULT_TOPIC);
   const [company, setCompany] = useState("");
   // Business enquiries are quote requests: they get a quote heading, a

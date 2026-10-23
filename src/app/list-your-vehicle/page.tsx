@@ -63,15 +63,11 @@ export default function ListYourVehiclePage() {
             </Link>
           </div>
           <p className="mt-4 text-sm text-white/60">
-            Vehicle owners get their own subscription tier {" "}
-            <Link href="/subscriptions" className="underline hover:text-white">
-              see owner pricing
-            </Link>
-            , or{" "}
+            Listing a larger fleet?{" "}
             <Link href="/fleet-quote" className="underline hover:text-white">
-              request a custom quote
-            </Link>{" "}
-            if you&apos;re listing a larger fleet.
+              Request a custom quote
+            </Link>
+            .
           </p>
         </div>
       </section>

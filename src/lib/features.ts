@@ -30,3 +30,11 @@ export const SELFIE_VERIFICATION_ENABLED = false;
  * Launch day: change false to true, commit, and the full site opens.
  */
 export const SITE_LAUNCHED = false;
+
+/**
+ * Mobility subscriptions (monthly plans). A work in progress: while false,
+ * the page sends visitors to /services, and it is left out of the top bar,
+ * the footer and the sitemap. Change to true when it is ready, and add the
+ * links back (Header.tsx, Footer.tsx, sitemap.ts).
+ */
+export const SUBSCRIPTIONS_ENABLED = false;

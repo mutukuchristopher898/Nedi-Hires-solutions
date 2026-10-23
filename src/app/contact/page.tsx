@@ -3,6 +3,7 @@ import ContactForm from "@/components/ContactForm";
 import SocialLinks from "@/components/SocialLinks";
 import { site } from "@/lib/site";
 import { findTopic } from "@/lib/enquiryTopics";
+import { SERVICES } from "@/lib/services";
 import PageHero from "@/components/PageHero";
 import { HERO_IMAGES } from "@/lib/heroImages";
 
@@ -16,11 +17,15 @@ export const metadata: Metadata = {
 export default async function ContactPage({
   searchParams,
 }: {
-  searchParams: Promise<{ topic?: string | string[] }>;
+  searchParams: Promise<{ topic?: string | string[]; service?: string | string[] }>;
 }) {
   // Services link here with ?topic=…, so the right topic is already chosen.
-  const { topic } = await searchParams;
+  const { topic, service } = await searchParams;
   const initialTopic = findTopic(typeof topic === "string" ? topic : undefined)?.value;
+  // A "Get a quote" button names its service; only known services are used,
+  // so the link can't put arbitrary text into the form.
+  const quotedService = SERVICES.find((s) => s.slug === service);
+  const initialMessage = quotedService ? `I'd like a quote for ${quotedService.title}.\n\n` : "";
 
   return (
     <div>
@@ -81,7 +86,7 @@ export default async function ContactPage({
           </div>
         </div>
 
-        <ContactForm initialTopic={initialTopic} />
+        <ContactForm initialTopic={initialTopic} initialMessage={initialMessage} />
       </section>
     </div>
   );
