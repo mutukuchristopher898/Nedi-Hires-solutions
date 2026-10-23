@@ -4,14 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import Logo from "./Logo";
-import { useAuth } from "@/lib/auth";
 import { site } from "@/lib/site";
 
-// Top bar. Kept deliberately short: one place to choose a car (Our Fleet),
-// Subscriptions left out while that product is unfinished (see
-// SUBSCRIPTIONS_ENABLED in src/lib/features.ts), and no personal details:
-// the phone number sits behind a Call button and a signed-in customer's name
-// is never shown, so it isn't on screen for anyone looking over a shoulder.
+// Top bar. Deliberately minimal: logo, five links, one call to action.
+// Subscriptions is left out while unfinished (SUBSCRIPTIONS_ENABLED in
+// src/lib/features.ts). Sign in / My account lives in the footer, and the
+// booking flow sends people to sign in when they need to; phone, WhatsApp
+// and email are in the footer too.
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/fleet", label: "Our Fleet" },
@@ -24,19 +23,9 @@ function isCurrent(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function PhoneIcon({ className = "h-4 w-4" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <path d="M4 5c0 8.284 6.716 15 15 15l2-3.5-5-2-1.5 2C11.5 15 9 12.5 8 10.5l2-1.5-2-5L4 5Z" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 export default function Header() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname() ?? "/";
-  const { user, ready } = useAuth();
-  const accountLabel = ready && user ? "My account" : "Sign in";
 
   return (
     <header className="sticky top-0 z-50 bg-midnight text-white">
@@ -45,7 +34,7 @@ export default function Header() {
           <Logo light />
         </Link>
 
-        <nav aria-label="Main" className="hidden items-center gap-7 text-sm font-medium lg:flex">
+        <nav aria-label="Main" className="hidden items-center gap-9 text-sm font-medium tracking-wide lg:flex">
           {NAV_LINKS.map((link) => {
             const current = isCurrent(pathname, link.href);
             return (
@@ -63,37 +52,16 @@ export default function Header() {
           })}
         </nav>
 
-        <div className="hidden items-center gap-3 lg:flex">
-          <a
-            href={`tel:${site.phoneTel}`}
-            aria-label={`Call ${site.name}`}
-            className="flex items-center gap-1.5 rounded-md border border-white/20 px-3 py-2 text-sm font-medium text-white/90 transition hover:border-white/40 hover:text-white"
-          >
-            <PhoneIcon />
-            Call
-          </a>
-          <Link
-            href="/account"
-            className="px-2 text-sm font-medium text-white/80 transition hover:text-white"
-          >
-            {accountLabel}
-          </Link>
+        <div className="hidden lg:block">
           <Link
             href="/fleet"
-            className="rounded-md bg-gold px-4 py-2 text-sm font-semibold text-midnight shadow-sm transition hover:bg-gold-dark hover:text-white"
+            className="rounded-md bg-gold px-5 py-2.5 text-sm font-semibold text-midnight shadow-sm transition hover:bg-gold-dark hover:text-white"
           >
             Book Now
           </Link>
         </div>
 
-        <div className="flex items-center gap-2 lg:hidden">
-          <a
-            href={`tel:${site.phoneTel}`}
-            aria-label={`Call ${site.name}`}
-            className="flex h-9 w-9 items-center justify-center rounded-md border border-white/15"
-          >
-            <PhoneIcon />
-          </a>
+        <div className="flex items-center lg:hidden">
           <button
             className="flex h-9 w-9 items-center justify-center rounded-md border border-white/15"
             onClick={() => setOpen((v) => !v)}
@@ -125,25 +93,13 @@ export default function Header() {
                 </Link>
               );
             })}
-            <Link href="/account" onClick={() => setOpen(false)} className="border-b border-white/5 py-3 text-white/85">
-              {accountLabel}
+            <Link
+              href="/fleet"
+              className="mt-4 rounded-md bg-gold px-4 py-3 text-center font-semibold text-midnight"
+              onClick={() => setOpen(false)}
+            >
+              Book Now
             </Link>
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <a
-                href={`tel:${site.phoneTel}`}
-                className="flex items-center justify-center gap-2 rounded-md border border-white/20 px-4 py-2.5 font-semibold text-white"
-              >
-                <PhoneIcon />
-                Call
-              </a>
-              <Link
-                href="/fleet"
-                className="rounded-md bg-gold px-4 py-2.5 text-center font-semibold text-midnight"
-                onClick={() => setOpen(false)}
-              >
-                Book Now
-              </Link>
-            </div>
           </div>
         </nav>
       )}

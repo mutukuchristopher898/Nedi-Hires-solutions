@@ -30,6 +30,7 @@ export default function Footer() {
             <li><Link href="/about">About Us</Link></li>
             <li><Link href="/contact">Contact us</Link></li>
             <li><Link href="/faq">FAQ</Link></li>
+            <li><Link href="/account">My account</Link></li>
           </ul>
         </div>
 
@@ -37,8 +38,8 @@ export default function Footer() {
           <h4 className="text-sm font-semibold text-white">Reach us</h4>
           {/* Three one-tap buttons. The number and address sit behind them
               (each link and its accessible name carry them), rather than
-              being printed in full. WhatsApp uses a plain chat icon in its
-              familiar green, not WhatsApp's own logo. */}
+              being printed in full. All three share the brand's gold ring;
+              WhatsApp uses a plain chat icon, not WhatsApp's own logo. */}
           <ul className="mt-4 flex gap-5">
             <li>
               <a
@@ -49,8 +50,8 @@ export default function Footer() {
                 title={`WhatsApp ${site.phoneDisplay}`}
                 className="group flex flex-col items-center gap-1.5"
               >
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white transition group-hover:brightness-110">
-                  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" aria-hidden="true">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full border border-gold/60 text-gold transition group-hover:border-gold group-hover:bg-gold group-hover:text-midnight">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true">
                     <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-5A8 8 0 1 1 21 12z" />
                   </svg>
                 </span>
@@ -64,7 +65,7 @@ export default function Footer() {
                 title={`Call ${site.phoneDisplay}`}
                 className="group flex flex-col items-center gap-1.5"
               >
-                <span className="flex h-12 w-12 items-center justify-center rounded-full border border-white/25 text-white transition group-hover:border-white/60">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full border border-gold/60 text-gold transition group-hover:border-gold group-hover:bg-gold group-hover:text-midnight">
                   <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true">
                     <path d="M4 5c0 8.284 6.716 15 15 15l2-3.5-5-2-1.5 2C11.5 15 9 12.5 8 10.5l2-1.5-2-5L4 5Z" />
                   </svg>
@@ -79,7 +80,7 @@ export default function Footer() {
                 title={site.email}
                 className="group flex flex-col items-center gap-1.5"
               >
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gold text-midnight transition group-hover:bg-gold-dark group-hover:text-white">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full border border-gold/60 text-gold transition group-hover:border-gold group-hover:bg-gold group-hover:text-midnight">
                   <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true">
                     <rect x="3" y="5" width="18" height="14" rx="2" />
                     <path d="M3 7l9 6 9-6" />
