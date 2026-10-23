@@ -230,7 +230,7 @@ export default function VehicleForm({
             {locationOptions.map((l) => <option key={l} value={l} />)}
           </datalist>
         </Field>
-        <Field label="Daily rate (USD)">
+        <Field label="Daily rate ($)">
           <input type="number" min={1} step={1} value={pricePerDay}
             onChange={(e) => { setPricePerDay(e.target.value); setSaved(false); }} placeholder="e.g. 35"
             {...fieldProps(fieldErrors.pricePerDay ? "reject" : undefined, INPUT)} />

@@ -30,10 +30,10 @@ export default function DepositStep({
 
   return (
     <section className="rounded-2xl bg-white p-6 ring-1 ring-line">
-      <h2 className="text-lg font-semibold text-midnight">5. Reservation & Deposit</h2>
+      <h2 className="text-lg font-semibold text-midnight">Review and send your request</h2>
       <p className="mt-1 text-sm text-midnight/60">
-        Your deposit holds this vehicle for you. It goes toward your total, it isn&apos;t an
-        extra charge.
+        No payment is taken online. Send your request and we&apos;ll review it, then contact you
+        to confirm your booking and arrange the deposit.
       </p>
 
       <div className="mt-5 rounded-lg bg-offwhite p-4 text-sm">
@@ -58,7 +58,8 @@ export default function DepositStep({
             value={money(oneWayFee)}
           />
         )}
-        <Row label="Reservation deposit due now" value={money(deposit)} bold />
+        <Row label="Total for this booking" value={money(total)} bold />
+        <Row label="Deposit due when we confirm" value={money(deposit)} />
       </div>
 
       <button
@@ -66,7 +67,7 @@ export default function DepositStep({
         disabled={saving}
         className="mt-6 w-full rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white disabled:opacity-60 sm:w-auto"
       >
-        {saving ? "Processing…" : `Pay Deposit ${money(deposit)}`}
+        {saving ? "Sending…" : "Send booking request"}
       </button>
     </section>
   );

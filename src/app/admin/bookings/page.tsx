@@ -1,4 +1,6 @@
 import BookingCancelButton from "@/components/admin/BookingCancelButton";
+import BookingConfirmButton from "@/components/admin/BookingConfirmButton";
+import { requireRole } from "@/lib/supabase/authz";
 import { getAdminBookings } from "@/lib/supabase/queries";
 import { formatMoney } from "@/lib/data";
 import type { BookingStatus } from "@/lib/types";
@@ -12,9 +14,9 @@ const STATUS_STYLES: Record<BookingStatus, string> = {
 };
 
 const STATUS_LABELS: Record<BookingStatus, string> = {
-  deposit_pending: "Deposit Pending",
-  verification_pending: "Verification Pending",
-  settlement_pending: "Settlement Pending",
+  deposit_pending: "Not sent yet",
+  verification_pending: "Request received",
+  settlement_pending: "Awaiting payment",
   confirmed: "Confirmed",
   cancelled: "Cancelled",
 };
@@ -24,6 +26,7 @@ function formatDate(iso: string) {
 }
 
 export default async function AdminBookingsPage() {
+  const { role } = await requireRole(["staff", "admin"], "/admin/bookings");
   const bookings = await getAdminBookings();
   const holding = bookings.filter((b) => b.holdsVehicle);
 
@@ -79,9 +82,14 @@ export default async function AdminBookingsPage() {
                     </p>
                   </div>
 
-                  {b.status !== "cancelled" && (
-                    <BookingCancelButton id={b.id} bookingRef={b.bookingRef} holdsVehicle={b.holdsVehicle} />
-                  )}
+                  <div className="flex flex-col items-end gap-2">
+                    {role === "admin" && (b.status === "verification_pending" || b.status === "settlement_pending") && (
+                      <BookingConfirmButton id={b.id} bookingRef={b.bookingRef} />
+                    )}
+                    {b.status !== "cancelled" && (
+                      <BookingCancelButton id={b.id} bookingRef={b.bookingRef} holdsVehicle={b.holdsVehicle} />
+                    )}
+                  </div>
                 </div>
               </article>
             ))}

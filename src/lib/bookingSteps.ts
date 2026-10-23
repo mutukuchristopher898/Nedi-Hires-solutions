@@ -29,13 +29,15 @@ export function visibleStep(step: BookingStep): BookingStep {
 }
 
 export const STEP_LABELS: Record<BookingStep, string> = {
-  trip: "Trip Details",
-  applicant: "Applicant & Guarantor",
-  selfie: "Selfie Verification",
-  agreement: "Rental Agreement",
-  deposit: "Reservation & Deposit",
-  verification: "Verification",
-  settlement: "Settlement",
+  trip: "Trip details",
+  applicant: "Applicant and guarantor",
+  selfie: "Selfie verification",
+  agreement: "Rental agreement",
+  // Until online payment is ready, step 5 sends a booking request and an
+  // admin confirms it (supabase 7-booking-requests.sql).
+  deposit: "Review and send",
+  verification: "Request sent",
+  settlement: "Payment",
   confirmed: "Confirmed",
 };
 

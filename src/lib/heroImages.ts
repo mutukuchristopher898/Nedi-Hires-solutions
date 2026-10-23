@@ -21,3 +21,26 @@ export const HERO_IMAGES: Record<"home" | "fleet" | "services" | "about" | "cont
   comingSoon: "/images/hero-coming-soon.jpg",
   partner: "/images/hero-coming-soon.jpg",
 };
+
+// Darkened photo backgrounds for home page sections (Unsplash License):
+//   services     Jan Vlacuha          unsplash.com/photos/U4IaoKF5aj4  (cropped below the badge, softened)
+//   partner      Caleb Bennetts       unsplash.com/photos/D5paKhr6c8w  (cropped above the badge)
+export const SECTION_IMAGES = {
+  services: "/images/section-services.jpg",
+  partner: "/images/section-partner.jpg",
+};
+
+// Banner photo for each service's own page (reusing the photos above).
+export const SERVICE_IMAGES: Record<string, string> = {
+  "self-drive": "/images/hero-contact.jpg",
+  "chauffeur-driven": "/images/hero-services.jpg",
+  "driver-hire": "/images/hero-services.jpg",
+  "airport-transfers": "/images/hero-about.jpg",
+  "corporate-travel": "/images/hero-fleet.jpg",
+  "corporate-leasing": "/images/hero-fleet.jpg",
+  "insurance-replacement": "/images/section-partner.jpg",
+  "vehicle-partnership": "/images/hero-coming-soon.jpg",
+  "family-trips": "/images/hero-home.jpg",
+  "tours-and-safaris": "/images/hero-home.jpg",
+  "event-transport": "/images/hero-coming-soon.jpg",
+};

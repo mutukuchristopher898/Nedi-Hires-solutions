@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const SECTIONS = [
   {
     title: "1. Bookings & Reservations",
-    body: "A reservation is confirmed once the reservation deposit is paid. The vehicle is held for the agreed pickup window; late arrivals beyond the grace period may result in the booking being released.",
+    body: "Sending a booking request through the website does not confirm a booking. We review each request, then contact you to confirm it and arrange the deposit; the booking is confirmed once the deposit is received. The vehicle is held for the agreed pickup window; late arrivals beyond the grace period may result in the booking being released.",
   },
   {
     title: "2. Identity Verification",
@@ -23,11 +23,11 @@ const SECTIONS = [
   },
   {
     title: "3. Payments & Deposits",
-    body: `Reservation deposits, remaining rental balances, and refundable security deposits are processed through ${site.name}'s payment providers. Prices are quoted and charged in US dollars.`,
+    body: `No payment is taken through the website at present. Deposits, remaining rental balances and any refundable security deposit are arranged directly with ${site.name} when your booking is confirmed. Prices are quoted and charged in US dollars.`,
   },
   {
     title: "4. Whose Vehicle You Are Hiring",
-    body: `${site.name} does not own the vehicles it hires out. Each is owned by the operator we source it from, and that operator holds the insurance on it. Every vehicle is checked, and its documentation reviewed, before it is offered to customers. What that insurance covers and what excess you would be liable for is not yet set out here — see below, and ask us before you book.`,
+    body: `${site.name} hires out vehicles it owns and vehicles it manages on behalf of their owners under its partnership programme. Every vehicle is checked, and its documentation reviewed, before it is offered to customers, and you deal with ${site.name} whichever vehicle you hire. What the insurance on each vehicle covers, and what excess you would be liable for, is not yet set out here — see below, and ask us before you book.`,
   },
   {
     title: "5. Cancellations",

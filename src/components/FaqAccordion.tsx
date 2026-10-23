@@ -4,32 +4,44 @@ import { useState } from "react";
 
 const FAQS = [
   {
-    q: "How does the reservation deposit work?",
-    a: "When you book, you pay a small reservation deposit online to hold the vehicle for your chosen dates. The remaining balance and any security deposit are settled after identity verification, either online or at handoff.",
+    q: "How do I book a car?",
+    a: "Choose a car on Our Fleet, add your trip details and documents, and send a booking request. No payment is taken online. We review your request, then contact you by phone or WhatsApp to confirm and arrange the deposit. Your booking is confirmed once the deposit is received.",
   },
   {
-    q: "What documents do I need to verify my identity?",
-    a: "We accept an International Passport, a valid Driver's License, or a National ID. Upload a clear photo during the booking flow, our team or the vehicle partner reviews it before final settlement.",
+    q: "How do I pay?",
+    a: "We arrange payment with you directly when we confirm your booking. You'll see the price and the deposit due before you send your request, so there are no surprises.",
   },
   {
-    q: "Can I hire a chauffeur instead of self driving?",
-    a: "Yes. Most of our Luxury and SUV vehicles are available chauffeur driven. Select this when booking, or mention it via Contact Support for group and event transport.",
+    q: "What documents do I need?",
+    a: "A national ID or passport, and a valid driving licence if you're driving yourself. You upload clear photos while booking, and our team reviews them before any vehicle is released.",
   },
   {
-    q: "What happens if a partner vehicle is still 'Pending'?",
-    a: "Newly listed partner vehicles go through an admin approval queue and only appear in search results once approved, so every vehicle you can book has already passed our quality checks.",
+    q: "Can I hire a car with a driver?",
+    a: "Yes. Choose chauffeur driven when you book, or ask us for a quote for group and event transport.",
+  },
+  {
+    q: "I have my own vehicle. Can you provide just a driver?",
+    a: "Yes. Our Driver Hire service provides a driver for your own car, van or company vehicles, by the day, the week or longer. Request a quote from the Driver Hire page.",
+  },
+  {
+    q: "Do you lease vehicles to companies?",
+    a: "Yes. Corporate Leasing covers single vehicles or whole fleets, on weekly, monthly or longer terms. Request a quote and we'll put together an arrangement for your company.",
+  },
+  {
+    q: "Do you provide replacement cars for insurance companies?",
+    a: "Yes. We work with insurers, brokers and assessors to provide a vehicle for their customers while their own car is being repaired. If your car is under repair, ask your insurer whether they can book one with us.",
+  },
+  {
+    q: "I own a vehicle. Can you manage it for me?",
+    a: "Yes, through our Vehicle Partnership. We inspect your vehicle, agree your percentage and terms with you, then rent it out and look after it, and you earn an agreed share of what it makes. See Partner with us for details.",
   },
   {
     q: "Can I cancel or change my booking?",
-    a: "Reach out via Contact Support with your booking reference as soon as possible. Reservation deposits are generally non refundable within 24 hours of pickup, but we handle changes case by case.",
+    a: "Contact us with your booking reference as early as possible. We handle changes and cancellations case by case.",
   },
   {
-    q: "How do Mobility Subscriptions work?",
-    a: "Subscriptions are all inclusive monthly plans that grant tiered access to vehicles with a set number of swaps per month, ideal if you need a vehicle regularly without owning one.",
-  },
-  {
-    q: "How do I list my own vehicle?",
-    a: "Head to Partner Onboarding to register your business or host profile and submit your vehicle's details. It enters our admin approval queue and goes live once verified.",
+    q: "Where do you operate?",
+    a: "We're based in Nairobi and serve customers across Kenya. Tell us where you're going and we'll confirm what we can arrange.",
   },
 ];
 

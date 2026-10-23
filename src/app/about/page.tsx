@@ -7,7 +7,7 @@ import PageHero from "@/components/PageHero";
 import { HERO_IMAGES } from "@/lib/heroImages";
 
 const DESCRIPTION =
-  "Nedi Hires Solutions is a Kenyan transport and car hire company. We own no vehicles: we source them from operators across Kenya and stand behind every one of them ourselves.";
+  "Nedi Hires Solutions is a Kenyan car hire and transport company. We hire out our own vehicles and vehicles we manage for their owners, and stand behind every one.";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -19,33 +19,33 @@ export const metadata: Metadata = {
 const VALUES = [
   {
     title: "Affordable",
-    copy: "Our pricing is quoted upfront and doesn't move. No surge, no surprise fuel charges, no mysterious line items at handover.",
+    copy: "Prices are shown upfront, so you know what your hire costs before you send a request.",
   },
   {
     title: "Reliable",
-    copy: "A vehicle that arrives late is a vehicle that failed. We track flights, plan routes around Nairobi traffic, and build buffer into every schedule.",
+    copy: "A vehicle that arrives late is a vehicle that failed. We plan around your schedule and Nairobi traffic, so your vehicle is there when you need it.",
   },
   {
     title: "Comfortable",
-    copy: "Clean interiors, working air conditioning, and enough room for your luggage. Basic things, done consistently.",
+    copy: "Clean interiors and enough room for your luggage. Basic things, done consistently.",
   },
 ];
 
 const PIPELINE = [
   {
     step: "01",
-    title: "Reservation & Deposit",
-    copy: "Choose your dates and pay a reservation deposit online. The deposit holds your vehicle so it isn't double booked, and it confirms to the owner that the booking is real.",
+    title: "Send your request",
+    copy: "Choose your vehicle and dates, add your details and send a booking request. No payment is taken online.",
   },
   {
     step: "02",
-    title: "Identity Verification",
-    copy: "Upload a passport, driver's licence or national ID. Our team reviews it before the vehicle is released. This is why the cars on our platform don't disappear.",
+    title: "Identity verification",
+    copy: "Upload a passport, driver's licence or national ID. Our team reviews it before any vehicle is released.",
   },
   {
     step: "03",
-    title: "Final Settlement",
-    copy: "Once you're verified, settle the balance online or at handover, whichever suits you. No cash pressure at pickup.",
+    title: "Confirm and pay",
+    copy: "We contact you to confirm your booking and arrange the deposit. Your booking is confirmed once it's received.",
   },
 ];
 
@@ -84,23 +84,18 @@ export default async function AboutPage() {
               replacement vehicles for insurance companies, family trips, tours and safaris, and
               event transport.
             </p>
-            {/* Corrected twice. It first claimed a small internal fleet, then
-                claimed every vehicle came from a vetted partner operator. Both
-                were wrong: there is no fleet of our own, and no formal partner
-                register either. Vehicles are sourced from operators we have
-                working access to, and the customer sees no distinction because
-                there genuinely is not one. */}
             <p className="mt-3 text-sm leading-relaxed text-midnight/70">
-              We own no vehicles. Every car we hire out is sourced from an operator we work with
-              somewhere in Kenya, and we do not sort them into tiers: there is no in house fleet
-              and no second class of listing, so the car you are offered is not quietly a
-              different proposition from the one next to it.
+              Our fleet is made up of vehicles we own and vehicles we manage for their owners
+              through our partnership programme. Every one is inspected and held to the same
+              standard, and whichever car you hire, you deal with us and you hold us accountable.
             </p>
             <p className="mt-3 text-sm leading-relaxed text-midnight/70">
-              That matters more than it sounds. When a company owns some of its cars and brokers
-              the rest, the incentive is to push you towards the ones it owns. We have nothing to
-              push you towards. Whichever vehicle suits your trip is the one we will put you in,
-              and whoever it came from, you deal with us and you hold us accountable.
+              We recommend the vehicle that suits your trip, whoever owns it. Own a vehicle
+              yourself?{" "}
+              <Link href="/partner" className="font-semibold text-gold-dark hover:text-gold">
+                Partner with us
+              </Link>
+              .
             </p>
 
             <Link
@@ -157,7 +152,7 @@ export default async function AboutPage() {
         </div>
 
         <div className="mt-8 rounded-2xl bg-offwhite p-6">
-          <h3 className="font-semibold text-midnight">Why we ask for a deposit first</h3>
+          <h3 className="font-semibold text-midnight">Why we verify every renter</h3>
           <p className="mt-2 max-w-3xl text-sm leading-relaxed text-midnight/70">
             Vehicle theft and fraudulent bookings are a real cost in Kenyan car hire, and that cost
             normally gets passed to honest customers through inflated rates and heavy security
@@ -168,8 +163,8 @@ export default async function AboutPage() {
 
         <ul className="mt-8 grid gap-3 sm:grid-cols-2">
           <TrustRow>
-            <strong className="text-midnight">100% of drivers</strong> background-checked before
-            their first trip
+            <strong className="text-midnight">Every driver vetted</strong> before their first
+            trip
           </TrustRow>
           <TrustRow>
             <strong className="text-midnight">Every vehicle inspected</strong> before handover,
@@ -191,7 +186,7 @@ export default async function AboutPage() {
               href="/fleet"
               className="rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
             >
-              Twende. Book a Ride
+              Twende, book a ride
             </Link>
             <a
               href={site.whatsappHref}
@@ -199,7 +194,7 @@ export default async function AboutPage() {
               rel="noopener noreferrer"
               className="rounded-md border border-white/20 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
             >
-              Talk to Us on WhatsApp
+              Talk to us on WhatsApp
             </a>
           </div>
         </div>

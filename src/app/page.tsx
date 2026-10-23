@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import VehicleCard from "@/components/VehicleCard";
 import ServiceIcon from "@/components/ServiceIcon";
@@ -5,11 +6,10 @@ import { SERVICES } from "@/lib/services";
 import { getApprovedVehicles } from "@/lib/supabase/queries";
 import { site } from "@/lib/site";
 import PageHero from "@/components/PageHero";
-import { HERO_IMAGES } from "@/lib/heroImages";
+import { HERO_IMAGES, SECTION_IMAGES } from "@/lib/heroImages";
 
 
 const mainServices = SERVICES.filter((s) => s.featured);
-const otherServices = SERVICES.filter((s) => !s.featured);
 
 export default async function Home() {
   // Live inventory, cheapest first, rather than a slice of the catalogue.
@@ -30,8 +30,8 @@ export default async function Home() {
             Reliable transport, memorable travel, anywhere in Kenya.
           </h1>
           <p className="mt-4 max-w-xl text-base text-white/70 sm:text-lg">
-            Self drive or chauffeur driven car hire, airport transfers, corporate travel,
-            and tours &amp; safaris. Every vehicle inspected, every driver vetted.
+            Self drive and chauffeur driven car hire, drivers for your own vehicle, airport
+            transfers, corporate leasing and safaris. Every vehicle inspected, every driver vetted.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -39,7 +39,7 @@ export default async function Home() {
               href="/fleet"
               className="rounded-md bg-gold px-7 py-3.5 text-center text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
             >
-              Twende, Book a Ride
+              Twende, book a ride
             </Link>
             <a
               href={site.whatsappHref}
@@ -47,23 +47,27 @@ export default async function Home() {
               rel="noopener noreferrer"
               className="rounded-md border border-white/20 px-7 py-3.5 text-center text-sm font-semibold text-white transition hover:bg-white/10"
             >
-              Talk to Us on WhatsApp
+              Talk to us on WhatsApp
             </a>
           </div>
         </div>
       </PageHero>
 
-      {/* Advertises the main services (featured: true in src/lib/services.ts)
-          in large cards; the rest are one tap away on /services. */}
-      <section className="container-shell py-14">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
+      {/* The main services (featured: true in src/lib/services.ts), over a
+          darkened leather-interior photo. Every other service is one click
+          away under Services. */}
+      <section className="relative isolate overflow-hidden bg-midnight text-white">
+        <Image src={SECTION_IMAGES.services} alt="" fill sizes="100vw" className="-z-20 object-cover" />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-midnight/80" />
+        <div className="container-shell py-20">
+        <div className="mb-10 flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-2xl font-bold text-midnight sm:text-3xl">How would you like to travel?</h2>
-            <p className="mt-1 text-sm text-midnight/60">
+            <h2 className="text-2xl font-bold text-white sm:text-3xl">How would you like to travel?</h2>
+            <p className="mt-2 text-sm text-white/65">
               Affordable · Reliable · Comfortable, from one vetted fleet.
             </p>
           </div>
-          <Link href="/services" className="text-sm font-semibold text-gold-dark hover:text-gold">
+          <Link href="/services" className="text-sm font-semibold text-gold transition hover:text-white">
             See all services
           </Link>
         </div>
@@ -72,7 +76,7 @@ export default async function Home() {
           {mainServices.map((s) => (
             <article
               key={s.slug}
-              className="flex flex-col rounded-2xl bg-midnight p-7 text-white ring-1 ring-white/5 sm:p-9"
+              className="flex flex-col rounded-2xl bg-midnight/70 p-7 text-white ring-1 ring-white/10 backdrop-blur-sm sm:p-9"
             >
               <div className="flex items-center gap-3">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gold/15">
@@ -103,7 +107,7 @@ export default async function Home() {
                   {s.cta.label}
                 </Link>
                 <Link
-                  href={`/services#${s.slug}`}
+                  href={`/services/${s.slug}`}
                   className="rounded-md border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
                 >
                   Learn more
@@ -113,20 +117,7 @@ export default async function Home() {
           ))}
         </div>
 
-        {otherServices.length > 0 && (
-          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl bg-offwhite px-5 py-4 ring-1 ring-line">
-            <span className="text-sm font-semibold text-midnight">Also available:</span>
-            {otherServices.map((s) => (
-              <Link
-                key={s.slug}
-                href={`/services#${s.slug}`}
-                className="rounded-full bg-white px-3 py-1 text-sm text-midnight/70 ring-1 ring-line transition hover:text-gold-dark hover:ring-gold"
-              >
-                {s.title}
-              </Link>
-            ))}
-          </div>
-        )}
+        </div>
       </section>
 
       <section className="container-shell py-14">
@@ -146,7 +137,7 @@ export default async function Home() {
         {featured.length === 0 ? (
           <div className="rounded-xl bg-white p-10 text-center ring-1 ring-line">
             <p className="text-sm text-midnight/60">
-              Nothing is listed for these dates yet. Message us on WhatsApp and we&apos;ll tell you what we can source.
+              Our fleet is being updated. Message us on WhatsApp and we&apos;ll tell you what&apos;s available.
             </p>
             <Link
               href="/list-your-vehicle/start"
@@ -167,7 +158,9 @@ export default async function Home() {
 
 
       <section className="container-shell py-16">
-        <div className="grid gap-6 rounded-2xl bg-midnight p-8 text-white sm:grid-cols-2 sm:items-center lg:p-12">
+        <div className="relative isolate grid gap-6 overflow-hidden rounded-2xl bg-midnight p-8 text-white sm:grid-cols-2 sm:items-center lg:p-14">
+          <Image src={SECTION_IMAGES.partner} alt="" fill sizes="(min-width: 1280px) 1200px, 100vw" className="-z-20 object-cover" />
+          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-r from-midnight/95 via-midnight/80 to-midnight/50" />
           <div>
             <h2 className="text-2xl font-bold">Own a vehicle? Partner with us.</h2>
             <p className="mt-2 text-sm text-white/70">

@@ -1,49 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import { bookingErrorMessage } from "@/lib/bookingErrors";
 import { useBookingDraft, useRequireBookingId } from "@/lib/booking/draftStore";
-import VerificationStep from "@/components/booking/VerificationStep";
 import WizardNav from "@/components/booking/WizardNav";
-import { FormError } from "@/components/booking/shared";
+import BookingRequestStatus from "@/components/booking/BookingRequestStatus";
 
+// After "Send booking request": the request's status. The customer can no
+// longer move the booking on themselves; an admin confirms it once the
+// deposit is arranged (supabase 7-booking-requests.sql).
 export default function VerificationPage() {
-  const router = useRouter();
-  const { draft, patchDraft, vehicle } = useBookingDraft();
-  const [error, setError] = useState<string | null>(null);
-
+  const { draft, vehicle } = useBookingDraft();
   useRequireBookingId();
-
-  async function handleContinueToSettlement() {
-    if (!draft.bookingId) return;
-    setError(null);
-
-    const supabase = createClient();
-    const { error: updateError } = await supabase
-      .from("bookings")
-      .update({ status: "settlement_pending" })
-      .eq("id", draft.bookingId);
-
-    // Previously discarded, so the wizard advanced regardless of whether the
-    // write landed. A status-transition trigger can now reject this.
-    if (updateError) {
-      setError(bookingErrorMessage(updateError, "Could not continue. Please try again."));
-      return;
-    }
-
-    patchDraft({ furthestStepReached: "settlement" });
-    router.push(`/booking/${vehicle.slug}/settlement`);
-  }
 
   return (
     <>
       <WizardNav vehicleId={vehicle.slug} current="verification" furthest={draft.furthestStepReached} locked={draft.lockedAfterPayment} />
-
-      {error && <FormError message={error} className="mb-4" />}
-
-      <VerificationStep onContinue={handleContinueToSettlement} />
+      <BookingRequestStatus bookingId={draft.bookingId} />
     </>
   );
 }

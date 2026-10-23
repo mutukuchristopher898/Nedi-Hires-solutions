@@ -133,7 +133,7 @@ export default async function VehicleDetailPage({
               href={`/booking/${vehicle.slug}`}
               className="mt-6 block rounded-md bg-gold px-5 py-3 text-center text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
             >
-              Reserve This Vehicle
+              Reserve this vehicle
             </Link>
           ) : (
             // Switched off by an admin. Shown rather than hidden, so a
@@ -146,7 +146,7 @@ export default async function VehicleDetailPage({
             </div>
           )}
           <p className="mt-3 text-center text-xs text-midnight/50">
-            Trip details, identity verification, and a signed agreement before deposit
+            Send a request with your trip details and documents. We confirm with you before any payment.
           </p>
         </aside>
       </div>

@@ -241,7 +241,7 @@ function VehicleRow({ vehicle, defaults }: { vehicle: VehiclePricingRow; default
       </div>
 
       <label className="mt-3 block max-w-xs">
-        <span className="text-[11px] font-medium text-midnight/60">Daily rate (USD)</span>
+        <span className="text-[11px] font-medium text-midnight/60">Daily rate ($)</span>
         <input
           inputMode="decimal"
           value={dailyRate}

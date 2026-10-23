@@ -57,7 +57,6 @@ const ORGANIZATION_JSON_LD = JSON.stringify({
   name: site.name,
   description: site.description,
   areaServed: { "@type": "Country", name: "Kenya" },
-  currenciesAccepted: "USD",
   url: site.url,
   logo: `${site.url}/logo-lockup.png`,
   email: site.email,

@@ -4,16 +4,16 @@ import FaqAccordion from "@/components/FaqAccordion";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Frequently Asked Questions",
-  description: "How deposits, identity verification, chauffeur hire, cancellations and vehicle listing work at Nedi Hires Solutions.",
+  title: "Frequently asked questions",
+  description: "How booking, payment, documents, driver hire, corporate leasing, insurance replacement and vehicle partnership work at Nedi Hires Solutions.",
   alternates: { canonical: "/faq" },
-  openGraph: { images: [site.ogImage], title: "Frequently Asked Questions", description: "How deposits, identity verification, chauffeur hire, cancellations and vehicle listing work at Nedi Hires Solutions.", url: "/faq" },
+  openGraph: { images: [site.ogImage], title: "Frequently asked questions", description: "How booking, payment, documents, driver hire, corporate leasing, insurance replacement and vehicle partnership work at Nedi Hires Solutions.", url: "/faq" },
 };
 
 export default function FaqPage() {
   return (
     <div className="container-shell max-w-2xl py-14">
-      <h1 className="text-3xl font-bold text-midnight">Frequently Asked Questions</h1>
+      <h1 className="text-3xl font-bold text-midnight">Frequently asked questions</h1>
       <p className="mt-2 text-sm text-midnight/60">
         Can&apos;t find what you&apos;re looking for?{" "}
         <Link href="/contact" className="font-medium text-gold-dark hover:text-gold">

@@ -37,13 +37,13 @@ export default function BookingShell({
             href={`/account/sign-in?next=${encodeURIComponent(next)}`}
             className="rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
           >
-            Sign In
+            Sign in
           </Link>
           <Link
             href={`/account/sign-up?next=${encodeURIComponent(next)}`}
             className="rounded-md border border-line px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-midnight/5"
           >
-            Create Account
+            Create account
           </Link>
         </div>
       </div>

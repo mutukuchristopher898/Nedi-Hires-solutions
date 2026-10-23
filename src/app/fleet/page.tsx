@@ -64,7 +64,7 @@ export default async function FleetPage() {
               rel="noopener noreferrer"
               className="rounded-md border border-white/20 px-7 py-3.5 text-center text-sm font-semibold text-white transition hover:bg-white/10"
             >
-              Talk to Us on WhatsApp
+              Talk to us on WhatsApp
             </a>
           </div>
         </div>

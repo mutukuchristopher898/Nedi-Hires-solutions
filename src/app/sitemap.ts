@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { createClient } from "@supabase/supabase-js";
 import { site } from "@/lib/site";
+import { SERVICES } from "@/lib/services";
 
 // Public, indexable pages only. Everything behind sign-in — /account, /booking,
 // /admin, the partner dashboard — is excluded here and disallowed in robots.ts.
@@ -66,5 +67,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency,
     priority,
   }));
-  return [...fixed, ...(await vehicleEntries())];
+  const services = SERVICES.map((s) => ({
+    url: `${site.url}/services/${s.slug}`,
+    lastModified,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+  return [...fixed, ...services, ...(await vehicleEntries())];
 }

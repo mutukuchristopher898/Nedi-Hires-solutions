@@ -57,7 +57,7 @@ export default function ForgotPasswordPage() {
           href="/account/sign-in"
           className="mt-6 inline-block rounded-md bg-midnight px-5 py-3 text-sm font-semibold text-white transition hover:bg-charcoal"
         >
-          Back to Sign In
+          Back to sign in
         </Link>
       </div>
     );

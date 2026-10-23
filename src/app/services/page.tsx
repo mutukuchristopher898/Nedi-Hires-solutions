@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ServiceIcon from "@/components/ServiceIcon";
-import { SERVICES } from "@/lib/services";
+import { SERVICE_GROUPS } from "@/lib/services";
 import { quoteHref } from "@/lib/enquiryTopics";
 import { site } from "@/lib/site";
 import PageHero from "@/components/PageHero";
@@ -16,15 +16,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/services" },
   openGraph: { images: [site.ogImage], title: "Services", description: DESCRIPTION, url: "/services" },
 };
-
-// The outline groups services by who they are for, so a company or an
-// insurer sees its options without reading past family trips.
-const BUSINESS_SERVICES = new Set(["corporate-travel", "corporate-leasing", "insurance-replacement", "vehicle-partnership"]);
-
-const GROUPS = [
-  { title: "For you and your family", services: SERVICES.filter((s) => !BUSINESS_SERVICES.has(s.slug)) },
-  { title: "For businesses, insurers and vehicle owners", services: SERVICES.filter((s) => BUSINESS_SERVICES.has(s.slug)) },
-];
 
 export default function ServicesPage() {
   return (
@@ -59,7 +50,7 @@ export default function ServicesPage() {
           What we offer
         </h2>
         <div className="mt-8 space-y-10">
-          {GROUPS.map((group) => (
+          {SERVICE_GROUPS.map((group) => (
             <div key={group.title}>
               <h3 className="text-sm font-semibold text-midnight/60">{group.title}</h3>
               <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -69,16 +60,20 @@ export default function ServicesPage() {
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gold/10">
                         <ServiceIcon name={service.title} className="h-6 w-6 text-gold-dark" />
                       </div>
-                      <h4 className="font-semibold text-midnight">{service.title}</h4>
+                      <h4 className="font-semibold text-midnight">
+                        <Link href={`/services/${service.slug}`} className="transition hover:text-gold-dark">
+                          {service.title}
+                        </Link>
+                      </h4>
                     </div>
                     <p className="mt-3 text-sm leading-relaxed text-midnight/65">{service.summary}</p>
                     <div className="mt-auto flex items-center gap-4 pt-4 text-sm font-semibold">
                       <Link href={service.action?.href ?? quoteHref(service.slug)} className="text-gold-dark transition hover:text-gold">
                         {service.action?.label ?? "Get a quote"}
                       </Link>
-                      <a href={`#${service.slug}`} className="text-midnight/60 transition hover:text-midnight">
-                        Learn more
-                      </a>
+                      <Link href={`/services/${service.slug}`} className="text-midnight/60 transition hover:text-midnight">
+                        View service
+                      </Link>
                     </div>
                   </li>
                 ))}
@@ -87,64 +82,6 @@ export default function ServicesPage() {
           ))}
         </div>
       </section>
-
-      {/* Each service in full. */}
-      <div className="border-t border-line bg-white">
-        <div className="container-shell py-14">
-          <div className="space-y-12">
-            {SERVICES.map((service, index) => (
-              <section
-                key={service.slug}
-                id={service.slug}
-                // scroll-mt keeps the heading clear of the sticky header when
-                // a "Learn more" link lands on it.
-                className={`scroll-mt-24 ${index > 0 ? "border-t border-line pt-12" : ""}`}
-              >
-                <div className="grid gap-6 lg:grid-cols-[auto_1fr] lg:gap-10">
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold/10">
-                    <ServiceIcon name={service.title} className="h-8 w-8 text-gold-dark" />
-                  </div>
-
-                  <div className="min-w-0">
-                    <h2 className="text-2xl font-bold text-midnight">{service.title}</h2>
-                    <p className="mt-1 text-lg font-semibold text-gold-dark">{service.promise}</p>
-                    <p className="mt-3 max-w-2xl text-sm leading-relaxed text-midnight/70">{service.intro}</p>
-
-                    <h3 className="mt-6 text-sm font-semibold text-midnight">What&apos;s included</h3>
-                    <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-                      {service.points.map((point) => (
-                        <li key={point} className="flex gap-2 text-sm text-midnight/70">
-                          <span aria-hidden className="mt-0.5 text-gold">
-                            ✓
-                          </span>
-                          <span>{point}</span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    <h3 className="mt-6 text-sm font-semibold text-midnight">Best for</h3>
-                    <p className="mt-1 max-w-2xl text-sm leading-relaxed text-midnight/70">{service.bestFor}</p>
-
-                    <div className="mt-6 flex flex-wrap items-center gap-4">
-                      <Link
-                        href={service.action?.href ?? quoteHref(service.slug)}
-                        className="rounded-md bg-gold px-5 py-2.5 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
-                      >
-                        {service.action?.label ?? "Get a quote"}
-                      </Link>
-                      {service.cta.href === "/fleet" && (
-                        <Link href="/fleet" className="text-sm font-semibold text-midnight/70 transition hover:text-midnight">
-                          Or choose a car now
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </section>
-            ))}
-          </div>
-        </div>
-      </div>
 
       <section className="container-shell py-16">
         <div className="flex flex-col items-center gap-4 rounded-2xl bg-midnight p-10 text-center text-white">

@@ -228,3 +228,12 @@ export const SERVICES: Service[] = [
     cta: { label: "Get an event quote", href: "/contact" },
   },
 ];
+
+// Services grouped by who they are for. Used by the Services menu in the top
+// bar and the /services page, so both always list services the same way.
+const BUSINESS_SLUGS = new Set(["corporate-travel", "corporate-leasing", "insurance-replacement", "vehicle-partnership"]);
+
+export const SERVICE_GROUPS = [
+  { title: "For you and your family", services: SERVICES.filter((s) => !BUSINESS_SLUGS.has(s.slug)) },
+  { title: "For businesses, insurers and vehicle owners", services: SERVICES.filter((s) => BUSINESS_SLUGS.has(s.slug)) },
+];

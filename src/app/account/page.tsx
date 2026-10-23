@@ -71,9 +71,9 @@ const BOOKING_STATUS_STYLES: Record<BookingRow["status"], string> = {
 };
 
 const BOOKING_STATUS_LABELS: Record<BookingRow["status"], string> = {
-  deposit_pending: "Deposit Pending",
-  verification_pending: "Verification Pending",
-  settlement_pending: "Settlement Pending",
+  deposit_pending: "Not sent yet",
+  verification_pending: "Request received",
+  settlement_pending: "Awaiting payment",
   confirmed: "Confirmed",
   cancelled: "Cancelled",
 };
@@ -176,10 +176,10 @@ export default function AccountPage() {
         </p>
         <div className="mt-6 flex justify-center gap-3">
           <Link href="/account/sign-in" className="rounded-md bg-gold px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white">
-            Sign In
+            Sign in
           </Link>
           <Link href="/account/sign-up" className="rounded-md border border-line px-5 py-3 text-sm font-semibold text-midnight transition hover:bg-midnight/5">
-            Create Account
+            Create account
           </Link>
         </div>
       </div>

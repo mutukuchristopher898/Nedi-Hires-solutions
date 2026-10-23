@@ -342,7 +342,7 @@ export default function PartnerOnboardingForm({
                 ))}
               </datalist>
             </Field>
-            <Field label="Price per day (USD)">
+            <Field label="Price per day ($)">
               <input
                 type="number"
                 min={1}
