@@ -1,4 +1,12 @@
 const ICONS: Record<string, React.ReactNode> = {
+  // A percentage sign, for a vehicle earning a share for its owner.
+  "Vehicle Partnership": (
+    <>
+      <circle cx="7.5" cy="7.5" r="2.5" />
+      <circle cx="16.5" cy="16.5" r="2.5" />
+      <path d="M18 6L6 18" />
+    </>
+  ),
   // A person, for a driver supplied on their own.
   "Driver Hire": (
     <>

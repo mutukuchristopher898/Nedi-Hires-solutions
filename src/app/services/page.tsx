@@ -19,11 +19,11 @@ export const metadata: Metadata = {
 
 // The outline groups services by who they are for, so a company or an
 // insurer sees its options without reading past family trips.
-const BUSINESS_SERVICES = new Set(["corporate-travel", "corporate-leasing", "insurance-replacement"]);
+const BUSINESS_SERVICES = new Set(["corporate-travel", "corporate-leasing", "insurance-replacement", "vehicle-partnership"]);
 
 const GROUPS = [
   { title: "For you and your family", services: SERVICES.filter((s) => !BUSINESS_SERVICES.has(s.slug)) },
-  { title: "For businesses and insurers", services: SERVICES.filter((s) => BUSINESS_SERVICES.has(s.slug)) },
+  { title: "For businesses, insurers and vehicle owners", services: SERVICES.filter((s) => BUSINESS_SERVICES.has(s.slug)) },
 ];
 
 export default function ServicesPage() {
@@ -73,8 +73,8 @@ export default function ServicesPage() {
                     </div>
                     <p className="mt-3 text-sm leading-relaxed text-midnight/65">{service.summary}</p>
                     <div className="mt-auto flex items-center gap-4 pt-4 text-sm font-semibold">
-                      <Link href={quoteHref(service.slug)} className="text-gold-dark transition hover:text-gold">
-                        Get a quote
+                      <Link href={service.action?.href ?? quoteHref(service.slug)} className="text-gold-dark transition hover:text-gold">
+                        {service.action?.label ?? "Get a quote"}
                       </Link>
                       <a href={`#${service.slug}`} className="text-midnight/60 transition hover:text-midnight">
                         Learn more
@@ -127,10 +127,10 @@ export default function ServicesPage() {
 
                     <div className="mt-6 flex flex-wrap items-center gap-4">
                       <Link
-                        href={quoteHref(service.slug)}
+                        href={service.action?.href ?? quoteHref(service.slug)}
                         className="rounded-md bg-gold px-5 py-2.5 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
                       >
-                        Get a quote
+                        {service.action?.label ?? "Get a quote"}
                       </Link>
                       {service.cta.href === "/fleet" && (
                         <Link href="/fleet" className="text-sm font-semibold text-midnight/70 transition hover:text-midnight">

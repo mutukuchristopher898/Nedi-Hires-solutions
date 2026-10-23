@@ -169,21 +169,18 @@ export default async function Home() {
       <section className="container-shell py-16">
         <div className="grid gap-6 rounded-2xl bg-midnight p-8 text-white sm:grid-cols-2 sm:items-center lg:p-12">
           <div>
-            <h2 className="text-2xl font-bold">Own a vehicle? Put it to work.</h2>
-            {/* The route is still /list-your-vehicle/start and the word is
-                deliberately absent from the copy: customers are not shown a
-                two tier fleet, so nothing here should hint at one. */}
+            <h2 className="text-2xl font-bold">Own a vehicle? Partner with us.</h2>
             <p className="mt-2 text-sm text-white/70">
-              Tell us about your vehicle and we&apos;ll put it in front of customers. Every
-              submission is checked, and its paperwork reviewed, before it goes live.
+              Hand your vehicle over to us. We rent it out, look after the customers and
+              coordinate its upkeep, and you earn an agreed percentage of what it makes.
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
             <Link
-              href="/list-your-vehicle/start"
-              className="rounded-md bg-emerald px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-emerald-dark"
+              href="/partner"
+              className="rounded-md bg-gold px-5 py-3 text-center text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
             >
-              List Your Vehicle
+              Partner with us
             </Link>
           </div>
         </div>

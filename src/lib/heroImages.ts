@@ -12,11 +12,12 @@
 //   comingSoon   Rob Wingate          unsplash.com/photos/hbQgmSJpJY0
 // Cropped and compressed for the web (October 2026).
 
-export const HERO_IMAGES: Record<"home" | "fleet" | "services" | "about" | "contact" | "comingSoon", string | null> = {
+export const HERO_IMAGES: Record<"home" | "fleet" | "services" | "about" | "contact" | "comingSoon" | "partner", string | null> = {
   home: "/images/hero-home.jpg",
   fleet: "/images/hero-fleet.jpg",
   services: "/images/hero-services.jpg",
   about: "/images/hero-about.jpg",
   contact: "/images/hero-contact.jpg",
   comingSoon: "/images/hero-coming-soon.jpg",
+  partner: "/images/hero-coming-soon.jpg",
 };

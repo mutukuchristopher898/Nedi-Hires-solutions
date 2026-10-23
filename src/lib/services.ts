@@ -23,6 +23,11 @@ export interface Service {
   bestFor: string;
   cta: { label: string; href: string };
   /**
+   * Replaces the usual "Get a quote" button on the Services page, for a
+   * service that isn't priced per trip (e.g. Vehicle Partnership).
+   */
+  action?: { label: string; href: string };
+  /**
    * A main service: advertised in large cards on the home page. Keep this to
    * one or two so the home page says clearly what the business is best at.
    * Every service, featured or not, is listed on /services.
@@ -152,6 +157,24 @@ export const SERVICES: Service[] = [
     bestFor:
       "insurance companies, brokers and assessors arranging courtesy vehicles for clients. If your own car is being repaired, ask your insurer whether they can book one with us.",
     cta: { label: "Partner with us", href: "/contact?topic=insurance-replacement" },
+  },
+  {
+    slug: "vehicle-partnership",
+    title: "Vehicle Partnership",
+    summary: "Own a vehicle? We manage it for you, and you earn an agreed share of what it makes.",
+    promise: "Your vehicle earns. We do the work.",
+    intro:
+      "Hand your car, van or 4x4 over to Nedi Hires. We rent it out, look after the customers and coordinate its upkeep, and you receive an agreed percentage of what it earns.",
+    points: [
+      "An agreed percentage of your vehicle’s earnings",
+      "We handle bookings, customers and handovers",
+      "Maintenance and servicing coordinated for you",
+      "Follow your vehicle from your partner account",
+    ],
+    bestFor:
+      "car owners, companies with vehicles that sit idle, and anyone who wants their vehicle to earn while they aren’t using it.",
+    cta: { label: "Partner with us", href: "/partner" },
+    action: { label: "Partner with us", href: "/partner" },
   },
   {
     slug: "family-trips",

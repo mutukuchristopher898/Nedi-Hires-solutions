@@ -22,6 +22,12 @@ export const ENQUIRY_TOPICS: EnquiryTopic[] = [
       "Which service, your dates, pickup and drop-off places, how many people, and any vehicle you prefer.",
   },
   {
+    value: "partnership",
+    label: "Vehicle partnership (manage my vehicle)",
+    placeholder:
+      "Your vehicle’s make, model and year, its mileage and condition, where it’s kept, and whether it’s yours or your company’s.",
+  },
+  {
     value: "booking",
     label: "Help with a booking",
     placeholder: "Your booking reference (if you have one) and what you need help with.",
