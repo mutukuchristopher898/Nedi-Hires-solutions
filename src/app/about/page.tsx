@@ -179,7 +179,7 @@ export default async function AboutPage() {
       </section>
 
       <section className="container-shell pb-16">
-        <div className="flex flex-col items-center gap-4 rounded-2xl bg-gradient-to-br from-teal-dark via-teal to-terracotta p-10 text-center text-white">
+        <div className="flex flex-col items-center gap-4 rounded-2xl bg-midnight p-10 text-center text-white">
           <h2 className="text-2xl font-bold">
             Wherever you&apos;re headed, <span className="italic text-gold">twende.</span>
           </h2>

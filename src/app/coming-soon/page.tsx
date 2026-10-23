@@ -3,6 +3,8 @@ import Link from "next/link";
 import { LogoLockup } from "@/components/Logo";
 import SocialLinks from "@/components/SocialLinks";
 import { site } from "@/lib/site";
+import Image from "next/image";
+import { HERO_IMAGES } from "@/lib/heroImages";
 
 // What visitors see before launch (SITE_LAUNCHED in src/lib/features.ts).
 // It covers the whole screen, header and footer included, because their links
@@ -16,7 +18,13 @@ export const metadata: Metadata = {
 
 export default function ComingSoonPage() {
   return (
-    <div className="fixed inset-0 z-[100] overflow-y-auto bg-gradient-to-br from-teal-dark via-teal to-terracotta text-white">
+    <div className="fixed inset-0 z-[100] isolate overflow-y-auto bg-midnight text-white">
+      {HERO_IMAGES.comingSoon && (
+        <>
+          <Image src={HERO_IMAGES.comingSoon} alt="" fill priority sizes="100vw" className="-z-20 object-cover" />
+          <div aria-hidden="true" className="fixed inset-0 -z-10 bg-midnight/75" />
+        </>
+      )}
       <main className="mx-auto flex min-h-full max-w-xl flex-col items-center justify-center px-6 py-16 text-center">
         <LogoLockup light width={220} />
 

@@ -71,7 +71,7 @@ export default async function FleetPage() {
       </PageHero>
 
       {groups.length > 1 && (
-        <nav aria-label="Vehicle classes" className="border-b border-line bg-sand">
+        <nav aria-label="Vehicle classes" className="border-b border-line bg-offwhite">
           <div className="container-shell flex flex-wrap gap-x-5 gap-y-2 py-4">
             {groups.map((g) => (
               <a
@@ -98,7 +98,6 @@ export default async function FleetPage() {
         groups.map((g) => (
           <section key={g.classification} id={anchor(g.title)} className="container-shell scroll-mt-24 py-12">
             <div className="mb-6">
-              <span aria-hidden="true" className="mb-3 block h-1 w-10 rounded-full bg-terracotta" />
               <h2 className="text-2xl font-bold text-midnight">{g.title}</h2>
               <p className="mt-1 text-sm text-midnight/60">{g.blurb}</p>
             </div>

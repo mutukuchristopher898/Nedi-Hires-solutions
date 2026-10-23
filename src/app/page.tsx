@@ -21,7 +21,7 @@ export default async function Home() {
   // full list, photographed or not, is on /fleet.
   return (
     <div>
-      <PageHero image={HERO_IMAGES.home} imageAlt="" className="py-20 lg:py-28">
+      <PageHero image={HERO_IMAGES.home} className="py-20 lg:py-28">
         <div className="container-shell">
           <p className="mb-4 inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/80">
             {site.tagline}
@@ -69,16 +69,16 @@ export default async function Home() {
         </div>
 
         <div className={`grid gap-6 ${mainServices.length > 1 ? "lg:grid-cols-2" : ""}`}>
-          {mainServices.map((s, i) => (
+          {mainServices.map((s) => (
             <article
               key={s.slug}
-              className={`flex flex-col rounded-2xl p-7 text-white ring-1 ring-white/5 sm:p-9 ${i % 2 === 0 ? "bg-teal-dark" : "bg-terracotta-dark"}`}
+              className="flex flex-col rounded-2xl bg-midnight p-7 text-white ring-1 ring-white/5 sm:p-9"
             >
               <div className="flex items-center gap-3">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gold/15">
-                  <ServiceIcon name={s.title} className={`h-7 w-7 ${i % 2 === 0 ? "text-gold" : "text-sand"}`} />
+                  <ServiceIcon name={s.title} className="h-7 w-7 text-gold" />
                 </div>
-                <h3 className="text-lg font-semibold text-sand">{s.title}</h3>
+                <h3 className="text-lg font-semibold text-gold">{s.title}</h3>
               </div>
 
               <p className="mt-5 text-2xl font-bold leading-snug sm:text-3xl">{s.promise}</p>
@@ -87,7 +87,7 @@ export default async function Home() {
               <ul className="mt-5 space-y-2">
                 {s.points.slice(0, 3).map((point) => (
                   <li key={point} className="flex gap-2 text-sm text-white/80">
-                    <span aria-hidden className={`mt-0.5 ${i % 2 === 0 ? "text-gold" : "text-sand"}`}>
+                    <span aria-hidden className="mt-0.5 text-gold">
                       ✓
                     </span>
                     <span>{point}</span>
@@ -167,7 +167,7 @@ export default async function Home() {
 
 
       <section className="container-shell py-16">
-        <div className="grid gap-6 rounded-2xl bg-gradient-to-br from-teal-dark via-teal to-terracotta p-8 text-white sm:grid-cols-2 sm:items-center lg:p-12">
+        <div className="grid gap-6 rounded-2xl bg-midnight p-8 text-white sm:grid-cols-2 sm:items-center lg:p-12">
           <div>
             <h2 className="text-2xl font-bold">Own a vehicle? Put it to work.</h2>
             {/* The route is still /list-your-vehicle/start and the word is

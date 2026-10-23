@@ -118,7 +118,7 @@ export default function ServicesPage() {
       </div>
 
       <section className="container-shell pb-16">
-        <div className="flex flex-col items-center gap-4 rounded-2xl bg-gradient-to-br from-teal-dark via-teal to-terracotta p-10 text-center text-white">
+        <div className="flex flex-col items-center gap-4 rounded-2xl bg-midnight p-10 text-center text-white">
           <h2 className="text-2xl font-bold">Not sure which one you need?</h2>
           <p className="max-w-md text-sm text-white/70">
             Tell us where you&apos;re going and how many of you there are. We&apos;ll tell you what
