@@ -17,6 +17,9 @@ const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
   subsets: ["latin"],
   weight: ["400", "500"],
+  // Italic too: the gold accent words in headings use it, and without the
+  // real italic the browser would slant the upright letters instead.
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {

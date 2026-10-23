@@ -3,37 +3,55 @@ import { LogoLockup } from "./Logo";
 import { site } from "@/lib/site";
 import SocialLinks from "@/components/SocialLinks";
 
+// Footer, four balanced columns: brand, Explore, Company, Reach us; then a
+// thin bar with the copyright and the legal links.
+const EXPLORE = [
+  { href: "/", label: "Home" },
+  { href: "/fleet", label: "Our Fleet" },
+  { href: "/services", label: "Services" },
+  { href: "/partner", label: "Partner with us" },
+];
+
+const COMPANY = [
+  { href: "/about", label: "About us" },
+  { href: "/contact", label: "Contact us" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/account", label: "My account" },
+];
+
+function LinkColumn({ title, links }: { title: string; links: { href: string; label: string }[] }) {
+  return (
+    <div>
+      <h4 className="text-sm font-semibold text-white">{title}</h4>
+      <ul className="mt-4 space-y-2.5 text-sm">
+        {links.map((l) => (
+          <li key={l.href}>
+            <Link href={l.href} className="transition hover:text-white">
+              {l.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function Footer() {
   return (
     <footer className="bg-midnight text-white/70">
-      <div className="container-shell grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-5">
-        <div className="sm:col-span-2 lg:col-span-2">
-          <LogoLockup light width={260} />
-          <p className="mt-4 max-w-xs text-sm">{site.description}</p>
-          <div className="mt-5">
-            <p className="mb-2 text-sm font-semibold text-white">Follow us</p>
+      <div className="container-shell grid gap-10 py-16 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1.2fr] lg:gap-12">
+        <div>
+          <LogoLockup light width={220} />
+          <p className="mt-5 max-w-xs text-sm leading-relaxed">
+            Car hire, drivers and fleet leasing across Kenya.
+          </p>
+          <div className="mt-6">
             <SocialLinks tone="dark" />
           </div>
         </div>
 
-        <div>
-          <h4 className="text-sm font-semibold text-white">Rent a Vehicle</h4>
-          <ul className="mt-3 space-y-2 text-sm">
-            <li><Link href="/fleet">Our Fleet</Link></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="text-sm font-semibold text-white">Company</h4>
-          <ul className="mt-3 space-y-2 text-sm">
-            <li><Link href="/services">Services</Link></li>
-            <li><Link href="/partner">Partner with us</Link></li>
-            <li><Link href="/about">About Us</Link></li>
-            <li><Link href="/contact">Contact us</Link></li>
-            <li><Link href="/faq">FAQ</Link></li>
-            <li><Link href="/account">My account</Link></li>
-          </ul>
-        </div>
+        <LinkColumn title="Explore" links={EXPLORE} />
+        <LinkColumn title="Company" links={COMPANY} />
 
         <div>
           <h4 className="text-sm font-semibold text-white">Reach us</h4>
@@ -97,12 +115,15 @@ export default function Footer() {
       <div className="border-t border-white/10 py-6">
         <div className="container-shell flex flex-col gap-2 text-xs sm:flex-row sm:items-center sm:justify-between">
           <span>
-            © {new Date().getFullYear()} {site.name}. All rights reserved. ·{" "}
-            <Link href="/terms" className="underline hover:text-white">Terms</Link> ·{" "}
-            <Link href="/privacy" className="underline hover:text-white">Privacy</Link>
+            © {new Date().getFullYear()} {site.name}. All rights reserved.
           </span>
-          <span>
-            Wherever you&apos;re headed, <span className="italic text-gold">twende.</span>
+          <span className="flex gap-4">
+            <Link href="/terms" className="transition hover:text-white">
+              Terms
+            </Link>
+            <Link href="/privacy" className="transition hover:text-white">
+              Privacy
+            </Link>
           </span>
         </div>
       </div>

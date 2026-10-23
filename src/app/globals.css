@@ -52,3 +52,27 @@ body {
     padding-right: 2rem;
   }
 }
+
+/* Home banner slideshow: the second photo fades in over the first and out
+   again, on a 14 second loop, with a very slow zoom on both. Pure CSS, so no
+   script runs; off entirely for anyone who has asked for reduced motion. */
+@keyframes hero-crossfade {
+  0%, 42% { opacity: 0; }
+  50%, 92% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes hero-zoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.06); }
+}
+.hero-slide {
+  opacity: 0;
+  animation: hero-crossfade 14s ease-in-out infinite;
+}
+.hero-zoom {
+  animation: hero-zoom 20s ease-in-out infinite alternate;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide { animation: none; opacity: 0; }
+  .hero-zoom { animation: none; }
+}

@@ -92,6 +92,7 @@ export const SERVICES: Service[] = [
   },
   {
     slug: "airport-transfers",
+    featured: true,
     title: "Airport Transfers",
     summary: "Meet & greet pickups and drop offs at JKIA, Moi International, and regional airports.",
     promise: "We'll be there before you land.",

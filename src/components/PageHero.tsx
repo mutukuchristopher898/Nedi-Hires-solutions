@@ -10,15 +10,37 @@ import Image from "next/image";
  */
 export default function PageHero({
   image,
+  images,
   imageAlt = "",
   className = "py-16",
   children,
 }: {
   image?: string | null;
+  /** Two photos for a slow cross-fading slideshow (the first loads first). */
+  images?: string[];
   imageAlt?: string;
   className?: string;
   children: React.ReactNode;
 }) {
+  if (images && images.length > 1) {
+    const [first, ...rest] = images;
+    return (
+      <section className="relative isolate overflow-hidden bg-midnight text-white">
+        <div aria-hidden="true" className="absolute inset-0 -z-20 hero-zoom">
+          <Image src={first} alt="" fill priority sizes="100vw" className="object-cover" />
+          {rest.map((src) => (
+            <Image key={src} src={src} alt="" fill sizes="100vw" fetchPriority="low" className="hero-slide object-cover" />
+          ))}
+        </div>
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 bg-gradient-to-r from-midnight/90 via-midnight/70 to-midnight/35"
+        />
+        <div className={`relative ${className}`}>{children}</div>
+      </section>
+    );
+  }
+
   return (
     <section className="relative isolate overflow-hidden bg-midnight text-white">
       {image ? (
