@@ -39,8 +39,8 @@ export const HOME_SLIDES = [
   "/images/hero-coming-soon.jpg",
 ];
 
-// Slideshow photos added October 2026 (Unsplash License). Brand badges are
-// softened, and the CX-5 and Nissan are mirrored so the car sits on the right:
+// Slideshow photos added October 2026 (Unsplash License), shown as taken,
+// badges included (not mirrored: that would reverse the brand names):
 //   slide-prado           Zenigame Photo       unsplash.com/photos/oaZ9WEVW7g8
 //   slide-cx5             Dmitriy Ivanovich    unsplash.com/photos/LtDGV5s_-zk
 //   slide-nissan          Matthijs Waanders    unsplash.com/photos/iw0D_9wHnf4
