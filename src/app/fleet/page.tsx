@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import VehicleCard from "@/components/VehicleCard";
 import { getApprovedVehicles } from "@/lib/supabase/queries";
 import { site } from "@/lib/site";
+import { FLEET_CLASSES, fleetAnchor } from "@/lib/fleetClasses";
 import PageHero from "@/components/PageHero";
 import { HERO_IMAGES } from "@/lib/heroImages";
 
@@ -20,17 +21,9 @@ export const metadata: Metadata = {
   openGraph: { images: [site.ogImage], title: "Our Fleet", description: DESCRIPTION, url: "/fleet" },
 };
 
-const CLASSES = [
-  { classification: "Economy", title: "Economy", blurb: "Affordable, economical cars for town and everyday trips." },
-  { classification: "Luxury", title: "Executive & Luxury", blurb: "Premium saloons, SUVs and people carriers for business and special occasions." },
-  { classification: "SUV", title: "SUVs, 4x4s & Pickups", blurb: "Space and ground clearance for upcountry roads, safaris and site visits." },
-  { classification: "Road-Trip Van", title: "Vans & People Carriers", blurb: "Room for the whole family or group, including safari vans." },
-  { classification: "Bus", title: "Buses", blurb: "Minibuses and coaches for large groups and events, chauffeur driven." },
-] as const;
+const CLASSES = FLEET_CLASSES;
 
-function anchor(text: string) {
-  return text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-}
+const anchor = fleetAnchor;
 
 export default async function FleetPage() {
   // One query per class: each stays well inside the per-query result cap,
