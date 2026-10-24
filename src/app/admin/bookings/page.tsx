@@ -73,7 +73,7 @@ export default async function AdminBookingsPage() {
                       )}
                     </div>
                     <p className="mt-1 text-sm text-midnight/70">
-                      {b.customerName ?? "Unknown customer"} · {b.vehicleLabel}{" "}
+                      {b.customerName ?? "Unknown customer"}{b.contactEmail ? ` (${b.contactEmail})` : ""} · {b.vehicleLabel}{" "}
                       {b.licensePlate && <span className="text-midnight/40">({b.licensePlate})</span>}
                     </p>
                     <p className="mt-0.5 text-sm text-midnight/60">

@@ -50,7 +50,9 @@ export default function ResetPasswordForm() {
     }
 
     const supabase = createClient();
-    const { error: updateError } = await supabase.auth.updateUser({ password });
+    // needs_password marks a guest account opened by email link; setting a
+    // password here clears it, so the reminder on My account goes away.
+    const { error: updateError } = await supabase.auth.updateUser({ password, data: { needs_password: false } });
 
     setSaving(false);
 

@@ -8,7 +8,7 @@ import { SITE_LAUNCHED } from "@/lib/features";
 // deliberately not on the list.
 const PRELAUNCH_OPEN = [
   /^\/coming-soon$/,
-  /^\/account\/(sign-in|forgot-password|reset-password)$/,
+  /^\/account\/(sign-in|forgot-password|reset-password|welcome|claim)$/,
   /^\/auth\//,
   /^\/api\//,
   /^\/admin(\/|$)/,

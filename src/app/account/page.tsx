@@ -227,6 +227,15 @@ export default function AccountPage() {
             Welcome back, {displayName.split(" ")[0]}
           </h1>
           <p className="mt-1 text-sm text-midnight/60">{user.email}</p>
+          {user.user_metadata?.needs_password === true && (
+            // Accounts opened from a booking email have no password yet.
+            <Link
+              href="/account/welcome"
+              className="mt-3 inline-block rounded-md bg-gold px-4 py-2 text-sm font-semibold text-midnight transition hover:bg-gold-dark hover:text-white"
+            >
+              Create a password
+            </Link>
+          )}
         </div>
         <button
           onClick={signOut}

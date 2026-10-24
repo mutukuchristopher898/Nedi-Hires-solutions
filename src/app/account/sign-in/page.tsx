@@ -46,6 +46,29 @@ function SignInForm() {
   const [fieldErrors, setFieldErrors] = useState<{ email?: boolean; password?: boolean }>({});
   const [submitting, setSubmitting] = useState(false);
 
+  // For accounts without a password (opened from a booking email), and for
+  // anyone who'd rather not type one. shouldCreateUser: false means this never
+  // creates an account, and the same message shows either way, so the form
+  // can't be used to find out who has one.
+  const [linkState, setLinkState] = useState<"idle" | "sending" | "sent">("idle");
+  async function sendSignInLink() {
+    const address = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)) {
+      setError("Enter your email address above, then choose this option.");
+      return;
+    }
+    setError(null);
+    setLinkState("sending");
+    await createClient().auth.signInWithOtp({
+      email: address,
+      options: {
+        shouldCreateUser: false,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+      },
+    });
+    setLinkState("sent");
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -124,6 +147,20 @@ function SignInForm() {
         >
           {submitting ? "Signing in…" : "Sign in"}
         </button>
+
+        <button
+          type="button"
+          onClick={sendSignInLink}
+          disabled={linkState === "sending"}
+          className="w-full text-center text-sm font-medium text-gold-dark transition hover:text-gold disabled:opacity-60"
+        >
+          {linkState === "sending" ? "Sending…" : "No password? Email me a sign-in link"}
+        </button>
+        {linkState === "sent" && (
+          <p className="text-center text-sm text-midnight/70">
+            If that email has an account, a sign-in link is on its way. Check your inbox.
+          </p>
+        )}
       </form>
 
       <p className="mt-4 text-center text-sm text-midnight/60">

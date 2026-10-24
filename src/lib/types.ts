@@ -197,6 +197,8 @@ export type BookingStatus =
 
 export interface AdminBooking {
   id: string;
+  /** The email given when the request was sent (how staff reach guests). */
+  contactEmail?: string | null;
   bookingRef: string;
   status: BookingStatus;
   startDate: string;

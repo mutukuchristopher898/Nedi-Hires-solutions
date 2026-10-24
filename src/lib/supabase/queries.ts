@@ -241,6 +241,7 @@ interface AdminBookingRow {
   created_at: string;
   profiles: { full_name: string | null } | null;
   vehicles: { make: string; model: string; year: number | null; license_plate: string | null } | null;
+  contact_email: string | null;
 }
 
 // Admin-only: "Admins can view all bookings" (20260818120000) is what widens
@@ -250,7 +251,7 @@ export async function getAdminBookings(): Promise<AdminBooking[]> {
   const { data, error } = await supabase
     .from("bookings")
     .select(
-      "id, booking_ref, status, start_date, end_date, total_amount, currency, created_at, profiles(full_name), vehicles(make, model, year, license_plate)"
+      "id, booking_ref, status, start_date, end_date, total_amount, currency, created_at, contact_email, profiles(full_name), vehicles(make, model, year, license_plate)"
     )
     .order("created_at", { ascending: false });
 
@@ -267,6 +268,7 @@ export async function getAdminBookings(): Promise<AdminBooking[]> {
     totalAmount: row.total_amount,
     currency: row.currency,
     createdAt: row.created_at,
+    contactEmail: row.contact_email ?? null,
     customerName: row.profiles?.full_name ?? null,
     vehicleLabel: row.vehicles ? `${row.vehicles.make} ${row.vehicles.model}` : "Unknown vehicle",
     licensePlate: row.vehicles?.license_plate ?? "",
