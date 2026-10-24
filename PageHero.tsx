@@ -1,0 +1,78 @@
+import Image from "next/image";
+
+/**
+ * The banner at the top of a page, in the brand's black and gold.
+ *
+ * With a photo: the photo fills the banner under a dark shade that is
+ * strongest on the left, where the text sits, so white text and gold buttons
+ * stay readable on any picture. Without one: the original black background
+ * with two soft gold glows.
+ */
+export default function PageHero({
+  image,
+  images,
+  imageAlt = "",
+  className = "py-16",
+  children,
+}: {
+  image?: string | null;
+  /** Two photos for a slow cross-fading slideshow (the first loads first). */
+  images?: string[];
+  imageAlt?: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  if (images && images.length > 1) {
+    const [first, ...rest] = images;
+    return (
+      <section className="relative isolate overflow-hidden bg-midnight text-white">
+        <div aria-hidden="true" className="absolute inset-0 -z-20 hero-zoom">
+          <Image src={first} alt="" fill priority sizes="100vw" className="object-cover" />
+          {rest.map((src, i) => (
+            <Image
+              key={src}
+              src={src}
+              alt=""
+              fill
+              sizes="100vw"
+              fetchPriority="low"
+              className="hero-slide object-cover"
+              // One 7 second turn per photo: the whole cycle is 7s x the
+              // number of photos, and each extra photo starts one turn later.
+              style={{
+                animationName: images.length === 3 ? "hero-crossfade-3" : undefined,
+                animationDuration: `${images.length * 7}s`,
+                animationDelay: `${i * 7}s`,
+              }}
+            />
+          ))}
+        </div>
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 bg-gradient-to-r from-midnight/90 via-midnight/70 to-midnight/35"
+        />
+        <div className={`relative ${className}`}>{children}</div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="relative isolate overflow-hidden bg-midnight text-white">
+      {image ? (
+        <>
+          <Image src={image} alt={imageAlt} fill priority sizes="100vw" className="-z-20 object-cover" />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 -z-10 bg-gradient-to-r from-midnight/90 via-midnight/70 to-midnight/35"
+          />
+        </>
+      ) : (
+        <div aria-hidden="true" className="absolute inset-0 -z-10">
+          <div className="absolute inset-0 bg-gradient-to-br from-midnight via-charcoal to-charcoal-soft" />
+          <div className="absolute inset-0 opacity-40 [background:radial-gradient(circle_at_20%_20%,rgba(182,130,53,0.28),transparent_45%),radial-gradient(circle_at_80%_0%,rgba(143,101,39,0.22),transparent_40%)]" />
+        </div>
+      )}
+      <div className={`relative ${className}`}>{children}</div>
+    </section>
+  );
+}
