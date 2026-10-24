@@ -28,8 +28,23 @@ export default function PageHero({
       <section className="relative isolate overflow-hidden bg-midnight text-white">
         <div aria-hidden="true" className="absolute inset-0 -z-20 hero-zoom">
           <Image src={first} alt="" fill priority sizes="100vw" className="object-cover" />
-          {rest.map((src) => (
-            <Image key={src} src={src} alt="" fill sizes="100vw" fetchPriority="low" className="hero-slide object-cover" />
+          {rest.map((src, i) => (
+            <Image
+              key={src}
+              src={src}
+              alt=""
+              fill
+              sizes="100vw"
+              fetchPriority="low"
+              className="hero-slide object-cover"
+              // One 7 second turn per photo: the whole cycle is 7s x the
+              // number of photos, and each extra photo starts one turn later.
+              style={{
+                animationName: images.length === 3 ? "hero-crossfade-3" : undefined,
+                animationDuration: `${images.length * 7}s`,
+                animationDelay: `${i * 7}s`,
+              }}
+            />
           ))}
         </div>
         <div

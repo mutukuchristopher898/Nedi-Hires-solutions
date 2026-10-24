@@ -61,6 +61,14 @@ body {
   50%, 92% { opacity: 1; }
   100% { opacity: 0; }
 }
+/* Three photos: each extra photo is shown for its own third of a 21 second
+   cycle (the second from 7s, the third from 14s, staggered by delay), and
+   the first sits underneath, so every change is a soft cross-fade. */
+@keyframes hero-crossfade-3 {
+  0%, 28% { opacity: 0; }
+  33%, 62% { opacity: 1; }
+  67%, 100% { opacity: 0; }
+}
 @keyframes hero-zoom {
   from { transform: scale(1); }
   to { transform: scale(1.06); }

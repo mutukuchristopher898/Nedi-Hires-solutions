@@ -5,15 +5,14 @@ import ServiceIcon from "@/components/ServiceIcon";
 import PageHero from "@/components/PageHero";
 import { SERVICES } from "@/lib/services";
 import { getApprovedVehicles } from "@/lib/supabase/queries";
-import { HERO_IMAGES, SERVICE_IMAGES } from "@/lib/heroImages";
+import { HERO_IMAGES, HOME_SLIDES, SECTION_IMAGES, SERVICE_IMAGES } from "@/lib/heroImages";
 import type { VehicleListing } from "@/lib/types";
 
 // Home page. Photos are used as bookends, not behind every section:
-//   1. Banner: the safari Land Cruiser (warm, unmistakably Kenyan).
+//   1. Banner: a slow slideshow of three photos (HOME_SLIDES).
 //   2. The three main services on a light background, each card with its
 //      own photo (SERVICE_IMAGES).
-//   3. Four vehicles, one per main class, on a light background so the car
-//      photos carry it.
+//   3. Four vehicles, one per main class, over the darkened leather seats.
 //   4. Vehicle partnership: full width over the black 4x4.
 // Headings pair the bold sans-serif with a gold italic serif accent (the
 // logo's typeface), via <Accent>; on light sections it uses the deeper gold
@@ -46,7 +45,7 @@ export default async function Home() {
   return (
     <div>
       {/* 1. Banner */}
-      <PageHero image={HERO_IMAGES.home} className="py-24 lg:py-36">
+      <PageHero images={HOME_SLIDES} className="py-24 lg:py-36">
         <div className="container-shell">
           <h1 className="max-w-3xl text-4xl font-bold leading-[1.1] text-white sm:text-6xl">
             Every journey across <Accent>East Africa</Accent> starts here
@@ -117,17 +116,19 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 3. Four vehicles: light section, the car photos carry it */}
-      <section className="border-y border-line bg-white">
+      {/* 3. Four vehicles, over the darkened leather-seats photo */}
+      <section className="relative isolate overflow-hidden bg-midnight">
+        <Image src={SECTION_IMAGES.services} alt="" fill sizes="100vw" className="-z-20 object-cover" />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-midnight/80" />
         <div className="container-shell py-20">
           <div className="mb-10 flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h2 className="text-3xl font-bold text-midnight sm:text-4xl">
-                Ready when <Accent onLight>you are</Accent>
+              <h2 className="text-3xl font-bold text-white sm:text-4xl">
+                Ready when <Accent>you are</Accent>
               </h2>
-              <p className="mt-2 text-sm text-midnight/60">Inspected, road ready and available to book.</p>
+              <p className="mt-2 text-sm text-white/65">Inspected, road ready and available to book.</p>
             </div>
-            <Link href="/fleet" className="text-sm font-semibold text-gold-dark transition hover:text-gold">
+            <Link href="/fleet" className="text-sm font-semibold text-gold transition hover:text-white">
               View the full fleet
             </Link>
           </div>
@@ -139,7 +140,7 @@ export default async function Home() {
               ))}
             </div>
           ) : (
-            <div className="rounded-xl bg-offwhite p-8 text-center text-sm text-midnight/60 ring-1 ring-line">
+            <div className="rounded-xl bg-white/5 p-8 text-center text-sm text-white/70 ring-1 ring-white/10">
               Our fleet is being updated. Message us on WhatsApp and we&apos;ll tell you what&apos;s available.
             </div>
           )}

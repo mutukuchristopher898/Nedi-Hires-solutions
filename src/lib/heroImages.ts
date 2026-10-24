@@ -30,6 +30,12 @@ export const SECTION_IMAGES = {
   partner: "/images/section-partner.jpg",
 };
 
+// The home banner slideshow, in order.
+export const HOME_SLIDES = ["/images/hero-home.jpg", "/images/hero-sunset.jpg", "/images/hero-coming-soon.jpg"];
+
+// Added October 2026 (Unsplash License):
+//   hero-sunset           Victoria V           unsplash.com/photos/HhTPDu5SjmA  (cropped above the model badge)
+
 // Banner photo for each service's own page (reusing the photos above).
 export const SERVICE_IMAGES: Record<string, string> = {
   "self-drive": "/images/hero-contact.jpg",
