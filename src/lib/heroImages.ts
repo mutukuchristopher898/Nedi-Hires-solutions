@@ -31,10 +31,19 @@ export const SECTION_IMAGES = {
 };
 
 // The home banner slideshow, in order.
-export const HOME_SLIDES = ["/images/hero-home.jpg", "/images/hero-sunset.jpg", "/images/hero-coming-soon.jpg"];
+export const HOME_SLIDES = [
+  "/images/hero-home.jpg",
+  "/images/slide-prado.jpg",
+  "/images/slide-cx5.jpg",
+  "/images/slide-nissan.jpg",
+  "/images/hero-coming-soon.jpg",
+];
 
-// Added October 2026 (Unsplash License):
-//   hero-sunset           Victoria V           unsplash.com/photos/HhTPDu5SjmA  (cropped above the model badge)
+// Slideshow photos added October 2026 (Unsplash License). Brand badges are
+// softened, and the CX-5 and Nissan are mirrored so the car sits on the right:
+//   slide-prado           Zenigame Photo       unsplash.com/photos/oaZ9WEVW7g8
+//   slide-cx5             Dmitriy Ivanovich    unsplash.com/photos/LtDGV5s_-zk
+//   slide-nissan          Matthijs Waanders    unsplash.com/photos/iw0D_9wHnf4
 
 // Banner photo for each service's own page (reusing the photos above).
 export const SERVICE_IMAGES: Record<string, string> = {

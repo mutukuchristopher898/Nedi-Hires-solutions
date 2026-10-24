@@ -53,34 +53,15 @@ body {
   }
 }
 
-/* Home banner slideshow: the second photo fades in over the first and out
-   again, on a 14 second loop, with a very slow zoom on both. Pure CSS, so no
-   script runs; off entirely for anyone who has asked for reduced motion. */
-@keyframes hero-crossfade {
-  0%, 42% { opacity: 0; }
-  50%, 92% { opacity: 1; }
-  100% { opacity: 0; }
-}
-/* Three photos: each extra photo is shown for its own third of a 21 second
-   cycle (the second from 7s, the third from 14s, staggered by delay), and
-   the first sits underneath, so every change is a soft cross-fade. */
-@keyframes hero-crossfade-3 {
-  0%, 28% { opacity: 0; }
-  33%, 62% { opacity: 1; }
-  67%, 100% { opacity: 0; }
-}
+/* Home banner slideshow: a very slow zoom under the cross-fading photos
+   (HeroSlides.tsx). Off for anyone who has asked for reduced motion. */
 @keyframes hero-zoom {
   from { transform: scale(1); }
   to { transform: scale(1.06); }
-}
-.hero-slide {
-  opacity: 0;
-  animation: hero-crossfade 14s ease-in-out infinite;
 }
 .hero-zoom {
   animation: hero-zoom 20s ease-in-out infinite alternate;
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-slide { animation: none; opacity: 0; }
   .hero-zoom { animation: none; }
 }
