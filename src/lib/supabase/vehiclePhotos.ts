@@ -53,6 +53,10 @@ export async function uploadVehiclePhoto({
  * documented public-object URL shape for a public bucket.
  */
 export function publicVehiclePhotoUrl(path: string): string {
+  // Photos added in bulk ship with the site, under public/images/vehicles,
+  // and are stored as a site path ("/images/vehicles/..."). Everything else
+  // is an upload in Supabase storage.
+  if (path.startsWith("/")) return path;
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
   return `${base}/storage/v1/object/public/${BUCKET}/${path}`;
 }
